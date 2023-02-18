@@ -1,0 +1,17 @@
+version: '3'
+services:
+  db:
+    image: postgres:alpine
+    ports:
+      - '5433:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: Animals
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: Root123
+    container_name: db-container
+    restart: always
+
+volumes:
+  db-data:
