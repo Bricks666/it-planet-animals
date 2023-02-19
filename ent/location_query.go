@@ -81,8 +81,8 @@ func (lq *LocationQuery) FirstX(ctx context.Context) *Location {
 
 // FirstID returns the first Location ID from the query.
 // Returns a *NotFoundError when no Location ID was found.
-func (lq *LocationQuery) FirstID(ctx context.Context) (id int64, err error) {
-	var ids []int64
+func (lq *LocationQuery) FirstID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = lq.Limit(1).IDs(setContextOp(ctx, lq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -94,7 +94,7 @@ func (lq *LocationQuery) FirstID(ctx context.Context) (id int64, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (lq *LocationQuery) FirstIDX(ctx context.Context) int64 {
+func (lq *LocationQuery) FirstIDX(ctx context.Context) uint64 {
 	id, err := lq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -132,8 +132,8 @@ func (lq *LocationQuery) OnlyX(ctx context.Context) *Location {
 // OnlyID is like Only, but returns the only Location ID in the query.
 // Returns a *NotSingularError when more than one Location ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (lq *LocationQuery) OnlyID(ctx context.Context) (id int64, err error) {
-	var ids []int64
+func (lq *LocationQuery) OnlyID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = lq.Limit(2).IDs(setContextOp(ctx, lq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -149,7 +149,7 @@ func (lq *LocationQuery) OnlyID(ctx context.Context) (id int64, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (lq *LocationQuery) OnlyIDX(ctx context.Context) int64 {
+func (lq *LocationQuery) OnlyIDX(ctx context.Context) uint64 {
 	id, err := lq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -177,7 +177,7 @@ func (lq *LocationQuery) AllX(ctx context.Context) []*Location {
 }
 
 // IDs executes the query and returns a list of Location IDs.
-func (lq *LocationQuery) IDs(ctx context.Context) (ids []int64, err error) {
+func (lq *LocationQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if lq.ctx.Unique == nil && lq.path != nil {
 		lq.Unique(true)
 	}
@@ -189,7 +189,7 @@ func (lq *LocationQuery) IDs(ctx context.Context) (ids []int64, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (lq *LocationQuery) IDsX(ctx context.Context) []int64 {
+func (lq *LocationQuery) IDsX(ctx context.Context) []uint64 {
 	ids, err := lq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -364,7 +364,7 @@ func (lq *LocationQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (lq *LocationQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(location.Table, location.Columns, sqlgraph.NewFieldSpec(location.FieldID, field.TypeInt64))
+	_spec := sqlgraph.NewQuerySpec(location.Table, location.Columns, sqlgraph.NewFieldSpec(location.FieldID, field.TypeUint64))
 	_spec.From = lq.sql
 	if unique := lq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

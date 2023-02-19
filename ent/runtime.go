@@ -36,7 +36,7 @@ func init() {
 	// locationDescID is the schema descriptor for id field.
 	locationDescID := locationFields[0].Descriptor()
 	// location.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	location.IDValidator = locationDescID.Validators[0].(func(int64) error)
+	location.IDValidator = locationDescID.Validators[0].(func(uint64) error)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescEmail is the schema descriptor for email field.

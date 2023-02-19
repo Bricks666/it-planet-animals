@@ -14,7 +14,7 @@ type Location struct {
 // Fields of the Location.
 func (Location) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int64("id").Positive(),
+		field.Uint64("id").Positive(),
 		field.Float("latitude").Range(-90, 90),
 		field.Float("longitude").Range(-180, 180),
 	}

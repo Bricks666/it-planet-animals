@@ -9,47 +9,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int64) predicate.Location {
+func ID(id uint64) predicate.Location {
 	return predicate.Location(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int64) predicate.Location {
+func IDEQ(id uint64) predicate.Location {
 	return predicate.Location(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int64) predicate.Location {
+func IDNEQ(id uint64) predicate.Location {
 	return predicate.Location(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int64) predicate.Location {
+func IDIn(ids ...uint64) predicate.Location {
 	return predicate.Location(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int64) predicate.Location {
+func IDNotIn(ids ...uint64) predicate.Location {
 	return predicate.Location(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int64) predicate.Location {
+func IDGT(id uint64) predicate.Location {
 	return predicate.Location(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int64) predicate.Location {
+func IDGTE(id uint64) predicate.Location {
 	return predicate.Location(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int64) predicate.Location {
+func IDLT(id uint64) predicate.Location {
 	return predicate.Location(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int64) predicate.Location {
+func IDLTE(id uint64) predicate.Location {
 	return predicate.Location(sql.FieldLTE(FieldID, id))
 }
 

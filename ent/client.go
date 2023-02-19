@@ -450,7 +450,7 @@ func (c *LocationClient) UpdateOne(l *Location) *LocationUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *LocationClient) UpdateOneID(id int64) *LocationUpdateOne {
+func (c *LocationClient) UpdateOneID(id uint64) *LocationUpdateOne {
 	mutation := newLocationMutation(c.config, OpUpdateOne, withLocationID(id))
 	return &LocationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -467,7 +467,7 @@ func (c *LocationClient) DeleteOne(l *Location) *LocationDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *LocationClient) DeleteOneID(id int64) *LocationDeleteOne {
+func (c *LocationClient) DeleteOneID(id uint64) *LocationDeleteOne {
 	builder := c.Delete().Where(location.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -484,12 +484,12 @@ func (c *LocationClient) Query() *LocationQuery {
 }
 
 // Get returns a Location entity by its id.
-func (c *LocationClient) Get(ctx context.Context, id int64) (*Location, error) {
+func (c *LocationClient) Get(ctx context.Context, id uint64) (*Location, error) {
 	return c.Query().Where(location.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *LocationClient) GetX(ctx context.Context, id int64) *Location {
+func (c *LocationClient) GetX(ctx context.Context, id uint64) *Location {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

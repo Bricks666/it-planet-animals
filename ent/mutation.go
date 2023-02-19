@@ -632,7 +632,7 @@ type LocationMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int64
+	id            *uint64
 	latitude      *float64
 	addlatitude   *float64
 	longitude     *float64
@@ -663,7 +663,7 @@ func newLocationMutation(c config, op Op, opts ...locationOption) *LocationMutat
 }
 
 // withLocationID sets the ID field of the mutation.
-func withLocationID(id int64) locationOption {
+func withLocationID(id uint64) locationOption {
 	return func(m *LocationMutation) {
 		var (
 			err   error
@@ -715,13 +715,13 @@ func (m LocationMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Location entities.
-func (m *LocationMutation) SetID(id int64) {
+func (m *LocationMutation) SetID(id uint64) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *LocationMutation) ID() (id int64, exists bool) {
+func (m *LocationMutation) ID() (id uint64, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -732,12 +732,12 @@ func (m *LocationMutation) ID() (id int64, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *LocationMutation) IDs(ctx context.Context) ([]int64, error) {
+func (m *LocationMutation) IDs(ctx context.Context) ([]uint64, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int64{id}, nil
+			return []uint64{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):

@@ -38,5 +38,5 @@ var (
 	// LongitudeValidator is a validator for the "longitude" field. It is called by the builders before save.
 	LongitudeValidator func(float64) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(int64) error
+	IDValidator func(uint64) error
 )

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"animals/locations"
 	"animals/shared"
 	"animals/users"
 
@@ -21,6 +22,13 @@ func setupRouter() *fiber.App {
 	usersRouter.Put("/:id", users.Controller.Update)
 	usersRouter.Delete("/:id", users.Controller.Remove)
 
+	locationsRouter := router.Group("locations")
+
+	locationsRouter.Get("/:id", locations.Controller.GetOne)
+	locationsRouter.Post("/", locations.Controller.Create)
+	locationsRouter.Put("/:id", locations.Controller.Update)
+	locationsRouter.Delete("/:id", locations.Controller.Remove)
+
 	return router
 }
 
@@ -36,5 +44,4 @@ func main() {
 	address := fmt.Sprintf(":%s", shared.ENV["PORT"])
 
 	router.Listen(address)
-
 }

@@ -32,8 +32,8 @@ func (lc *LocationCreate) SetLongitude(f float64) *LocationCreate {
 }
 
 // SetID sets the "id" field.
-func (lc *LocationCreate) SetID(i int64) *LocationCreate {
-	lc.mutation.SetID(i)
+func (lc *LocationCreate) SetID(u uint64) *LocationCreate {
+	lc.mutation.SetID(u)
 	return lc
 }
 
@@ -108,7 +108,7 @@ func (lc *LocationCreate) sqlSave(ctx context.Context) (*Location, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = int64(id)
+		_node.ID = uint64(id)
 	}
 	lc.mutation.id = &_node.ID
 	lc.mutation.done = true
@@ -118,7 +118,7 @@ func (lc *LocationCreate) sqlSave(ctx context.Context) (*Location, error) {
 func (lc *LocationCreate) createSpec() (*Location, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Location{config: lc.config}
-		_spec = sqlgraph.NewCreateSpec(location.Table, sqlgraph.NewFieldSpec(location.FieldID, field.TypeInt64))
+		_spec = sqlgraph.NewCreateSpec(location.Table, sqlgraph.NewFieldSpec(location.FieldID, field.TypeUint64))
 	)
 	if id, ok := lc.mutation.ID(); ok {
 		_node.ID = id
@@ -177,7 +177,7 @@ func (lcb *LocationCreateBulk) Save(ctx context.Context) ([]*Location, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int64(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
