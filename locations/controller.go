@@ -39,7 +39,7 @@ func (lc *LocationsController) GetOne(ct *fiber.Ctx) error {
 	location, err = lc.locationsService.GetOne(params.Id)
 
 	if err != nil {
-		return ct.Status(fiber.StatusForbidden).JSON(err.Error())
+		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
 	}
 
 	return ct.Status(fiber.StatusOK).JSON(location)
@@ -64,7 +64,7 @@ func (lc *LocationsController) Create(ct *fiber.Ctx) error {
 	location, err = lc.locationsService.Create(&dto)
 
 	if err != nil {
-		return ct.Status(fiber.StatusForbidden).JSON(err.Error())
+		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
 	}
 
 	return ct.Status(fiber.StatusCreated).JSON(location)

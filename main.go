@@ -1,10 +1,7 @@
 package main
 
 import (
-	"fmt"
-
 	"animals/locations"
-	"animals/shared"
 	"animals/users"
 
 	"github.com/gofiber/fiber/v2"
@@ -41,7 +38,5 @@ func main() {
 		return nil
 	})
 
-	address := fmt.Sprintf(":%s", shared.ENV["PORT"])
-
-	router.Listen(address)
+	router.Listen(":5000")
 }

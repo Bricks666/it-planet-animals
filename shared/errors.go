@@ -1,6 +1,11 @@
 package shared
 
-import "github.com/go-playground/validator"
+import (
+	"reflect"
+	"strings"
+
+	"github.com/go-playground/validator"
+)
 
 type ErrorResponse struct {
 	FailedField string
@@ -9,6 +14,10 @@ type ErrorResponse struct {
 }
 
 var validate = validator.New()
+
+func init() {
+	validate.RegisterValidation("notblank", NotBlank)
+}
 
 func ValidateStruct[T interface{}](obj T) []*ErrorResponse {
 	var errors []*ErrorResponse
@@ -23,4 +32,19 @@ func ValidateStruct[T interface{}](obj T) []*ErrorResponse {
 		}
 	}
 	return errors
+}
+
+func NotBlank(fl validator.FieldLevel) bool {
+	field := fl.Field()
+
+	switch field.Kind() {
+	case reflect.String:
+		return len(strings.TrimSpace(field.String())) > 0
+	case reflect.Chan, reflect.Map, reflect.Slice, reflect.Array:
+		return field.Len() > 0
+	case reflect.Ptr, reflect.Interface, reflect.Func:
+		return !field.IsNil()
+	default:
+		return field.IsValid() && field.Interface() != reflect.Zero(field.Type()).Interface()
+	}
 }

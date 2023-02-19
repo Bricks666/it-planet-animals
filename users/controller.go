@@ -23,13 +23,14 @@ func (uc *UsersController) GetAll(ct *fiber.Ctx) error {
 	var query UsersSearchQueryDto
 	var validationErrors []*shared.ErrorResponse
 	var err = ct.QueryParser(&query)
+	var size = ct.QueryInt("size", 10)
 
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
 	if query.Size == 0 {
-		query.Size = 10
+		query.Size = uint32(size)
 	}
 
 	validationErrors = shared.ValidateStruct(&query)

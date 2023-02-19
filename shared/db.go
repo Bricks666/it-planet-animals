@@ -4,8 +4,8 @@ import (
 	"animals/ent"
 	"context"
 	"fmt"
+	"log"
 
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -17,19 +17,9 @@ type DB struct {
 var Database DB
 
 func init() {
-	ENV, _ := godotenv.Read(".env")
-
-	var port = ENV["DB_PORT"]
-	var host = ENV["DB_HOST"]
-	var name = ENV["DB_NAME"]
-	var user = ENV["DB_USER"]
-	var password = ENV["DB_PASSWORD"]
-
-	dsn := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable", host, port, user, name, password)
-
+	dsn := fmt.Sprintf("host=%s port=%d user=%s dbname=%s password=%s sslmode=disable", DB_HOST, DB_PORT, DB_USER, DB_NAME, DB_PASSWORD)
+	log.Println(dsn)
 	client, err := ent.Open("postgres", dsn)
-
-	fmt.Println(err, "Error")
 
 	if err != nil {
 		panic(err)

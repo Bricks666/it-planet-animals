@@ -2,6 +2,7 @@ package users
 
 import (
 	"animals/ent"
+	"animals/shared"
 	"errors"
 
 	"golang.org/x/crypto/bcrypt"
@@ -45,7 +46,7 @@ func (us *UsersService) GetOne(id uint32) (*SecurityUserDto, error) {
 }
 
 func (us *UsersService) Create(dto *CreateUserDto) (*SecurityUserDto, error) {
-	hashed, _ := bcrypt.GenerateFromPassword([]byte(dto.Password), 8)
+	hashed, _ := bcrypt.GenerateFromPassword([]byte(dto.Password), shared.ROUND_COUNT)
 
 	// May be should replace this mutation
 	dto.Password = string(hashed)
@@ -66,7 +67,7 @@ func (us *UsersService) Update(id uint32, dto *UpdateUserDto) (*SecurityUserDto,
 		return nil, errors.New("email")
 	}
 
-	hashed, _ := bcrypt.GenerateFromPassword([]byte(dto.Password), 8)
+	hashed, _ := bcrypt.GenerateFromPassword([]byte(dto.Password), shared.ROUND_COUNT)
 
 	dto.Password = string(hashed)
 

@@ -1,5 +1,19 @@
 version: '3'
 services:
+  webapi:
+    build: ./
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=root
+      - DB_PASSWORD=Root123
+      - DB_NAME=Animals
+      - ROUND_COUNT=8
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+    restart: on-failure
   db:
     image: postgres:alpine
     ports:
@@ -10,8 +24,17 @@ services:
       POSTGRES_DB: Animals
       POSTGRES_USER: root
       POSTGRES_PASSWORD: Root123
-    container_name: db-container
     restart: always
+  tests:
+      image: mrexpen/planet_olymp_phase1
+      pull_policy: always
+      ports:
+        - "8090:8080"
+      depends_on:
+        - webapi
+      environment:
+        SERVER_URL: http://webapi:5000
+        STAGE: all
 
 volumes:
   db-data:
