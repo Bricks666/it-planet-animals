@@ -12,9 +12,12 @@ import (
 func setupRouter() *gin.Engine {
 	router := gin.Default()
 
-	usersR := router.Group("users")
+	router.POST("/registration", users.Controller.Create)
 
-	usersR.POST("/", users.Controller.Create)
+	usersRouter := router.Group("accounts")
+
+	usersRouter.GET("/:id", users.Controller.GetOne)
+	usersRouter.GET("search", users.Controller.GetAll)
 
 	return router
 }

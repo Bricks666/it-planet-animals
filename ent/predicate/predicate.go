@@ -6,5 +6,14 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Animal is the predicate function for animal builders.
+type Animal func(*sql.Selector)
+
+// AnimalType is the predicate function for animaltype builders.
+type AnimalType func(*sql.Selector)
+
+// Location is the predicate function for location builders.
+type Location func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

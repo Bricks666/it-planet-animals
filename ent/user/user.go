@@ -37,3 +37,16 @@ func ValidColumn(column string) bool {
 	}
 	return false
 }
+
+var (
+	// EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	EmailValidator func(string) error
+	// PasswordValidator is a validator for the "password" field. It is called by the builders before save.
+	PasswordValidator func(string) error
+	// FirstNameValidator is a validator for the "firstName" field. It is called by the builders before save.
+	FirstNameValidator func(string) error
+	// LastNameValidator is a validator for the "lastName" field. It is called by the builders before save.
+	LastNameValidator func(string) error
+	// IDValidator is a validator for the "id" field. It is called by the builders before save.
+	IDValidator func(uint32) error
+)

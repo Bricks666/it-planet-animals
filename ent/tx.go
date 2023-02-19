@@ -12,6 +12,12 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// Animal is the client for interacting with the Animal builders.
+	Animal *AnimalClient
+	// AnimalType is the client for interacting with the AnimalType builders.
+	AnimalType *AnimalTypeClient
+	// Location is the client for interacting with the Location builders.
+	Location *LocationClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -145,6 +151,9 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.Animal = NewAnimalClient(tx.config)
+	tx.AnimalType = NewAnimalTypeClient(tx.config)
+	tx.Location = NewLocationClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 
@@ -155,7 +164,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: User.QueryXXX(), the query will be executed
+// applies a query, for example: Animal.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

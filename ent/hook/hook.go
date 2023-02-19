@@ -8,6 +8,42 @@ import (
 	"fmt"
 )
 
+// The AnimalFunc type is an adapter to allow the use of ordinary
+// function as Animal mutator.
+type AnimalFunc func(context.Context, *ent.AnimalMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AnimalFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AnimalMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AnimalMutation", m)
+}
+
+// The AnimalTypeFunc type is an adapter to allow the use of ordinary
+// function as AnimalType mutator.
+type AnimalTypeFunc func(context.Context, *ent.AnimalTypeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AnimalTypeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AnimalTypeMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AnimalTypeMutation", m)
+}
+
+// The LocationFunc type is an adapter to allow the use of ordinary
+// function as Location mutator.
+type LocationFunc func(context.Context, *ent.LocationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f LocationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.LocationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.LocationMutation", m)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)

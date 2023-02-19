@@ -1,6 +1,10 @@
 package users
 
-import "animals/shared"
+import (
+	"animals/ent"
+	"animals/ent/user"
+	"animals/shared"
+)
 
 var Repository UserRepository
 
@@ -16,10 +20,22 @@ func init() {
 
 func (ur *UserRepository) GetAll() {}
 
-func (ur *UserRepository) GetOne() {}
+func (ur *UserRepository) GetOne(id uint32) (*ent.User, error) {
+	return ur.db.Client.User.Query().
+		Where(user.ID(id)).
+		Select(user.FieldEmail, user.FieldFirstName, user.FieldLastName, user.FieldID).
+		Only(ur.db.Context)
 
-func (ur *UserRepository) Create() {
-	ur.db.Client.User.Create().SetEmail("email@gmail.com").SetFirstName("First Name").SetLastName("LastName").SetPassword("Password").Save(ur.db.Context)
+}
+
+func (ur *UserRepository) Create(dto *CreateUserDto) (*ent.User, error) {
+	return ur.db.Client.User.Create().
+		SetEmail(dto.Email).
+		SetFirstName(dto.FirstName).
+		SetLastName(dto.LastName).
+		SetPassword(dto.Password).
+		Save(ur.db.Context)
+
 }
 
 func (ur *UserRepository) Update() {}

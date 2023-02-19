@@ -1,6 +1,10 @@
 package users
 
-import "log"
+import (
+	"animals/ent"
+
+	"golang.org/x/crypto/bcrypt"
+)
 
 var Service UsersService
 
@@ -14,15 +18,41 @@ type UsersService struct {
 	usersRepository *UserRepository
 }
 
-func (ac *UsersService) GetAll() {}
+func (us *UsersService) GetAll() {}
 
-func (ac *UsersService) GetOne() {}
+func (us *UsersService) GetOne(id uint32) (*SecurityUserDto, error) {
+	user, err := us.usersRepository.GetOne(id)
+	if err != nil {
+		return nil, err
+	}
 
-func (ac *UsersService) Create() {
-	log.Println(ac)
-	ac.usersRepository.Create()
+	return prepareSecurityUser(user), nil
 }
 
-func (ac *UsersService) Update() {}
+func (us *UsersService) Create(dto *CreateUserDto) (*SecurityUserDto, error) {
+	hashed, _ := bcrypt.GenerateFromPassword([]byte(dto.Password), 8)
 
-func (ac *UsersService) Remove() {}
+	// May be should replace this mutation
+	dto.Password = string(hashed)
+
+	user, err := us.usersRepository.Create(dto)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return prepareSecurityUser(user), nil
+}
+
+func (us *UsersService) Update() {}
+
+func (us *UsersService) Remove() {}
+
+func prepareSecurityUser(user *ent.User) *SecurityUserDto {
+	return &SecurityUserDto{
+		Id:        user.ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+	}
+}

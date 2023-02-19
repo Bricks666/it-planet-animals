@@ -8,9 +8,49 @@ import (
 )
 
 var (
+	// AnimalsColumns holds the columns for the "animals" table.
+	AnimalsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+	}
+	// AnimalsTable holds the schema information for the "animals" table.
+	AnimalsTable = &schema.Table{
+		Name:       "animals",
+		Columns:    AnimalsColumns,
+		PrimaryKey: []*schema.Column{AnimalsColumns[0]},
+	}
+	// AnimalTypesColumns holds the columns for the "animal_types" table.
+	AnimalTypesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "type", Type: field.TypeString, Unique: true},
+	}
+	// AnimalTypesTable holds the schema information for the "animal_types" table.
+	AnimalTypesTable = &schema.Table{
+		Name:       "animal_types",
+		Columns:    AnimalTypesColumns,
+		PrimaryKey: []*schema.Column{AnimalTypesColumns[0]},
+	}
+	// LocationsColumns holds the columns for the "locations" table.
+	LocationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "latitude", Type: field.TypeFloat64},
+		{Name: "longitude", Type: field.TypeFloat64},
+	}
+	// LocationsTable holds the schema information for the "locations" table.
+	LocationsTable = &schema.Table{
+		Name:       "locations",
+		Columns:    LocationsColumns,
+		PrimaryKey: []*schema.Column{LocationsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "location_latitude_longitude",
+				Unique:  true,
+				Columns: []*schema.Column{LocationsColumns[1], LocationsColumns[2]},
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeString},
 		{Name: "first_name", Type: field.TypeString},
@@ -24,6 +64,9 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AnimalsTable,
+		AnimalTypesTable,
+		LocationsTable,
 		UsersTable,
 	}
 )

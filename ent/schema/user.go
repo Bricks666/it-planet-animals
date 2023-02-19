@@ -13,10 +13,11 @@ type User struct {
 // Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("email").Unique(),
-		field.String("password"),
-		field.String("firstName"),
-		field.String("lastName"),
+		field.Uint32("id").Positive(),
+		field.String("email").Unique().MinLen(1),
+		field.String("password").MinLen(1),
+		field.String("firstName").MinLen(1),
+		field.String("lastName").MinLen(1),
 	}
 }
 
