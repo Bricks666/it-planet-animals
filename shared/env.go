@@ -7,15 +7,20 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var ENV map[string]string
+type Env map[string]string
 
-func init() {
+var ENV Env = calculateENV()
+
+func calculateENV() Env {
 
 	var err error
+	var env Env
 	fmt.Println(os.Getwd())
-	ENV, err = godotenv.Read("../.env")
+	env, err = godotenv.Read(".env")
 
 	if err != nil {
 		panic(err)
 	}
+
+	return env
 }

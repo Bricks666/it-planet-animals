@@ -3,12 +3,18 @@ package main
 import (
 	"fmt"
 
-	"animals.com/src/shared"
+	"animals/shared"
+	"animals/users"
+
 	"github.com/gin-gonic/gin"
 )
 
 func setupRouter() *gin.Engine {
 	router := gin.Default()
+
+	usersR := router.Group("users")
+
+	usersR.POST("/", users.Controller.Create)
 
 	return router
 }
