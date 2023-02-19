@@ -6,18 +6,20 @@ import (
 	"animals/shared"
 	"animals/users"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
-func setupRouter() *gin.Engine {
-	router := gin.Default()
+func setupRouter() *fiber.App {
+	router := fiber.New()
 
-	router.POST("/registration", users.Controller.Create)
+	router.Post("/registration", users.Controller.Create)
 
 	usersRouter := router.Group("accounts")
 
-	usersRouter.GET("/:id", users.Controller.GetOne)
-	usersRouter.GET("search", users.Controller.GetAll)
+	usersRouter.Get("/search", users.Controller.GetAll)
+	usersRouter.Get("/:id", users.Controller.GetOne)
+	usersRouter.Put("/:id", users.Controller.Update)
+	usersRouter.Delete("/:id", users.Controller.Remove)
 
 	return router
 }
@@ -25,12 +27,14 @@ func setupRouter() *gin.Engine {
 func main() {
 	router := setupRouter()
 
-	router.GET("/ping", func(ct *gin.Context) {
-		ct.JSON(200, "pong!")
+	router.Get("/ping", func(ct *fiber.Ctx) error {
+		ct.Status(200).SendString("pong!")
+
+		return nil
 	})
 
 	address := fmt.Sprintf(":%s", shared.ENV["PORT"])
 
-	router.Run(address)
+	router.Listen(address)
 
 }

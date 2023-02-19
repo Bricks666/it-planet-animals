@@ -3,9 +3,8 @@ package users
 import (
 	"animals/shared"
 	"net/http"
-	"strconv"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
 var Controller UsersController
@@ -20,43 +19,77 @@ type UsersController struct {
 	usersService *UsersService
 }
 
-func (uc *UsersController) GetAll(ct *gin.Context) {}
-
-func (uc *UsersController) GetOne(ct *gin.Context) {
-	var stringId = ct.Params.ByName("id")
-	id, err := strconv.ParseUint(stringId, 10, 0)
-
-	if err != nil || id == 0 {
-		ct.JSON(http.StatusBadRequest, "")
-		return
-	}
-
-	user, err := uc.usersService.GetOne(uint32(id))
+func (uc *UsersController) GetAll(ct *fiber.Ctx) error {
+	var query UsersSearchQueryDto
+	var validationErrors []*shared.ErrorResponse
+	var err = ct.QueryParser(&query)
 
 	if err != nil {
-		ct.JSON(http.StatusNotFound, err)
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	ct.JSON(http.StatusOK, user)
+	if query.Size == 0 {
+		query.Size = 10
+	}
+
+	validationErrors = shared.ValidateStruct(&query)
+
+	if validationErrors != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
+
+	}
+
+	var users []*SecurityUserDto
+
+	users, err = uc.usersService.GetAll(&query)
+
+	if err != nil {
+		return ct.Status(fiber.StatusInternalServerError).JSON(err.Error())
+	}
+
+	return ct.Status(fiber.StatusOK).JSON(users)
+}
+
+func (uc *UsersController) GetOne(ct *fiber.Ctx) error {
+	var params UserParamsDto
+	var validationErrors []*shared.ErrorResponse
+	var err = ct.ParamsParser(&params)
+
+	if err != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	validationErrors = shared.ValidateStruct(&params)
+
+	if validationErrors != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
+
+	}
+
+	user, err := uc.usersService.GetOne(params.Id)
+
+	if err != nil {
+		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
+	}
+
+	return ct.Status(fiber.StatusOK).JSON(user)
 
 }
 
-func (uc *UsersController) Create(ct *gin.Context) {
+func (uc *UsersController) Create(ct *fiber.Ctx) error {
 	var dto CreateUserDto
 
-	err := ct.ShouldBindJSON(&dto)
+	err := ct.BodyParser(&dto)
 
 	if err != nil {
-		ct.JSON(http.StatusBadRequest, err)
-		return
+		return fiber.ErrBadRequest
 	}
 
-	if shared.IsEmpty(dto.Email) ||
-		shared.IsEmpty(dto.FirstName) ||
-		shared.IsEmpty(dto.LastName) ||
-		shared.IsEmpty(dto.Password) {
-		ct.JSON(http.StatusBadRequest, "Some field is empty")
-		return
+	validationErrors := shared.ValidateStruct(dto)
+
+	if validationErrors != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
+
 	}
 
 	var user *SecurityUserDto
@@ -64,13 +97,76 @@ func (uc *UsersController) Create(ct *gin.Context) {
 	user, err = uc.usersService.Create(&dto)
 
 	if err != nil {
-		ct.JSON(http.StatusConflict, "")
-		return
+		return fiber.ErrConflict
 	}
 
-	ct.JSON(http.StatusCreated, user)
+	return ct.Status(http.StatusCreated).JSON(user)
 }
 
-func (uc *UsersController) Update(ct *gin.Context) {}
+func (uc *UsersController) Update(ct *fiber.Ctx) error {
+	var params UserParamsDto
+	var dto UpdateUserDto
+	var validationErrors []*shared.ErrorResponse
+	var err error
 
-func (uc *UsersController) Remove(ct *gin.Context) {}
+	err = ct.ParamsParser(&params)
+	if err != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	validationErrors = shared.ValidateStruct(&params)
+	if validationErrors != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
+
+	}
+
+	err = ct.BodyParser(&dto)
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
+
+	validationErrors = shared.ValidateStruct(dto)
+	if validationErrors != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
+
+	}
+
+	var user *SecurityUserDto
+
+	user, err = uc.usersService.Update(params.Id, &dto)
+
+	if err != nil {
+		if err.Error() == "email" {
+			return ct.Status(fiber.StatusConflict).JSON("Email already exists")
+		}
+
+		return ct.Status(fiber.StatusBadRequest).JSON("")
+	}
+
+	return ct.Status(fiber.StatusOK).JSON(user)
+}
+
+func (uc *UsersController) Remove(ct *fiber.Ctx) error {
+	var params UserParamsDto
+	var validationErrors []*shared.ErrorResponse
+	var err error
+
+	err = ct.ParamsParser(&params)
+
+	if err != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	validationErrors = shared.ValidateStruct(&params)
+	if validationErrors != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
+	}
+
+	err = uc.usersService.Remove(params.Id)
+
+	if err != nil {
+		return ct.Status(fiber.StatusForbidden).JSON(err.Error())
+	}
+
+	return ct.Status(fiber.StatusOK).JSON("")
+}
