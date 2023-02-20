@@ -22,7 +22,7 @@ func init() {
 	// animaltypeDescID is the schema descriptor for id field.
 	animaltypeDescID := animaltypeFields[0].Descriptor()
 	// animaltype.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	animaltype.IDValidator = animaltypeDescID.Validators[0].(func(int64) error)
+	animaltype.IDValidator = animaltypeDescID.Validators[0].(func(uint64) error)
 	locationFields := schema.Location{}.Fields()
 	_ = locationFields
 	// locationDescLatitude is the schema descriptor for latitude field.

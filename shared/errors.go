@@ -19,7 +19,7 @@ func init() {
 	validate.RegisterValidation("notblank", NotBlank)
 }
 
-func ValidateStruct[T interface{}](obj T) []*ErrorResponse {
+func ValidateStruct[T interface{}](obj *T) []*ErrorResponse {
 	var errors []*ErrorResponse
 	err := validate.Struct(obj)
 	if err != nil {

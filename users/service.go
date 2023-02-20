@@ -38,6 +38,7 @@ func (us *UsersService) GetAll(dto *UsersSearchQueryDto) ([]*SecurityUserDto, er
 
 func (us *UsersService) GetOne(id uint32) (*SecurityUserDto, error) {
 	user, err := us.usersRepository.GetOne(id)
+
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +65,7 @@ func (us *UsersService) Update(id uint32, dto *UpdateUserDto) (*SecurityUserDto,
 	isExists, _ := us.usersRepository.HasWithThisEmail(dto.Email)
 
 	if isExists {
-		return nil, errors.New("email")
+		return nil, &ent.ConstraintError{}
 	}
 
 	hashed, _ := bcrypt.GenerateFromPassword([]byte(dto.Password), shared.ROUND_COUNT)

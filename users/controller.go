@@ -1,6 +1,7 @@
 package users
 
 import (
+	"animals/ent"
 	"animals/shared"
 	"net/http"
 
@@ -86,7 +87,7 @@ func (uc *UsersController) Create(ct *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	validationErrors := shared.ValidateStruct(dto)
+	validationErrors := shared.ValidateStruct(&dto)
 
 	if validationErrors != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
@@ -126,7 +127,7 @@ func (uc *UsersController) Update(ct *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	validationErrors = shared.ValidateStruct(dto)
+	validationErrors = shared.ValidateStruct(&dto)
 	if validationErrors != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
 
@@ -137,7 +138,7 @@ func (uc *UsersController) Update(ct *fiber.Ctx) error {
 	user, err = uc.usersService.Update(params.Id, &dto)
 
 	if err != nil {
-		if err.Error() == "email" {
+		if shared.IsInstanceOf(&err, new(*ent.ConstraintError)) {
 			return ct.Status(fiber.StatusConflict).JSON("Email already exists")
 		}
 

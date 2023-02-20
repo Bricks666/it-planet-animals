@@ -1,6 +1,7 @@
 package main
 
 import (
+	"animals/animaltypes"
 	"animals/locations"
 	"animals/users"
 
@@ -25,6 +26,15 @@ func setupRouter() *fiber.App {
 	locationsRouter.Post("/", locations.Controller.Create)
 	locationsRouter.Put("/:id", locations.Controller.Update)
 	locationsRouter.Delete("/:id", locations.Controller.Remove)
+
+	animalsRouter := router.Group("animals")
+
+	animalTypesRouter := animalsRouter.Group("types")
+
+	animalTypesRouter.Get("/:id", animaltypes.Controller.GetOne)
+	animalTypesRouter.Post("/", animaltypes.Controller.Create)
+	animalTypesRouter.Put("/:id", animaltypes.Controller.Update)
+	animalTypesRouter.Delete("/:id", animaltypes.Controller.Remove)
 
 	return router
 }

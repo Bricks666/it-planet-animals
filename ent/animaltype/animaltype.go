@@ -33,5 +33,5 @@ var (
 	// TypeValidator is a validator for the "type" field. It is called by the builders before save.
 	TypeValidator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(int64) error
+	IDValidator func(uint64) error
 )

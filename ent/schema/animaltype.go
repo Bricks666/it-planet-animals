@@ -13,7 +13,7 @@ type AnimalType struct {
 // Fields of the AnimalType.
 func (AnimalType) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int64("id").Positive(),
+		field.Uint64("id").Positive(),
 		field.String("type").MinLen(1).Unique(),
 	}
 }

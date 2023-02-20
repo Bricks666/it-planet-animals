@@ -14,7 +14,7 @@ import (
 type AnimalType struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int64 `json:"id,omitempty"`
+	ID uint64 `json:"id,omitempty"`
 	// Type holds the value of the "type" field.
 	Type string `json:"type,omitempty"`
 }
@@ -48,7 +48,7 @@ func (at *AnimalType) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			at.ID = int64(value.Int64)
+			at.ID = uint64(value.Int64)
 		case animaltype.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])

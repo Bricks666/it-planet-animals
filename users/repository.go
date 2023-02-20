@@ -53,11 +53,13 @@ func (ur *UserRepository) Create(dto *CreateUserDto) (*ent.User, error) {
 }
 
 func (ur *UserRepository) Update(id uint32, dto *UpdateUserDto) (*ent.User, error) {
-	return ur.db.Client.User.UpdateOneID(id).
+	return ur.db.Client.User.
+		UpdateOneID(id).
 		SetEmail(dto.Email).
 		SetFirstName(dto.FirstName).
 		SetLastName(dto.LastName).
-		SetPassword(dto.Password).Save(ur.db.Context)
+		SetPassword(dto.Password).
+		Save(ur.db.Context)
 }
 
 func (ur *UserRepository) Remove(id uint32) error {

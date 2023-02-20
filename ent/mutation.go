@@ -300,7 +300,7 @@ type AnimalTypeMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int64
+	id            *uint64
 	_type         *string
 	clearedFields map[string]struct{}
 	done          bool
@@ -328,7 +328,7 @@ func newAnimalTypeMutation(c config, op Op, opts ...animaltypeOption) *AnimalTyp
 }
 
 // withAnimalTypeID sets the ID field of the mutation.
-func withAnimalTypeID(id int64) animaltypeOption {
+func withAnimalTypeID(id uint64) animaltypeOption {
 	return func(m *AnimalTypeMutation) {
 		var (
 			err   error
@@ -380,13 +380,13 @@ func (m AnimalTypeMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of AnimalType entities.
-func (m *AnimalTypeMutation) SetID(id int64) {
+func (m *AnimalTypeMutation) SetID(id uint64) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *AnimalTypeMutation) ID() (id int64, exists bool) {
+func (m *AnimalTypeMutation) ID() (id uint64, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -397,12 +397,12 @@ func (m *AnimalTypeMutation) ID() (id int64, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *AnimalTypeMutation) IDs(ctx context.Context) ([]int64, error) {
+func (m *AnimalTypeMutation) IDs(ctx context.Context) ([]uint64, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int64{id}, nil
+			return []uint64{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):

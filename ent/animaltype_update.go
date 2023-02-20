@@ -79,7 +79,7 @@ func (atu *AnimalTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := atu.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(animaltype.Table, animaltype.Columns, sqlgraph.NewFieldSpec(animaltype.FieldID, field.TypeInt64))
+	_spec := sqlgraph.NewUpdateSpec(animaltype.Table, animaltype.Columns, sqlgraph.NewFieldSpec(animaltype.FieldID, field.TypeUint64))
 	if ps := atu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -175,7 +175,7 @@ func (atuo *AnimalTypeUpdateOne) sqlSave(ctx context.Context) (_node *AnimalType
 	if err := atuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(animaltype.Table, animaltype.Columns, sqlgraph.NewFieldSpec(animaltype.FieldID, field.TypeInt64))
+	_spec := sqlgraph.NewUpdateSpec(animaltype.Table, animaltype.Columns, sqlgraph.NewFieldSpec(animaltype.FieldID, field.TypeUint64))
 	id, ok := atuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AnimalType.id" for update`)}

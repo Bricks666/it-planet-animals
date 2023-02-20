@@ -332,7 +332,7 @@ func (c *AnimalTypeClient) UpdateOne(at *AnimalType) *AnimalTypeUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *AnimalTypeClient) UpdateOneID(id int64) *AnimalTypeUpdateOne {
+func (c *AnimalTypeClient) UpdateOneID(id uint64) *AnimalTypeUpdateOne {
 	mutation := newAnimalTypeMutation(c.config, OpUpdateOne, withAnimalTypeID(id))
 	return &AnimalTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -349,7 +349,7 @@ func (c *AnimalTypeClient) DeleteOne(at *AnimalType) *AnimalTypeDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *AnimalTypeClient) DeleteOneID(id int64) *AnimalTypeDeleteOne {
+func (c *AnimalTypeClient) DeleteOneID(id uint64) *AnimalTypeDeleteOne {
 	builder := c.Delete().Where(animaltype.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -366,12 +366,12 @@ func (c *AnimalTypeClient) Query() *AnimalTypeQuery {
 }
 
 // Get returns a AnimalType entity by its id.
-func (c *AnimalTypeClient) Get(ctx context.Context, id int64) (*AnimalType, error) {
+func (c *AnimalTypeClient) Get(ctx context.Context, id uint64) (*AnimalType, error) {
 	return c.Query().Where(animaltype.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *AnimalTypeClient) GetX(ctx context.Context, id int64) *AnimalType {
+func (c *AnimalTypeClient) GetX(ctx context.Context, id uint64) *AnimalType {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

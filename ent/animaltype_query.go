@@ -81,8 +81,8 @@ func (atq *AnimalTypeQuery) FirstX(ctx context.Context) *AnimalType {
 
 // FirstID returns the first AnimalType ID from the query.
 // Returns a *NotFoundError when no AnimalType ID was found.
-func (atq *AnimalTypeQuery) FirstID(ctx context.Context) (id int64, err error) {
-	var ids []int64
+func (atq *AnimalTypeQuery) FirstID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = atq.Limit(1).IDs(setContextOp(ctx, atq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -94,7 +94,7 @@ func (atq *AnimalTypeQuery) FirstID(ctx context.Context) (id int64, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (atq *AnimalTypeQuery) FirstIDX(ctx context.Context) int64 {
+func (atq *AnimalTypeQuery) FirstIDX(ctx context.Context) uint64 {
 	id, err := atq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -132,8 +132,8 @@ func (atq *AnimalTypeQuery) OnlyX(ctx context.Context) *AnimalType {
 // OnlyID is like Only, but returns the only AnimalType ID in the query.
 // Returns a *NotSingularError when more than one AnimalType ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (atq *AnimalTypeQuery) OnlyID(ctx context.Context) (id int64, err error) {
-	var ids []int64
+func (atq *AnimalTypeQuery) OnlyID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = atq.Limit(2).IDs(setContextOp(ctx, atq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -149,7 +149,7 @@ func (atq *AnimalTypeQuery) OnlyID(ctx context.Context) (id int64, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (atq *AnimalTypeQuery) OnlyIDX(ctx context.Context) int64 {
+func (atq *AnimalTypeQuery) OnlyIDX(ctx context.Context) uint64 {
 	id, err := atq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -177,7 +177,7 @@ func (atq *AnimalTypeQuery) AllX(ctx context.Context) []*AnimalType {
 }
 
 // IDs executes the query and returns a list of AnimalType IDs.
-func (atq *AnimalTypeQuery) IDs(ctx context.Context) (ids []int64, err error) {
+func (atq *AnimalTypeQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if atq.ctx.Unique == nil && atq.path != nil {
 		atq.Unique(true)
 	}
@@ -189,7 +189,7 @@ func (atq *AnimalTypeQuery) IDs(ctx context.Context) (ids []int64, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (atq *AnimalTypeQuery) IDsX(ctx context.Context) []int64 {
+func (atq *AnimalTypeQuery) IDsX(ctx context.Context) []uint64 {
 	ids, err := atq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -364,7 +364,7 @@ func (atq *AnimalTypeQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (atq *AnimalTypeQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(animaltype.Table, animaltype.Columns, sqlgraph.NewFieldSpec(animaltype.FieldID, field.TypeInt64))
+	_spec := sqlgraph.NewQuerySpec(animaltype.Table, animaltype.Columns, sqlgraph.NewFieldSpec(animaltype.FieldID, field.TypeUint64))
 	_spec.From = atq.sql
 	if unique := atq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

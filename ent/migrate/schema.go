@@ -20,7 +20,7 @@ var (
 	}
 	// AnimalTypesColumns holds the columns for the "animal_types" table.
 	AnimalTypesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "type", Type: field.TypeString, Unique: true},
 	}
 	// AnimalTypesTable holds the schema information for the "animal_types" table.

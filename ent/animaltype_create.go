@@ -26,8 +26,8 @@ func (atc *AnimalTypeCreate) SetType(s string) *AnimalTypeCreate {
 }
 
 // SetID sets the "id" field.
-func (atc *AnimalTypeCreate) SetID(i int64) *AnimalTypeCreate {
-	atc.mutation.SetID(i)
+func (atc *AnimalTypeCreate) SetID(u uint64) *AnimalTypeCreate {
+	atc.mutation.SetID(u)
 	return atc
 }
 
@@ -94,7 +94,7 @@ func (atc *AnimalTypeCreate) sqlSave(ctx context.Context) (*AnimalType, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = int64(id)
+		_node.ID = uint64(id)
 	}
 	atc.mutation.id = &_node.ID
 	atc.mutation.done = true
@@ -104,7 +104,7 @@ func (atc *AnimalTypeCreate) sqlSave(ctx context.Context) (*AnimalType, error) {
 func (atc *AnimalTypeCreate) createSpec() (*AnimalType, *sqlgraph.CreateSpec) {
 	var (
 		_node = &AnimalType{config: atc.config}
-		_spec = sqlgraph.NewCreateSpec(animaltype.Table, sqlgraph.NewFieldSpec(animaltype.FieldID, field.TypeInt64))
+		_spec = sqlgraph.NewCreateSpec(animaltype.Table, sqlgraph.NewFieldSpec(animaltype.FieldID, field.TypeUint64))
 	)
 	if id, ok := atc.mutation.ID(); ok {
 		_node.ID = id
@@ -159,7 +159,7 @@ func (atcb *AnimalTypeCreateBulk) Save(ctx context.Context) ([]*AnimalType, erro
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int64(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil

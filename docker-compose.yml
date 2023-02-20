@@ -34,7 +34,7 @@ services:
         - webapi
       environment:
         SERVER_URL: http://webapi:5000
-        STAGE: all
+        STAGE: 0
 
 volumes:
   db-data:
