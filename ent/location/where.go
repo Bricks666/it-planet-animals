@@ -6,6 +6,7 @@ import (
 	"animals/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // ID filters vertices based on their ID field.
@@ -141,6 +142,33 @@ func LongitudeLT(v float64) predicate.Location {
 // LongitudeLTE applies the LTE predicate on the "longitude" field.
 func LongitudeLTE(v float64) predicate.Location {
 	return predicate.Location(sql.FieldLTE(FieldLongitude, v))
+}
+
+// HasVisitedLocationsLocation applies the HasEdge predicate on the "visited_locations_location" edge.
+func HasVisitedLocationsLocation() predicate.Location {
+	return predicate.Location(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, VisitedLocationsLocationTable, VisitedLocationsLocationPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasVisitedLocationsLocationWith applies the HasEdge predicate on the "visited_locations_location" edge with a given conditions (other predicates).
+func HasVisitedLocationsLocationWith(preds ...predicate.Animal) predicate.Location {
+	return predicate.Location(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(VisitedLocationsLocationInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, VisitedLocationsLocationTable, VisitedLocationsLocationPrimaryKey...),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

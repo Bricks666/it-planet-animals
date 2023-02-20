@@ -2,19 +2,92 @@
 
 package animal
 
+import (
+	"fmt"
+	"time"
+)
+
 const (
 	// Label holds the string label denoting the animal type in the database.
 	Label = "animal"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldWeight holds the string denoting the weight field in the database.
+	FieldWeight = "weight"
+	// FieldLength holds the string denoting the length field in the database.
+	FieldLength = "length"
+	// FieldHeight holds the string denoting the height field in the database.
+	FieldHeight = "height"
+	// FieldGender holds the string denoting the gender field in the database.
+	FieldGender = "gender"
+	// FieldLifestatus holds the string denoting the lifestatus field in the database.
+	FieldLifestatus = "lifestatus"
+	// FieldChippingDateTime holds the string denoting the chippingdatetime field in the database.
+	FieldChippingDateTime = "chipping_date_time"
+	// FieldChipperId holds the string denoting the chipperid field in the database.
+	FieldChipperId = "chipper_id"
+	// FieldChippingLocationId holds the string denoting the chippinglocationid field in the database.
+	FieldChippingLocationId = "chipping_location_id"
+	// FieldDeathDateTime holds the string denoting the deathdatetime field in the database.
+	FieldDeathDateTime = "death_date_time"
+	// EdgeUserAnimals holds the string denoting the user_animals edge name in mutations.
+	EdgeUserAnimals = "user_animals"
+	// EdgeAnimalTagsAnimals holds the string denoting the animal_tags_animals edge name in mutations.
+	EdgeAnimalTagsAnimals = "animal_tags_animals"
+	// EdgeChippingLocation holds the string denoting the chipping_location edge name in mutations.
+	EdgeChippingLocation = "chipping_location"
+	// EdgeVisitedLocationsAnimals holds the string denoting the visited_locations_animals edge name in mutations.
+	EdgeVisitedLocationsAnimals = "visited_locations_animals"
 	// Table holds the table name of the animal in the database.
 	Table = "animals"
+	// UserAnimalsTable is the table that holds the user_animals relation/edge.
+	UserAnimalsTable = "animals"
+	// UserAnimalsInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UserAnimalsInverseTable = "users"
+	// UserAnimalsColumn is the table column denoting the user_animals relation/edge.
+	UserAnimalsColumn = "chipper_id"
+	// AnimalTagsAnimalsTable is the table that holds the animal_tags_animals relation/edge. The primary key declared below.
+	AnimalTagsAnimalsTable = "animal_animal_tags_animals"
+	// AnimalTagsAnimalsInverseTable is the table name for the AnimalType entity.
+	// It exists in this package in order to avoid circular dependency with the "animaltype" package.
+	AnimalTagsAnimalsInverseTable = "animal_types"
+	// ChippingLocationTable is the table that holds the chipping_location relation/edge.
+	ChippingLocationTable = "animals"
+	// ChippingLocationInverseTable is the table name for the Location entity.
+	// It exists in this package in order to avoid circular dependency with the "location" package.
+	ChippingLocationInverseTable = "locations"
+	// ChippingLocationColumn is the table column denoting the chipping_location relation/edge.
+	ChippingLocationColumn = "chipping_location_id"
+	// VisitedLocationsAnimalsTable is the table that holds the visited_locations_animals relation/edge. The primary key declared below.
+	VisitedLocationsAnimalsTable = "animal_visited_locations_animals"
+	// VisitedLocationsAnimalsInverseTable is the table name for the Location entity.
+	// It exists in this package in order to avoid circular dependency with the "location" package.
+	VisitedLocationsAnimalsInverseTable = "locations"
 )
 
 // Columns holds all SQL columns for animal fields.
 var Columns = []string{
 	FieldID,
+	FieldWeight,
+	FieldLength,
+	FieldHeight,
+	FieldGender,
+	FieldLifestatus,
+	FieldChippingDateTime,
+	FieldChipperId,
+	FieldChippingLocationId,
+	FieldDeathDateTime,
 }
+
+var (
+	// AnimalTagsAnimalsPrimaryKey and AnimalTagsAnimalsColumn2 are the table columns denoting the
+	// primary key for the animal_tags_animals relation (M2M).
+	AnimalTagsAnimalsPrimaryKey = []string{"animal_id", "animal_type_id"}
+	// VisitedLocationsAnimalsPrimaryKey and VisitedLocationsAnimalsColumn2 are the table columns denoting the
+	// primary key for the visited_locations_animals relation (M2M).
+	VisitedLocationsAnimalsPrimaryKey = []string{"animal_id", "location_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -24,4 +97,67 @@ func ValidColumn(column string) bool {
 		}
 	}
 	return false
+}
+
+var (
+	// WeightValidator is a validator for the "weight" field. It is called by the builders before save.
+	WeightValidator func(float32) error
+	// LengthValidator is a validator for the "length" field. It is called by the builders before save.
+	LengthValidator func(float32) error
+	// HeightValidator is a validator for the "height" field. It is called by the builders before save.
+	HeightValidator func(float32) error
+	// DefaultChippingDateTime holds the default value on creation for the "chippingDateTime" field.
+	DefaultChippingDateTime func() time.Time
+	// IDValidator is a validator for the "id" field. It is called by the builders before save.
+	IDValidator func(uint64) error
+)
+
+// Gender defines the type for the "gender" enum field.
+type Gender string
+
+// Gender values.
+const (
+	GenderMALE   Gender = "MALE"
+	GenderFEMALE Gender = "FEMALE"
+	GenderOTHER  Gender = "OTHER"
+)
+
+func (ge Gender) String() string {
+	return string(ge)
+}
+
+// GenderValidator is a validator for the "gender" field enum values. It is called by the builders before save.
+func GenderValidator(ge Gender) error {
+	switch ge {
+	case GenderMALE, GenderFEMALE, GenderOTHER:
+		return nil
+	default:
+		return fmt.Errorf("animal: invalid enum value for gender field: %q", ge)
+	}
+}
+
+// Lifestatus defines the type for the "lifestatus" enum field.
+type Lifestatus string
+
+// LifestatusALIVE is the default value of the Lifestatus enum.
+const DefaultLifestatus = LifestatusALIVE
+
+// Lifestatus values.
+const (
+	LifestatusALIVE Lifestatus = "ALIVE"
+	LifestatusDEAD  Lifestatus = "DEAD"
+)
+
+func (l Lifestatus) String() string {
+	return string(l)
+}
+
+// LifestatusValidator is a validator for the "lifestatus" field enum values. It is called by the builders before save.
+func LifestatusValidator(l Lifestatus) error {
+	switch l {
+	case LifestatusALIVE, LifestatusDEAD:
+		return nil
+	default:
+		return fmt.Errorf("animal: invalid enum value for lifestatus field: %q", l)
+	}
 }

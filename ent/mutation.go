@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"animals/ent/animal"
 	"animals/ent/animaltype"
 	"animals/ent/location"
 	"animals/ent/predicate"
@@ -11,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -34,13 +36,33 @@ const (
 // AnimalMutation represents an operation that mutates the Animal nodes in the graph.
 type AnimalMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Animal, error)
-	predicates    []predicate.Animal
+	op                               Op
+	typ                              string
+	id                               *uint64
+	weight                           *float32
+	addweight                        *float32
+	length                           *float32
+	addlength                        *float32
+	height                           *float32
+	addheight                        *float32
+	gender                           *animal.Gender
+	lifestatus                       *animal.Lifestatus
+	chippingDateTime                 *time.Time
+	deathDateTime                    *time.Time
+	clearedFields                    map[string]struct{}
+	user_animals                     *uint32
+	cleareduser_animals              bool
+	animal_tags_animals              map[uint64]struct{}
+	removedanimal_tags_animals       map[uint64]struct{}
+	clearedanimal_tags_animals       bool
+	chipping_location                *uint64
+	clearedchipping_location         bool
+	visited_locations_animals        map[uint64]struct{}
+	removedvisited_locations_animals map[uint64]struct{}
+	clearedvisited_locations_animals bool
+	done                             bool
+	oldValue                         func(context.Context) (*Animal, error)
+	predicates                       []predicate.Animal
 }
 
 var _ ent.Mutation = (*AnimalMutation)(nil)
@@ -63,7 +85,7 @@ func newAnimalMutation(c config, op Op, opts ...animalOption) *AnimalMutation {
 }
 
 // withAnimalID sets the ID field of the mutation.
-func withAnimalID(id int) animalOption {
+func withAnimalID(id uint64) animalOption {
 	return func(m *AnimalMutation) {
 		var (
 			err   error
@@ -113,9 +135,15 @@ func (m AnimalMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Animal entities.
+func (m *AnimalMutation) SetID(id uint64) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *AnimalMutation) ID() (id int, exists bool) {
+func (m *AnimalMutation) ID() (id uint64, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -126,12 +154,12 @@ func (m *AnimalMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *AnimalMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *AnimalMutation) IDs(ctx context.Context) ([]uint64, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uint64{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -139,6 +167,615 @@ func (m *AnimalMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetWeight sets the "weight" field.
+func (m *AnimalMutation) SetWeight(f float32) {
+	m.weight = &f
+	m.addweight = nil
+}
+
+// Weight returns the value of the "weight" field in the mutation.
+func (m *AnimalMutation) Weight() (r float32, exists bool) {
+	v := m.weight
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWeight returns the old "weight" field's value of the Animal entity.
+// If the Animal object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnimalMutation) OldWeight(ctx context.Context) (v float32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWeight is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWeight requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWeight: %w", err)
+	}
+	return oldValue.Weight, nil
+}
+
+// AddWeight adds f to the "weight" field.
+func (m *AnimalMutation) AddWeight(f float32) {
+	if m.addweight != nil {
+		*m.addweight += f
+	} else {
+		m.addweight = &f
+	}
+}
+
+// AddedWeight returns the value that was added to the "weight" field in this mutation.
+func (m *AnimalMutation) AddedWeight() (r float32, exists bool) {
+	v := m.addweight
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetWeight resets all changes to the "weight" field.
+func (m *AnimalMutation) ResetWeight() {
+	m.weight = nil
+	m.addweight = nil
+}
+
+// SetLength sets the "length" field.
+func (m *AnimalMutation) SetLength(f float32) {
+	m.length = &f
+	m.addlength = nil
+}
+
+// Length returns the value of the "length" field in the mutation.
+func (m *AnimalMutation) Length() (r float32, exists bool) {
+	v := m.length
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLength returns the old "length" field's value of the Animal entity.
+// If the Animal object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnimalMutation) OldLength(ctx context.Context) (v float32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLength is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLength requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLength: %w", err)
+	}
+	return oldValue.Length, nil
+}
+
+// AddLength adds f to the "length" field.
+func (m *AnimalMutation) AddLength(f float32) {
+	if m.addlength != nil {
+		*m.addlength += f
+	} else {
+		m.addlength = &f
+	}
+}
+
+// AddedLength returns the value that was added to the "length" field in this mutation.
+func (m *AnimalMutation) AddedLength() (r float32, exists bool) {
+	v := m.addlength
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLength resets all changes to the "length" field.
+func (m *AnimalMutation) ResetLength() {
+	m.length = nil
+	m.addlength = nil
+}
+
+// SetHeight sets the "height" field.
+func (m *AnimalMutation) SetHeight(f float32) {
+	m.height = &f
+	m.addheight = nil
+}
+
+// Height returns the value of the "height" field in the mutation.
+func (m *AnimalMutation) Height() (r float32, exists bool) {
+	v := m.height
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHeight returns the old "height" field's value of the Animal entity.
+// If the Animal object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnimalMutation) OldHeight(ctx context.Context) (v float32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHeight is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHeight requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHeight: %w", err)
+	}
+	return oldValue.Height, nil
+}
+
+// AddHeight adds f to the "height" field.
+func (m *AnimalMutation) AddHeight(f float32) {
+	if m.addheight != nil {
+		*m.addheight += f
+	} else {
+		m.addheight = &f
+	}
+}
+
+// AddedHeight returns the value that was added to the "height" field in this mutation.
+func (m *AnimalMutation) AddedHeight() (r float32, exists bool) {
+	v := m.addheight
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetHeight resets all changes to the "height" field.
+func (m *AnimalMutation) ResetHeight() {
+	m.height = nil
+	m.addheight = nil
+}
+
+// SetGender sets the "gender" field.
+func (m *AnimalMutation) SetGender(a animal.Gender) {
+	m.gender = &a
+}
+
+// Gender returns the value of the "gender" field in the mutation.
+func (m *AnimalMutation) Gender() (r animal.Gender, exists bool) {
+	v := m.gender
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGender returns the old "gender" field's value of the Animal entity.
+// If the Animal object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnimalMutation) OldGender(ctx context.Context) (v animal.Gender, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGender is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGender requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGender: %w", err)
+	}
+	return oldValue.Gender, nil
+}
+
+// ResetGender resets all changes to the "gender" field.
+func (m *AnimalMutation) ResetGender() {
+	m.gender = nil
+}
+
+// SetLifestatus sets the "lifestatus" field.
+func (m *AnimalMutation) SetLifestatus(a animal.Lifestatus) {
+	m.lifestatus = &a
+}
+
+// Lifestatus returns the value of the "lifestatus" field in the mutation.
+func (m *AnimalMutation) Lifestatus() (r animal.Lifestatus, exists bool) {
+	v := m.lifestatus
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLifestatus returns the old "lifestatus" field's value of the Animal entity.
+// If the Animal object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnimalMutation) OldLifestatus(ctx context.Context) (v animal.Lifestatus, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLifestatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLifestatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLifestatus: %w", err)
+	}
+	return oldValue.Lifestatus, nil
+}
+
+// ResetLifestatus resets all changes to the "lifestatus" field.
+func (m *AnimalMutation) ResetLifestatus() {
+	m.lifestatus = nil
+}
+
+// SetChippingDateTime sets the "chippingDateTime" field.
+func (m *AnimalMutation) SetChippingDateTime(t time.Time) {
+	m.chippingDateTime = &t
+}
+
+// ChippingDateTime returns the value of the "chippingDateTime" field in the mutation.
+func (m *AnimalMutation) ChippingDateTime() (r time.Time, exists bool) {
+	v := m.chippingDateTime
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChippingDateTime returns the old "chippingDateTime" field's value of the Animal entity.
+// If the Animal object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnimalMutation) OldChippingDateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChippingDateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChippingDateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChippingDateTime: %w", err)
+	}
+	return oldValue.ChippingDateTime, nil
+}
+
+// ResetChippingDateTime resets all changes to the "chippingDateTime" field.
+func (m *AnimalMutation) ResetChippingDateTime() {
+	m.chippingDateTime = nil
+}
+
+// SetChipperId sets the "chipperId" field.
+func (m *AnimalMutation) SetChipperId(u uint32) {
+	m.user_animals = &u
+}
+
+// ChipperId returns the value of the "chipperId" field in the mutation.
+func (m *AnimalMutation) ChipperId() (r uint32, exists bool) {
+	v := m.user_animals
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChipperId returns the old "chipperId" field's value of the Animal entity.
+// If the Animal object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnimalMutation) OldChipperId(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChipperId is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChipperId requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChipperId: %w", err)
+	}
+	return oldValue.ChipperId, nil
+}
+
+// ClearChipperId clears the value of the "chipperId" field.
+func (m *AnimalMutation) ClearChipperId() {
+	m.user_animals = nil
+	m.clearedFields[animal.FieldChipperId] = struct{}{}
+}
+
+// ChipperIdCleared returns if the "chipperId" field was cleared in this mutation.
+func (m *AnimalMutation) ChipperIdCleared() bool {
+	_, ok := m.clearedFields[animal.FieldChipperId]
+	return ok
+}
+
+// ResetChipperId resets all changes to the "chipperId" field.
+func (m *AnimalMutation) ResetChipperId() {
+	m.user_animals = nil
+	delete(m.clearedFields, animal.FieldChipperId)
+}
+
+// SetChippingLocationId sets the "chippingLocationId" field.
+func (m *AnimalMutation) SetChippingLocationId(u uint64) {
+	m.chipping_location = &u
+}
+
+// ChippingLocationId returns the value of the "chippingLocationId" field in the mutation.
+func (m *AnimalMutation) ChippingLocationId() (r uint64, exists bool) {
+	v := m.chipping_location
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChippingLocationId returns the old "chippingLocationId" field's value of the Animal entity.
+// If the Animal object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnimalMutation) OldChippingLocationId(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChippingLocationId is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChippingLocationId requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChippingLocationId: %w", err)
+	}
+	return oldValue.ChippingLocationId, nil
+}
+
+// ClearChippingLocationId clears the value of the "chippingLocationId" field.
+func (m *AnimalMutation) ClearChippingLocationId() {
+	m.chipping_location = nil
+	m.clearedFields[animal.FieldChippingLocationId] = struct{}{}
+}
+
+// ChippingLocationIdCleared returns if the "chippingLocationId" field was cleared in this mutation.
+func (m *AnimalMutation) ChippingLocationIdCleared() bool {
+	_, ok := m.clearedFields[animal.FieldChippingLocationId]
+	return ok
+}
+
+// ResetChippingLocationId resets all changes to the "chippingLocationId" field.
+func (m *AnimalMutation) ResetChippingLocationId() {
+	m.chipping_location = nil
+	delete(m.clearedFields, animal.FieldChippingLocationId)
+}
+
+// SetDeathDateTime sets the "deathDateTime" field.
+func (m *AnimalMutation) SetDeathDateTime(t time.Time) {
+	m.deathDateTime = &t
+}
+
+// DeathDateTime returns the value of the "deathDateTime" field in the mutation.
+func (m *AnimalMutation) DeathDateTime() (r time.Time, exists bool) {
+	v := m.deathDateTime
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeathDateTime returns the old "deathDateTime" field's value of the Animal entity.
+// If the Animal object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnimalMutation) OldDeathDateTime(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeathDateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeathDateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeathDateTime: %w", err)
+	}
+	return oldValue.DeathDateTime, nil
+}
+
+// ClearDeathDateTime clears the value of the "deathDateTime" field.
+func (m *AnimalMutation) ClearDeathDateTime() {
+	m.deathDateTime = nil
+	m.clearedFields[animal.FieldDeathDateTime] = struct{}{}
+}
+
+// DeathDateTimeCleared returns if the "deathDateTime" field was cleared in this mutation.
+func (m *AnimalMutation) DeathDateTimeCleared() bool {
+	_, ok := m.clearedFields[animal.FieldDeathDateTime]
+	return ok
+}
+
+// ResetDeathDateTime resets all changes to the "deathDateTime" field.
+func (m *AnimalMutation) ResetDeathDateTime() {
+	m.deathDateTime = nil
+	delete(m.clearedFields, animal.FieldDeathDateTime)
+}
+
+// SetUserAnimalsID sets the "user_animals" edge to the User entity by id.
+func (m *AnimalMutation) SetUserAnimalsID(id uint32) {
+	m.user_animals = &id
+}
+
+// ClearUserAnimals clears the "user_animals" edge to the User entity.
+func (m *AnimalMutation) ClearUserAnimals() {
+	m.cleareduser_animals = true
+}
+
+// UserAnimalsCleared reports if the "user_animals" edge to the User entity was cleared.
+func (m *AnimalMutation) UserAnimalsCleared() bool {
+	return m.ChipperIdCleared() || m.cleareduser_animals
+}
+
+// UserAnimalsID returns the "user_animals" edge ID in the mutation.
+func (m *AnimalMutation) UserAnimalsID() (id uint32, exists bool) {
+	if m.user_animals != nil {
+		return *m.user_animals, true
+	}
+	return
+}
+
+// UserAnimalsIDs returns the "user_animals" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserAnimalsID instead. It exists only for internal usage by the builders.
+func (m *AnimalMutation) UserAnimalsIDs() (ids []uint32) {
+	if id := m.user_animals; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUserAnimals resets all changes to the "user_animals" edge.
+func (m *AnimalMutation) ResetUserAnimals() {
+	m.user_animals = nil
+	m.cleareduser_animals = false
+}
+
+// AddAnimalTagsAnimalIDs adds the "animal_tags_animals" edge to the AnimalType entity by ids.
+func (m *AnimalMutation) AddAnimalTagsAnimalIDs(ids ...uint64) {
+	if m.animal_tags_animals == nil {
+		m.animal_tags_animals = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.animal_tags_animals[ids[i]] = struct{}{}
+	}
+}
+
+// ClearAnimalTagsAnimals clears the "animal_tags_animals" edge to the AnimalType entity.
+func (m *AnimalMutation) ClearAnimalTagsAnimals() {
+	m.clearedanimal_tags_animals = true
+}
+
+// AnimalTagsAnimalsCleared reports if the "animal_tags_animals" edge to the AnimalType entity was cleared.
+func (m *AnimalMutation) AnimalTagsAnimalsCleared() bool {
+	return m.clearedanimal_tags_animals
+}
+
+// RemoveAnimalTagsAnimalIDs removes the "animal_tags_animals" edge to the AnimalType entity by IDs.
+func (m *AnimalMutation) RemoveAnimalTagsAnimalIDs(ids ...uint64) {
+	if m.removedanimal_tags_animals == nil {
+		m.removedanimal_tags_animals = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.animal_tags_animals, ids[i])
+		m.removedanimal_tags_animals[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedAnimalTagsAnimals returns the removed IDs of the "animal_tags_animals" edge to the AnimalType entity.
+func (m *AnimalMutation) RemovedAnimalTagsAnimalsIDs() (ids []uint64) {
+	for id := range m.removedanimal_tags_animals {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AnimalTagsAnimalsIDs returns the "animal_tags_animals" edge IDs in the mutation.
+func (m *AnimalMutation) AnimalTagsAnimalsIDs() (ids []uint64) {
+	for id := range m.animal_tags_animals {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetAnimalTagsAnimals resets all changes to the "animal_tags_animals" edge.
+func (m *AnimalMutation) ResetAnimalTagsAnimals() {
+	m.animal_tags_animals = nil
+	m.clearedanimal_tags_animals = false
+	m.removedanimal_tags_animals = nil
+}
+
+// SetChippingLocationID sets the "chipping_location" edge to the Location entity by id.
+func (m *AnimalMutation) SetChippingLocationID(id uint64) {
+	m.chipping_location = &id
+}
+
+// ClearChippingLocation clears the "chipping_location" edge to the Location entity.
+func (m *AnimalMutation) ClearChippingLocation() {
+	m.clearedchipping_location = true
+}
+
+// ChippingLocationCleared reports if the "chipping_location" edge to the Location entity was cleared.
+func (m *AnimalMutation) ChippingLocationCleared() bool {
+	return m.ChippingLocationIdCleared() || m.clearedchipping_location
+}
+
+// ChippingLocationID returns the "chipping_location" edge ID in the mutation.
+func (m *AnimalMutation) ChippingLocationID() (id uint64, exists bool) {
+	if m.chipping_location != nil {
+		return *m.chipping_location, true
+	}
+	return
+}
+
+// ChippingLocationIDs returns the "chipping_location" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ChippingLocationID instead. It exists only for internal usage by the builders.
+func (m *AnimalMutation) ChippingLocationIDs() (ids []uint64) {
+	if id := m.chipping_location; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetChippingLocation resets all changes to the "chipping_location" edge.
+func (m *AnimalMutation) ResetChippingLocation() {
+	m.chipping_location = nil
+	m.clearedchipping_location = false
+}
+
+// AddVisitedLocationsAnimalIDs adds the "visited_locations_animals" edge to the Location entity by ids.
+func (m *AnimalMutation) AddVisitedLocationsAnimalIDs(ids ...uint64) {
+	if m.visited_locations_animals == nil {
+		m.visited_locations_animals = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.visited_locations_animals[ids[i]] = struct{}{}
+	}
+}
+
+// ClearVisitedLocationsAnimals clears the "visited_locations_animals" edge to the Location entity.
+func (m *AnimalMutation) ClearVisitedLocationsAnimals() {
+	m.clearedvisited_locations_animals = true
+}
+
+// VisitedLocationsAnimalsCleared reports if the "visited_locations_animals" edge to the Location entity was cleared.
+func (m *AnimalMutation) VisitedLocationsAnimalsCleared() bool {
+	return m.clearedvisited_locations_animals
+}
+
+// RemoveVisitedLocationsAnimalIDs removes the "visited_locations_animals" edge to the Location entity by IDs.
+func (m *AnimalMutation) RemoveVisitedLocationsAnimalIDs(ids ...uint64) {
+	if m.removedvisited_locations_animals == nil {
+		m.removedvisited_locations_animals = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.visited_locations_animals, ids[i])
+		m.removedvisited_locations_animals[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedVisitedLocationsAnimals returns the removed IDs of the "visited_locations_animals" edge to the Location entity.
+func (m *AnimalMutation) RemovedVisitedLocationsAnimalsIDs() (ids []uint64) {
+	for id := range m.removedvisited_locations_animals {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// VisitedLocationsAnimalsIDs returns the "visited_locations_animals" edge IDs in the mutation.
+func (m *AnimalMutation) VisitedLocationsAnimalsIDs() (ids []uint64) {
+	for id := range m.visited_locations_animals {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetVisitedLocationsAnimals resets all changes to the "visited_locations_animals" edge.
+func (m *AnimalMutation) ResetVisitedLocationsAnimals() {
+	m.visited_locations_animals = nil
+	m.clearedvisited_locations_animals = false
+	m.removedvisited_locations_animals = nil
 }
 
 // Where appends a list predicates to the AnimalMutation builder.
@@ -175,7 +812,34 @@ func (m *AnimalMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AnimalMutation) Fields() []string {
-	fields := make([]string, 0, 0)
+	fields := make([]string, 0, 9)
+	if m.weight != nil {
+		fields = append(fields, animal.FieldWeight)
+	}
+	if m.length != nil {
+		fields = append(fields, animal.FieldLength)
+	}
+	if m.height != nil {
+		fields = append(fields, animal.FieldHeight)
+	}
+	if m.gender != nil {
+		fields = append(fields, animal.FieldGender)
+	}
+	if m.lifestatus != nil {
+		fields = append(fields, animal.FieldLifestatus)
+	}
+	if m.chippingDateTime != nil {
+		fields = append(fields, animal.FieldChippingDateTime)
+	}
+	if m.user_animals != nil {
+		fields = append(fields, animal.FieldChipperId)
+	}
+	if m.chipping_location != nil {
+		fields = append(fields, animal.FieldChippingLocationId)
+	}
+	if m.deathDateTime != nil {
+		fields = append(fields, animal.FieldDeathDateTime)
+	}
 	return fields
 }
 
@@ -183,6 +847,26 @@ func (m *AnimalMutation) Fields() []string {
 // return value indicates that this field was not set, or was not defined in the
 // schema.
 func (m *AnimalMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case animal.FieldWeight:
+		return m.Weight()
+	case animal.FieldLength:
+		return m.Length()
+	case animal.FieldHeight:
+		return m.Height()
+	case animal.FieldGender:
+		return m.Gender()
+	case animal.FieldLifestatus:
+		return m.Lifestatus()
+	case animal.FieldChippingDateTime:
+		return m.ChippingDateTime()
+	case animal.FieldChipperId:
+		return m.ChipperId()
+	case animal.FieldChippingLocationId:
+		return m.ChippingLocationId()
+	case animal.FieldDeathDateTime:
+		return m.DeathDateTime()
+	}
 	return nil, false
 }
 
@@ -190,6 +874,26 @@ func (m *AnimalMutation) Field(name string) (ent.Value, bool) {
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
 func (m *AnimalMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case animal.FieldWeight:
+		return m.OldWeight(ctx)
+	case animal.FieldLength:
+		return m.OldLength(ctx)
+	case animal.FieldHeight:
+		return m.OldHeight(ctx)
+	case animal.FieldGender:
+		return m.OldGender(ctx)
+	case animal.FieldLifestatus:
+		return m.OldLifestatus(ctx)
+	case animal.FieldChippingDateTime:
+		return m.OldChippingDateTime(ctx)
+	case animal.FieldChipperId:
+		return m.OldChipperId(ctx)
+	case animal.FieldChippingLocationId:
+		return m.OldChippingLocationId(ctx)
+	case animal.FieldDeathDateTime:
+		return m.OldDeathDateTime(ctx)
+	}
 	return nil, fmt.Errorf("unknown Animal field %s", name)
 }
 
@@ -198,6 +902,69 @@ func (m *AnimalMutation) OldField(ctx context.Context, name string) (ent.Value, 
 // type.
 func (m *AnimalMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case animal.FieldWeight:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWeight(v)
+		return nil
+	case animal.FieldLength:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLength(v)
+		return nil
+	case animal.FieldHeight:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHeight(v)
+		return nil
+	case animal.FieldGender:
+		v, ok := value.(animal.Gender)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGender(v)
+		return nil
+	case animal.FieldLifestatus:
+		v, ok := value.(animal.Lifestatus)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLifestatus(v)
+		return nil
+	case animal.FieldChippingDateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChippingDateTime(v)
+		return nil
+	case animal.FieldChipperId:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChipperId(v)
+		return nil
+	case animal.FieldChippingLocationId:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChippingLocationId(v)
+		return nil
+	case animal.FieldDeathDateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeathDateTime(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Animal field %s", name)
 }
@@ -205,13 +972,31 @@ func (m *AnimalMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *AnimalMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addweight != nil {
+		fields = append(fields, animal.FieldWeight)
+	}
+	if m.addlength != nil {
+		fields = append(fields, animal.FieldLength)
+	}
+	if m.addheight != nil {
+		fields = append(fields, animal.FieldHeight)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *AnimalMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case animal.FieldWeight:
+		return m.AddedWeight()
+	case animal.FieldLength:
+		return m.AddedLength()
+	case animal.FieldHeight:
+		return m.AddedHeight()
+	}
 	return nil, false
 }
 
@@ -219,13 +1004,46 @@ func (m *AnimalMutation) AddedField(name string) (ent.Value, bool) {
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
 func (m *AnimalMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case animal.FieldWeight:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddWeight(v)
+		return nil
+	case animal.FieldLength:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLength(v)
+		return nil
+	case animal.FieldHeight:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddHeight(v)
+		return nil
+	}
 	return fmt.Errorf("unknown Animal numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *AnimalMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(animal.FieldChipperId) {
+		fields = append(fields, animal.FieldChipperId)
+	}
+	if m.FieldCleared(animal.FieldChippingLocationId) {
+		fields = append(fields, animal.FieldChippingLocationId)
+	}
+	if m.FieldCleared(animal.FieldDeathDateTime) {
+		fields = append(fields, animal.FieldDeathDateTime)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -238,74 +1056,215 @@ func (m *AnimalMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *AnimalMutation) ClearField(name string) error {
+	switch name {
+	case animal.FieldChipperId:
+		m.ClearChipperId()
+		return nil
+	case animal.FieldChippingLocationId:
+		m.ClearChippingLocationId()
+		return nil
+	case animal.FieldDeathDateTime:
+		m.ClearDeathDateTime()
+		return nil
+	}
 	return fmt.Errorf("unknown Animal nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
 func (m *AnimalMutation) ResetField(name string) error {
+	switch name {
+	case animal.FieldWeight:
+		m.ResetWeight()
+		return nil
+	case animal.FieldLength:
+		m.ResetLength()
+		return nil
+	case animal.FieldHeight:
+		m.ResetHeight()
+		return nil
+	case animal.FieldGender:
+		m.ResetGender()
+		return nil
+	case animal.FieldLifestatus:
+		m.ResetLifestatus()
+		return nil
+	case animal.FieldChippingDateTime:
+		m.ResetChippingDateTime()
+		return nil
+	case animal.FieldChipperId:
+		m.ResetChipperId()
+		return nil
+	case animal.FieldChippingLocationId:
+		m.ResetChippingLocationId()
+		return nil
+	case animal.FieldDeathDateTime:
+		m.ResetDeathDateTime()
+		return nil
+	}
 	return fmt.Errorf("unknown Animal field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *AnimalMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 4)
+	if m.user_animals != nil {
+		edges = append(edges, animal.EdgeUserAnimals)
+	}
+	if m.animal_tags_animals != nil {
+		edges = append(edges, animal.EdgeAnimalTagsAnimals)
+	}
+	if m.chipping_location != nil {
+		edges = append(edges, animal.EdgeChippingLocation)
+	}
+	if m.visited_locations_animals != nil {
+		edges = append(edges, animal.EdgeVisitedLocationsAnimals)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *AnimalMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case animal.EdgeUserAnimals:
+		if id := m.user_animals; id != nil {
+			return []ent.Value{*id}
+		}
+	case animal.EdgeAnimalTagsAnimals:
+		ids := make([]ent.Value, 0, len(m.animal_tags_animals))
+		for id := range m.animal_tags_animals {
+			ids = append(ids, id)
+		}
+		return ids
+	case animal.EdgeChippingLocation:
+		if id := m.chipping_location; id != nil {
+			return []ent.Value{*id}
+		}
+	case animal.EdgeVisitedLocationsAnimals:
+		ids := make([]ent.Value, 0, len(m.visited_locations_animals))
+		for id := range m.visited_locations_animals {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *AnimalMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 4)
+	if m.removedanimal_tags_animals != nil {
+		edges = append(edges, animal.EdgeAnimalTagsAnimals)
+	}
+	if m.removedvisited_locations_animals != nil {
+		edges = append(edges, animal.EdgeVisitedLocationsAnimals)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *AnimalMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case animal.EdgeAnimalTagsAnimals:
+		ids := make([]ent.Value, 0, len(m.removedanimal_tags_animals))
+		for id := range m.removedanimal_tags_animals {
+			ids = append(ids, id)
+		}
+		return ids
+	case animal.EdgeVisitedLocationsAnimals:
+		ids := make([]ent.Value, 0, len(m.removedvisited_locations_animals))
+		for id := range m.removedvisited_locations_animals {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *AnimalMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 4)
+	if m.cleareduser_animals {
+		edges = append(edges, animal.EdgeUserAnimals)
+	}
+	if m.clearedanimal_tags_animals {
+		edges = append(edges, animal.EdgeAnimalTagsAnimals)
+	}
+	if m.clearedchipping_location {
+		edges = append(edges, animal.EdgeChippingLocation)
+	}
+	if m.clearedvisited_locations_animals {
+		edges = append(edges, animal.EdgeVisitedLocationsAnimals)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *AnimalMutation) EdgeCleared(name string) bool {
+	switch name {
+	case animal.EdgeUserAnimals:
+		return m.cleareduser_animals
+	case animal.EdgeAnimalTagsAnimals:
+		return m.clearedanimal_tags_animals
+	case animal.EdgeChippingLocation:
+		return m.clearedchipping_location
+	case animal.EdgeVisitedLocationsAnimals:
+		return m.clearedvisited_locations_animals
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *AnimalMutation) ClearEdge(name string) error {
+	switch name {
+	case animal.EdgeUserAnimals:
+		m.ClearUserAnimals()
+		return nil
+	case animal.EdgeChippingLocation:
+		m.ClearChippingLocation()
+		return nil
+	}
 	return fmt.Errorf("unknown Animal unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *AnimalMutation) ResetEdge(name string) error {
+	switch name {
+	case animal.EdgeUserAnimals:
+		m.ResetUserAnimals()
+		return nil
+	case animal.EdgeAnimalTagsAnimals:
+		m.ResetAnimalTagsAnimals()
+		return nil
+	case animal.EdgeChippingLocation:
+		m.ResetChippingLocation()
+		return nil
+	case animal.EdgeVisitedLocationsAnimals:
+		m.ResetVisitedLocationsAnimals()
+		return nil
+	}
 	return fmt.Errorf("unknown Animal edge %s", name)
 }
 
 // AnimalTypeMutation represents an operation that mutates the AnimalType nodes in the graph.
 type AnimalTypeMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	_type         *string
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*AnimalType, error)
-	predicates    []predicate.AnimalType
+	op                       Op
+	typ                      string
+	id                       *uint64
+	_type                    *string
+	clearedFields            map[string]struct{}
+	animal_tags_types        map[uint64]struct{}
+	removedanimal_tags_types map[uint64]struct{}
+	clearedanimal_tags_types bool
+	done                     bool
+	oldValue                 func(context.Context) (*AnimalType, error)
+	predicates               []predicate.AnimalType
 }
 
 var _ ent.Mutation = (*AnimalTypeMutation)(nil)
@@ -448,6 +1407,60 @@ func (m *AnimalTypeMutation) ResetType() {
 	m._type = nil
 }
 
+// AddAnimalTagsTypeIDs adds the "animal_tags_types" edge to the Animal entity by ids.
+func (m *AnimalTypeMutation) AddAnimalTagsTypeIDs(ids ...uint64) {
+	if m.animal_tags_types == nil {
+		m.animal_tags_types = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.animal_tags_types[ids[i]] = struct{}{}
+	}
+}
+
+// ClearAnimalTagsTypes clears the "animal_tags_types" edge to the Animal entity.
+func (m *AnimalTypeMutation) ClearAnimalTagsTypes() {
+	m.clearedanimal_tags_types = true
+}
+
+// AnimalTagsTypesCleared reports if the "animal_tags_types" edge to the Animal entity was cleared.
+func (m *AnimalTypeMutation) AnimalTagsTypesCleared() bool {
+	return m.clearedanimal_tags_types
+}
+
+// RemoveAnimalTagsTypeIDs removes the "animal_tags_types" edge to the Animal entity by IDs.
+func (m *AnimalTypeMutation) RemoveAnimalTagsTypeIDs(ids ...uint64) {
+	if m.removedanimal_tags_types == nil {
+		m.removedanimal_tags_types = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.animal_tags_types, ids[i])
+		m.removedanimal_tags_types[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedAnimalTagsTypes returns the removed IDs of the "animal_tags_types" edge to the Animal entity.
+func (m *AnimalTypeMutation) RemovedAnimalTagsTypesIDs() (ids []uint64) {
+	for id := range m.removedanimal_tags_types {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AnimalTagsTypesIDs returns the "animal_tags_types" edge IDs in the mutation.
+func (m *AnimalTypeMutation) AnimalTagsTypesIDs() (ids []uint64) {
+	for id := range m.animal_tags_types {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetAnimalTagsTypes resets all changes to the "animal_tags_types" edge.
+func (m *AnimalTypeMutation) ResetAnimalTagsTypes() {
+	m.animal_tags_types = nil
+	m.clearedanimal_tags_types = false
+	m.removedanimal_tags_types = nil
+}
+
 // Where appends a list predicates to the AnimalTypeMutation builder.
 func (m *AnimalTypeMutation) Where(ps ...predicate.AnimalType) {
 	m.predicates = append(m.predicates, ps...)
@@ -581,66 +1594,105 @@ func (m *AnimalTypeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *AnimalTypeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.animal_tags_types != nil {
+		edges = append(edges, animaltype.EdgeAnimalTagsTypes)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *AnimalTypeMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case animaltype.EdgeAnimalTagsTypes:
+		ids := make([]ent.Value, 0, len(m.animal_tags_types))
+		for id := range m.animal_tags_types {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *AnimalTypeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedanimal_tags_types != nil {
+		edges = append(edges, animaltype.EdgeAnimalTagsTypes)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *AnimalTypeMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case animaltype.EdgeAnimalTagsTypes:
+		ids := make([]ent.Value, 0, len(m.removedanimal_tags_types))
+		for id := range m.removedanimal_tags_types {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *AnimalTypeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedanimal_tags_types {
+		edges = append(edges, animaltype.EdgeAnimalTagsTypes)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *AnimalTypeMutation) EdgeCleared(name string) bool {
+	switch name {
+	case animaltype.EdgeAnimalTagsTypes:
+		return m.clearedanimal_tags_types
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *AnimalTypeMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown AnimalType unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *AnimalTypeMutation) ResetEdge(name string) error {
+	switch name {
+	case animaltype.EdgeAnimalTagsTypes:
+		m.ResetAnimalTagsTypes()
+		return nil
+	}
 	return fmt.Errorf("unknown AnimalType edge %s", name)
 }
 
 // LocationMutation represents an operation that mutates the Location nodes in the graph.
 type LocationMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	latitude      *float64
-	addlatitude   *float64
-	longitude     *float64
-	addlongitude  *float64
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Location, error)
-	predicates    []predicate.Location
+	op                                Op
+	typ                               string
+	id                                *uint64
+	latitude                          *float64
+	addlatitude                       *float64
+	longitude                         *float64
+	addlongitude                      *float64
+	clearedFields                     map[string]struct{}
+	visited_locations_location        map[uint64]struct{}
+	removedvisited_locations_location map[uint64]struct{}
+	clearedvisited_locations_location bool
+	done                              bool
+	oldValue                          func(context.Context) (*Location, error)
+	predicates                        []predicate.Location
 }
 
 var _ ent.Mutation = (*LocationMutation)(nil)
@@ -859,6 +1911,60 @@ func (m *LocationMutation) ResetLongitude() {
 	m.addlongitude = nil
 }
 
+// AddVisitedLocationsLocationIDs adds the "visited_locations_location" edge to the Animal entity by ids.
+func (m *LocationMutation) AddVisitedLocationsLocationIDs(ids ...uint64) {
+	if m.visited_locations_location == nil {
+		m.visited_locations_location = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.visited_locations_location[ids[i]] = struct{}{}
+	}
+}
+
+// ClearVisitedLocationsLocation clears the "visited_locations_location" edge to the Animal entity.
+func (m *LocationMutation) ClearVisitedLocationsLocation() {
+	m.clearedvisited_locations_location = true
+}
+
+// VisitedLocationsLocationCleared reports if the "visited_locations_location" edge to the Animal entity was cleared.
+func (m *LocationMutation) VisitedLocationsLocationCleared() bool {
+	return m.clearedvisited_locations_location
+}
+
+// RemoveVisitedLocationsLocationIDs removes the "visited_locations_location" edge to the Animal entity by IDs.
+func (m *LocationMutation) RemoveVisitedLocationsLocationIDs(ids ...uint64) {
+	if m.removedvisited_locations_location == nil {
+		m.removedvisited_locations_location = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.visited_locations_location, ids[i])
+		m.removedvisited_locations_location[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedVisitedLocationsLocation returns the removed IDs of the "visited_locations_location" edge to the Animal entity.
+func (m *LocationMutation) RemovedVisitedLocationsLocationIDs() (ids []uint64) {
+	for id := range m.removedvisited_locations_location {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// VisitedLocationsLocationIDs returns the "visited_locations_location" edge IDs in the mutation.
+func (m *LocationMutation) VisitedLocationsLocationIDs() (ids []uint64) {
+	for id := range m.visited_locations_location {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetVisitedLocationsLocation resets all changes to the "visited_locations_location" edge.
+func (m *LocationMutation) ResetVisitedLocationsLocation() {
+	m.visited_locations_location = nil
+	m.clearedvisited_locations_location = false
+	m.removedvisited_locations_location = nil
+}
+
 // Where appends a list predicates to the LocationMutation builder.
 func (m *LocationMutation) Where(ps ...predicate.Location) {
 	m.predicates = append(m.predicates, ps...)
@@ -1036,49 +2142,85 @@ func (m *LocationMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *LocationMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.visited_locations_location != nil {
+		edges = append(edges, location.EdgeVisitedLocationsLocation)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *LocationMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case location.EdgeVisitedLocationsLocation:
+		ids := make([]ent.Value, 0, len(m.visited_locations_location))
+		for id := range m.visited_locations_location {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *LocationMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedvisited_locations_location != nil {
+		edges = append(edges, location.EdgeVisitedLocationsLocation)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *LocationMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case location.EdgeVisitedLocationsLocation:
+		ids := make([]ent.Value, 0, len(m.removedvisited_locations_location))
+		for id := range m.removedvisited_locations_location {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *LocationMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedvisited_locations_location {
+		edges = append(edges, location.EdgeVisitedLocationsLocation)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *LocationMutation) EdgeCleared(name string) bool {
+	switch name {
+	case location.EdgeVisitedLocationsLocation:
+		return m.clearedvisited_locations_location
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *LocationMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown Location unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *LocationMutation) ResetEdge(name string) error {
+	switch name {
+	case location.EdgeVisitedLocationsLocation:
+		m.ResetVisitedLocationsLocation()
+		return nil
+	}
 	return fmt.Errorf("unknown Location edge %s", name)
 }
 

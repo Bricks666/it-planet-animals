@@ -6,6 +6,7 @@ import (
 	"animals/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // ID filters vertices based on their ID field.
@@ -121,6 +122,33 @@ func TypeEqualFold(v string) predicate.AnimalType {
 // TypeContainsFold applies the ContainsFold predicate on the "type" field.
 func TypeContainsFold(v string) predicate.AnimalType {
 	return predicate.AnimalType(sql.FieldContainsFold(FieldType, v))
+}
+
+// HasAnimalTagsTypes applies the HasEdge predicate on the "animal_tags_types" edge.
+func HasAnimalTagsTypes() predicate.AnimalType {
+	return predicate.AnimalType(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, AnimalTagsTypesTable, AnimalTagsTypesPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAnimalTagsTypesWith applies the HasEdge predicate on the "animal_tags_types" edge with a given conditions (other predicates).
+func HasAnimalTagsTypesWith(preds ...predicate.Animal) predicate.AnimalType {
+	return predicate.AnimalType(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(AnimalTagsTypesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, AnimalTagsTypesTable, AnimalTagsTypesPrimaryKey...),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

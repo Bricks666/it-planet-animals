@@ -4,17 +4,100 @@ package ent
 
 import (
 	"animals/ent/animal"
+	"animals/ent/location"
+	"animals/ent/user"
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 )
 
 // Animal is the model entity for the Animal schema.
 type Animal struct {
-	config
+	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID uint64 `json:"id,omitempty"`
+	// Weight holds the value of the "weight" field.
+	Weight float32 `json:"weight,omitempty"`
+	// Length holds the value of the "length" field.
+	Length float32 `json:"length,omitempty"`
+	// Height holds the value of the "height" field.
+	Height float32 `json:"height,omitempty"`
+	// Gender holds the value of the "gender" field.
+	Gender animal.Gender `json:"gender,omitempty"`
+	// Lifestatus holds the value of the "lifestatus" field.
+	Lifestatus animal.Lifestatus `json:"lifestatus,omitempty"`
+	// ChippingDateTime holds the value of the "chippingDateTime" field.
+	ChippingDateTime time.Time `json:"chippingDateTime,omitempty"`
+	// ChipperId holds the value of the "chipperId" field.
+	ChipperId uint32 `json:"chipperId,omitempty"`
+	// ChippingLocationId holds the value of the "chippingLocationId" field.
+	ChippingLocationId uint64 `json:"chippingLocationId,omitempty"`
+	// DeathDateTime holds the value of the "deathDateTime" field.
+	DeathDateTime *time.Time `json:"deathDateTime,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the AnimalQuery when eager-loading is set.
+	Edges AnimalEdges `json:"edges"`
+}
+
+// AnimalEdges holds the relations/edges for other nodes in the graph.
+type AnimalEdges struct {
+	// UserAnimals holds the value of the user_animals edge.
+	UserAnimals *User `json:"user_animals,omitempty"`
+	// AnimalTagsAnimals holds the value of the animal_tags_animals edge.
+	AnimalTagsAnimals []*AnimalType `json:"animal_tags_animals,omitempty"`
+	// ChippingLocation holds the value of the chipping_location edge.
+	ChippingLocation *Location `json:"chipping_location,omitempty"`
+	// VisitedLocationsAnimals holds the value of the visited_locations_animals edge.
+	VisitedLocationsAnimals []*Location `json:"visited_locations_animals,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [4]bool
+}
+
+// UserAnimalsOrErr returns the UserAnimals value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AnimalEdges) UserAnimalsOrErr() (*User, error) {
+	if e.loadedTypes[0] {
+		if e.UserAnimals == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.UserAnimals, nil
+	}
+	return nil, &NotLoadedError{edge: "user_animals"}
+}
+
+// AnimalTagsAnimalsOrErr returns the AnimalTagsAnimals value or an error if the edge
+// was not loaded in eager-loading.
+func (e AnimalEdges) AnimalTagsAnimalsOrErr() ([]*AnimalType, error) {
+	if e.loadedTypes[1] {
+		return e.AnimalTagsAnimals, nil
+	}
+	return nil, &NotLoadedError{edge: "animal_tags_animals"}
+}
+
+// ChippingLocationOrErr returns the ChippingLocation value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AnimalEdges) ChippingLocationOrErr() (*Location, error) {
+	if e.loadedTypes[2] {
+		if e.ChippingLocation == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: location.Label}
+		}
+		return e.ChippingLocation, nil
+	}
+	return nil, &NotLoadedError{edge: "chipping_location"}
+}
+
+// VisitedLocationsAnimalsOrErr returns the VisitedLocationsAnimals value or an error if the edge
+// was not loaded in eager-loading.
+func (e AnimalEdges) VisitedLocationsAnimalsOrErr() ([]*Location, error) {
+	if e.loadedTypes[3] {
+		return e.VisitedLocationsAnimals, nil
+	}
+	return nil, &NotLoadedError{edge: "visited_locations_animals"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -22,8 +105,14 @@ func (*Animal) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case animal.FieldID:
+		case animal.FieldWeight, animal.FieldLength, animal.FieldHeight:
+			values[i] = new(sql.NullFloat64)
+		case animal.FieldID, animal.FieldChipperId, animal.FieldChippingLocationId:
 			values[i] = new(sql.NullInt64)
+		case animal.FieldGender, animal.FieldLifestatus:
+			values[i] = new(sql.NullString)
+		case animal.FieldChippingDateTime, animal.FieldDeathDateTime:
+			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Animal", columns[i])
 		}
@@ -44,10 +133,85 @@ func (a *Animal) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			a.ID = int(value.Int64)
+			a.ID = uint64(value.Int64)
+		case animal.FieldWeight:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field weight", values[i])
+			} else if value.Valid {
+				a.Weight = float32(value.Float64)
+			}
+		case animal.FieldLength:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field length", values[i])
+			} else if value.Valid {
+				a.Length = float32(value.Float64)
+			}
+		case animal.FieldHeight:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field height", values[i])
+			} else if value.Valid {
+				a.Height = float32(value.Float64)
+			}
+		case animal.FieldGender:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field gender", values[i])
+			} else if value.Valid {
+				a.Gender = animal.Gender(value.String)
+			}
+		case animal.FieldLifestatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field lifestatus", values[i])
+			} else if value.Valid {
+				a.Lifestatus = animal.Lifestatus(value.String)
+			}
+		case animal.FieldChippingDateTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field chippingDateTime", values[i])
+			} else if value.Valid {
+				a.ChippingDateTime = value.Time
+			}
+		case animal.FieldChipperId:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field chipperId", values[i])
+			} else if value.Valid {
+				a.ChipperId = uint32(value.Int64)
+			}
+		case animal.FieldChippingLocationId:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field chippingLocationId", values[i])
+			} else if value.Valid {
+				a.ChippingLocationId = uint64(value.Int64)
+			}
+		case animal.FieldDeathDateTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field deathDateTime", values[i])
+			} else if value.Valid {
+				a.DeathDateTime = new(time.Time)
+				*a.DeathDateTime = value.Time
+			}
 		}
 	}
 	return nil
+}
+
+// QueryUserAnimals queries the "user_animals" edge of the Animal entity.
+func (a *Animal) QueryUserAnimals() *UserQuery {
+	return NewAnimalClient(a.config).QueryUserAnimals(a)
+}
+
+// QueryAnimalTagsAnimals queries the "animal_tags_animals" edge of the Animal entity.
+func (a *Animal) QueryAnimalTagsAnimals() *AnimalTypeQuery {
+	return NewAnimalClient(a.config).QueryAnimalTagsAnimals(a)
+}
+
+// QueryChippingLocation queries the "chipping_location" edge of the Animal entity.
+func (a *Animal) QueryChippingLocation() *LocationQuery {
+	return NewAnimalClient(a.config).QueryChippingLocation(a)
+}
+
+// QueryVisitedLocationsAnimals queries the "visited_locations_animals" edge of the Animal entity.
+func (a *Animal) QueryVisitedLocationsAnimals() *LocationQuery {
+	return NewAnimalClient(a.config).QueryVisitedLocationsAnimals(a)
 }
 
 // Update returns a builder for updating this Animal.
@@ -72,7 +236,35 @@ func (a *Animal) Unwrap() *Animal {
 func (a *Animal) String() string {
 	var builder strings.Builder
 	builder.WriteString("Animal(")
-	builder.WriteString(fmt.Sprintf("id=%v", a.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", a.ID))
+	builder.WriteString("weight=")
+	builder.WriteString(fmt.Sprintf("%v", a.Weight))
+	builder.WriteString(", ")
+	builder.WriteString("length=")
+	builder.WriteString(fmt.Sprintf("%v", a.Length))
+	builder.WriteString(", ")
+	builder.WriteString("height=")
+	builder.WriteString(fmt.Sprintf("%v", a.Height))
+	builder.WriteString(", ")
+	builder.WriteString("gender=")
+	builder.WriteString(fmt.Sprintf("%v", a.Gender))
+	builder.WriteString(", ")
+	builder.WriteString("lifestatus=")
+	builder.WriteString(fmt.Sprintf("%v", a.Lifestatus))
+	builder.WriteString(", ")
+	builder.WriteString("chippingDateTime=")
+	builder.WriteString(a.ChippingDateTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("chipperId=")
+	builder.WriteString(fmt.Sprintf("%v", a.ChipperId))
+	builder.WriteString(", ")
+	builder.WriteString("chippingLocationId=")
+	builder.WriteString(fmt.Sprintf("%v", a.ChippingLocationId))
+	builder.WriteString(", ")
+	if v := a.DeathDateTime; v != nil {
+		builder.WriteString("deathDateTime=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

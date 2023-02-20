@@ -3,16 +3,40 @@
 package ent
 
 import (
+	"animals/ent/animal"
 	"animals/ent/animaltype"
 	"animals/ent/location"
 	"animals/ent/schema"
 	"animals/ent/user"
+	"time"
 )
 
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	animalFields := schema.Animal{}.Fields()
+	_ = animalFields
+	// animalDescWeight is the schema descriptor for weight field.
+	animalDescWeight := animalFields[1].Descriptor()
+	// animal.WeightValidator is a validator for the "weight" field. It is called by the builders before save.
+	animal.WeightValidator = animalDescWeight.Validators[0].(func(float32) error)
+	// animalDescLength is the schema descriptor for length field.
+	animalDescLength := animalFields[2].Descriptor()
+	// animal.LengthValidator is a validator for the "length" field. It is called by the builders before save.
+	animal.LengthValidator = animalDescLength.Validators[0].(func(float32) error)
+	// animalDescHeight is the schema descriptor for height field.
+	animalDescHeight := animalFields[3].Descriptor()
+	// animal.HeightValidator is a validator for the "height" field. It is called by the builders before save.
+	animal.HeightValidator = animalDescHeight.Validators[0].(func(float32) error)
+	// animalDescChippingDateTime is the schema descriptor for chippingDateTime field.
+	animalDescChippingDateTime := animalFields[6].Descriptor()
+	// animal.DefaultChippingDateTime holds the default value on creation for the chippingDateTime field.
+	animal.DefaultChippingDateTime = animalDescChippingDateTime.Default.(func() time.Time)
+	// animalDescID is the schema descriptor for id field.
+	animalDescID := animalFields[0].Descriptor()
+	// animal.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	animal.IDValidator = animalDescID.Validators[0].(func(uint64) error)
 	animaltypeFields := schema.AnimalType{}.Fields()
 	_ = animaltypeFields
 	// animaltypeDescType is the schema descriptor for type field.

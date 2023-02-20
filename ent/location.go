@@ -19,6 +19,27 @@ type Location struct {
 	Latitude float64 `json:"latitude,omitempty"`
 	// Longitude holds the value of the "longitude" field.
 	Longitude float64 `json:"longitude,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the LocationQuery when eager-loading is set.
+	Edges LocationEdges `json:"edges"`
+}
+
+// LocationEdges holds the relations/edges for other nodes in the graph.
+type LocationEdges struct {
+	// VisitedLocationsLocation holds the value of the visited_locations_location edge.
+	VisitedLocationsLocation []*Animal `json:"visited_locations_location,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// VisitedLocationsLocationOrErr returns the VisitedLocationsLocation value or an error if the edge
+// was not loaded in eager-loading.
+func (e LocationEdges) VisitedLocationsLocationOrErr() ([]*Animal, error) {
+	if e.loadedTypes[0] {
+		return e.VisitedLocationsLocation, nil
+	}
+	return nil, &NotLoadedError{edge: "visited_locations_location"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -66,6 +87,11 @@ func (l *Location) assignValues(columns []string, values []any) error {
 		}
 	}
 	return nil
+}
+
+// QueryVisitedLocationsLocation queries the "visited_locations_location" edge of the Location entity.
+func (l *Location) QueryVisitedLocationsLocation() *AnimalQuery {
+	return NewLocationClient(l.config).QueryVisitedLocationsLocation(l)
 }
 
 // Update returns a builder for updating this Location.

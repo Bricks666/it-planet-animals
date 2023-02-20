@@ -4,8 +4,12 @@ package ent
 
 import (
 	"animals/ent/animal"
+	"animals/ent/animaltype"
+	"animals/ent/location"
 	"animals/ent/predicate"
+	"animals/ent/user"
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -17,10 +21,14 @@ import (
 // AnimalQuery is the builder for querying Animal entities.
 type AnimalQuery struct {
 	config
-	ctx        *QueryContext
-	order      []OrderFunc
-	inters     []Interceptor
-	predicates []predicate.Animal
+	ctx                         *QueryContext
+	order                       []OrderFunc
+	inters                      []Interceptor
+	predicates                  []predicate.Animal
+	withUserAnimals             *UserQuery
+	withAnimalTagsAnimals       *AnimalTypeQuery
+	withChippingLocation        *LocationQuery
+	withVisitedLocationsAnimals *LocationQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -57,6 +65,94 @@ func (aq *AnimalQuery) Order(o ...OrderFunc) *AnimalQuery {
 	return aq
 }
 
+// QueryUserAnimals chains the current query on the "user_animals" edge.
+func (aq *AnimalQuery) QueryUserAnimals() *UserQuery {
+	query := (&UserClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(animal.Table, animal.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, animal.UserAnimalsTable, animal.UserAnimalsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAnimalTagsAnimals chains the current query on the "animal_tags_animals" edge.
+func (aq *AnimalQuery) QueryAnimalTagsAnimals() *AnimalTypeQuery {
+	query := (&AnimalTypeClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(animal.Table, animal.FieldID, selector),
+			sqlgraph.To(animaltype.Table, animaltype.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, animal.AnimalTagsAnimalsTable, animal.AnimalTagsAnimalsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryChippingLocation chains the current query on the "chipping_location" edge.
+func (aq *AnimalQuery) QueryChippingLocation() *LocationQuery {
+	query := (&LocationClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(animal.Table, animal.FieldID, selector),
+			sqlgraph.To(location.Table, location.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, animal.ChippingLocationTable, animal.ChippingLocationColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryVisitedLocationsAnimals chains the current query on the "visited_locations_animals" edge.
+func (aq *AnimalQuery) QueryVisitedLocationsAnimals() *LocationQuery {
+	query := (&LocationClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(animal.Table, animal.FieldID, selector),
+			sqlgraph.To(location.Table, location.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, animal.VisitedLocationsAnimalsTable, animal.VisitedLocationsAnimalsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Animal entity from the query.
 // Returns a *NotFoundError when no Animal was found.
 func (aq *AnimalQuery) First(ctx context.Context) (*Animal, error) {
@@ -81,8 +177,8 @@ func (aq *AnimalQuery) FirstX(ctx context.Context) *Animal {
 
 // FirstID returns the first Animal ID from the query.
 // Returns a *NotFoundError when no Animal ID was found.
-func (aq *AnimalQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (aq *AnimalQuery) FirstID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = aq.Limit(1).IDs(setContextOp(ctx, aq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -94,7 +190,7 @@ func (aq *AnimalQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (aq *AnimalQuery) FirstIDX(ctx context.Context) int {
+func (aq *AnimalQuery) FirstIDX(ctx context.Context) uint64 {
 	id, err := aq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -132,8 +228,8 @@ func (aq *AnimalQuery) OnlyX(ctx context.Context) *Animal {
 // OnlyID is like Only, but returns the only Animal ID in the query.
 // Returns a *NotSingularError when more than one Animal ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (aq *AnimalQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (aq *AnimalQuery) OnlyID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = aq.Limit(2).IDs(setContextOp(ctx, aq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -149,7 +245,7 @@ func (aq *AnimalQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (aq *AnimalQuery) OnlyIDX(ctx context.Context) int {
+func (aq *AnimalQuery) OnlyIDX(ctx context.Context) uint64 {
 	id, err := aq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -177,7 +273,7 @@ func (aq *AnimalQuery) AllX(ctx context.Context) []*Animal {
 }
 
 // IDs executes the query and returns a list of Animal IDs.
-func (aq *AnimalQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (aq *AnimalQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if aq.ctx.Unique == nil && aq.path != nil {
 		aq.Unique(true)
 	}
@@ -189,7 +285,7 @@ func (aq *AnimalQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (aq *AnimalQuery) IDsX(ctx context.Context) []int {
+func (aq *AnimalQuery) IDsX(ctx context.Context) []uint64 {
 	ids, err := aq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -244,19 +340,79 @@ func (aq *AnimalQuery) Clone() *AnimalQuery {
 		return nil
 	}
 	return &AnimalQuery{
-		config:     aq.config,
-		ctx:        aq.ctx.Clone(),
-		order:      append([]OrderFunc{}, aq.order...),
-		inters:     append([]Interceptor{}, aq.inters...),
-		predicates: append([]predicate.Animal{}, aq.predicates...),
+		config:                      aq.config,
+		ctx:                         aq.ctx.Clone(),
+		order:                       append([]OrderFunc{}, aq.order...),
+		inters:                      append([]Interceptor{}, aq.inters...),
+		predicates:                  append([]predicate.Animal{}, aq.predicates...),
+		withUserAnimals:             aq.withUserAnimals.Clone(),
+		withAnimalTagsAnimals:       aq.withAnimalTagsAnimals.Clone(),
+		withChippingLocation:        aq.withChippingLocation.Clone(),
+		withVisitedLocationsAnimals: aq.withVisitedLocationsAnimals.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
 	}
 }
 
+// WithUserAnimals tells the query-builder to eager-load the nodes that are connected to
+// the "user_animals" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AnimalQuery) WithUserAnimals(opts ...func(*UserQuery)) *AnimalQuery {
+	query := (&UserClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withUserAnimals = query
+	return aq
+}
+
+// WithAnimalTagsAnimals tells the query-builder to eager-load the nodes that are connected to
+// the "animal_tags_animals" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AnimalQuery) WithAnimalTagsAnimals(opts ...func(*AnimalTypeQuery)) *AnimalQuery {
+	query := (&AnimalTypeClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withAnimalTagsAnimals = query
+	return aq
+}
+
+// WithChippingLocation tells the query-builder to eager-load the nodes that are connected to
+// the "chipping_location" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AnimalQuery) WithChippingLocation(opts ...func(*LocationQuery)) *AnimalQuery {
+	query := (&LocationClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withChippingLocation = query
+	return aq
+}
+
+// WithVisitedLocationsAnimals tells the query-builder to eager-load the nodes that are connected to
+// the "visited_locations_animals" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AnimalQuery) WithVisitedLocationsAnimals(opts ...func(*LocationQuery)) *AnimalQuery {
+	query := (&LocationClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withVisitedLocationsAnimals = query
+	return aq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		Weight float32 `json:"weight,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.Animal.Query().
+//		GroupBy(animal.FieldWeight).
+//		Aggregate(ent.Count()).
+//		Scan(ctx, &v)
 func (aq *AnimalQuery) GroupBy(field string, fields ...string) *AnimalGroupBy {
 	aq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &AnimalGroupBy{build: aq}
@@ -268,6 +424,16 @@ func (aq *AnimalQuery) GroupBy(field string, fields ...string) *AnimalGroupBy {
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		Weight float32 `json:"weight,omitempty"`
+//	}
+//
+//	client.Animal.Query().
+//		Select(animal.FieldWeight).
+//		Scan(ctx, &v)
 func (aq *AnimalQuery) Select(fields ...string) *AnimalSelect {
 	aq.ctx.Fields = append(aq.ctx.Fields, fields...)
 	sbuild := &AnimalSelect{AnimalQuery: aq}
@@ -309,8 +475,14 @@ func (aq *AnimalQuery) prepareQuery(ctx context.Context) error {
 
 func (aq *AnimalQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Animal, error) {
 	var (
-		nodes = []*Animal{}
-		_spec = aq.querySpec()
+		nodes       = []*Animal{}
+		_spec       = aq.querySpec()
+		loadedTypes = [4]bool{
+			aq.withUserAnimals != nil,
+			aq.withAnimalTagsAnimals != nil,
+			aq.withChippingLocation != nil,
+			aq.withVisitedLocationsAnimals != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Animal).scanValues(nil, columns)
@@ -318,6 +490,7 @@ func (aq *AnimalQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Anima
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &Animal{config: aq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -329,7 +502,216 @@ func (aq *AnimalQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Anima
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := aq.withUserAnimals; query != nil {
+		if err := aq.loadUserAnimals(ctx, query, nodes, nil,
+			func(n *Animal, e *User) { n.Edges.UserAnimals = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withAnimalTagsAnimals; query != nil {
+		if err := aq.loadAnimalTagsAnimals(ctx, query, nodes,
+			func(n *Animal) { n.Edges.AnimalTagsAnimals = []*AnimalType{} },
+			func(n *Animal, e *AnimalType) { n.Edges.AnimalTagsAnimals = append(n.Edges.AnimalTagsAnimals, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withChippingLocation; query != nil {
+		if err := aq.loadChippingLocation(ctx, query, nodes, nil,
+			func(n *Animal, e *Location) { n.Edges.ChippingLocation = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withVisitedLocationsAnimals; query != nil {
+		if err := aq.loadVisitedLocationsAnimals(ctx, query, nodes,
+			func(n *Animal) { n.Edges.VisitedLocationsAnimals = []*Location{} },
+			func(n *Animal, e *Location) {
+				n.Edges.VisitedLocationsAnimals = append(n.Edges.VisitedLocationsAnimals, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (aq *AnimalQuery) loadUserAnimals(ctx context.Context, query *UserQuery, nodes []*Animal, init func(*Animal), assign func(*Animal, *User)) error {
+	ids := make([]uint32, 0, len(nodes))
+	nodeids := make(map[uint32][]*Animal)
+	for i := range nodes {
+		fk := nodes[i].ChipperId
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "chipperId" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (aq *AnimalQuery) loadAnimalTagsAnimals(ctx context.Context, query *AnimalTypeQuery, nodes []*Animal, init func(*Animal), assign func(*Animal, *AnimalType)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[uint64]*Animal)
+	nids := make(map[uint64]map[*Animal]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(animal.AnimalTagsAnimalsTable)
+		s.Join(joinT).On(s.C(animaltype.FieldID), joinT.C(animal.AnimalTagsAnimalsPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(animal.AnimalTagsAnimalsPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(animal.AnimalTagsAnimalsPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := uint64(values[0].(*sql.NullInt64).Int64)
+				inValue := uint64(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Animal]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*AnimalType](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "animal_tags_animals" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (aq *AnimalQuery) loadChippingLocation(ctx context.Context, query *LocationQuery, nodes []*Animal, init func(*Animal), assign func(*Animal, *Location)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Animal)
+	for i := range nodes {
+		fk := nodes[i].ChippingLocationId
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(location.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "chippingLocationId" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (aq *AnimalQuery) loadVisitedLocationsAnimals(ctx context.Context, query *LocationQuery, nodes []*Animal, init func(*Animal), assign func(*Animal, *Location)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[uint64]*Animal)
+	nids := make(map[uint64]map[*Animal]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(animal.VisitedLocationsAnimalsTable)
+		s.Join(joinT).On(s.C(location.FieldID), joinT.C(animal.VisitedLocationsAnimalsPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(animal.VisitedLocationsAnimalsPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(animal.VisitedLocationsAnimalsPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := uint64(values[0].(*sql.NullInt64).Int64)
+				inValue := uint64(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Animal]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Location](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "visited_locations_animals" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
 }
 
 func (aq *AnimalQuery) sqlCount(ctx context.Context) (int, error) {
@@ -342,7 +724,7 @@ func (aq *AnimalQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (aq *AnimalQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(animal.Table, animal.Columns, sqlgraph.NewFieldSpec(animal.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(animal.Table, animal.Columns, sqlgraph.NewFieldSpec(animal.FieldID, field.TypeUint64))
 	_spec.From = aq.sql
 	if unique := aq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"animals/ent/animal"
 	"animals/ent/location"
 	"context"
 	"errors"
@@ -35,6 +36,21 @@ func (lc *LocationCreate) SetLongitude(f float64) *LocationCreate {
 func (lc *LocationCreate) SetID(u uint64) *LocationCreate {
 	lc.mutation.SetID(u)
 	return lc
+}
+
+// AddVisitedLocationsLocationIDs adds the "visited_locations_location" edge to the Animal entity by IDs.
+func (lc *LocationCreate) AddVisitedLocationsLocationIDs(ids ...uint64) *LocationCreate {
+	lc.mutation.AddVisitedLocationsLocationIDs(ids...)
+	return lc
+}
+
+// AddVisitedLocationsLocation adds the "visited_locations_location" edges to the Animal entity.
+func (lc *LocationCreate) AddVisitedLocationsLocation(a ...*Animal) *LocationCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return lc.AddVisitedLocationsLocationIDs(ids...)
 }
 
 // Mutation returns the LocationMutation object of the builder.
@@ -131,6 +147,25 @@ func (lc *LocationCreate) createSpec() (*Location, *sqlgraph.CreateSpec) {
 	if value, ok := lc.mutation.Longitude(); ok {
 		_spec.SetField(location.FieldLongitude, field.TypeFloat64, value)
 		_node.Longitude = value
+	}
+	if nodes := lc.mutation.VisitedLocationsLocationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   location.VisitedLocationsLocationTable,
+			Columns: location.VisitedLocationsLocationPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

@@ -3,9 +3,11 @@
 package ent
 
 import (
+	"animals/ent/animal"
 	"animals/ent/animaltype"
 	"animals/ent/predicate"
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -17,10 +19,11 @@ import (
 // AnimalTypeQuery is the builder for querying AnimalType entities.
 type AnimalTypeQuery struct {
 	config
-	ctx        *QueryContext
-	order      []OrderFunc
-	inters     []Interceptor
-	predicates []predicate.AnimalType
+	ctx                 *QueryContext
+	order               []OrderFunc
+	inters              []Interceptor
+	predicates          []predicate.AnimalType
+	withAnimalTagsTypes *AnimalQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -55,6 +58,28 @@ func (atq *AnimalTypeQuery) Unique(unique bool) *AnimalTypeQuery {
 func (atq *AnimalTypeQuery) Order(o ...OrderFunc) *AnimalTypeQuery {
 	atq.order = append(atq.order, o...)
 	return atq
+}
+
+// QueryAnimalTagsTypes chains the current query on the "animal_tags_types" edge.
+func (atq *AnimalTypeQuery) QueryAnimalTagsTypes() *AnimalQuery {
+	query := (&AnimalClient{config: atq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := atq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := atq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(animaltype.Table, animaltype.FieldID, selector),
+			sqlgraph.To(animal.Table, animal.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, animaltype.AnimalTagsTypesTable, animaltype.AnimalTagsTypesPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(atq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first AnimalType entity from the query.
@@ -244,15 +269,27 @@ func (atq *AnimalTypeQuery) Clone() *AnimalTypeQuery {
 		return nil
 	}
 	return &AnimalTypeQuery{
-		config:     atq.config,
-		ctx:        atq.ctx.Clone(),
-		order:      append([]OrderFunc{}, atq.order...),
-		inters:     append([]Interceptor{}, atq.inters...),
-		predicates: append([]predicate.AnimalType{}, atq.predicates...),
+		config:              atq.config,
+		ctx:                 atq.ctx.Clone(),
+		order:               append([]OrderFunc{}, atq.order...),
+		inters:              append([]Interceptor{}, atq.inters...),
+		predicates:          append([]predicate.AnimalType{}, atq.predicates...),
+		withAnimalTagsTypes: atq.withAnimalTagsTypes.Clone(),
 		// clone intermediate query.
 		sql:  atq.sql.Clone(),
 		path: atq.path,
 	}
+}
+
+// WithAnimalTagsTypes tells the query-builder to eager-load the nodes that are connected to
+// the "animal_tags_types" edge. The optional arguments are used to configure the query builder of the edge.
+func (atq *AnimalTypeQuery) WithAnimalTagsTypes(opts ...func(*AnimalQuery)) *AnimalTypeQuery {
+	query := (&AnimalClient{config: atq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	atq.withAnimalTagsTypes = query
+	return atq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -331,8 +368,11 @@ func (atq *AnimalTypeQuery) prepareQuery(ctx context.Context) error {
 
 func (atq *AnimalTypeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*AnimalType, error) {
 	var (
-		nodes = []*AnimalType{}
-		_spec = atq.querySpec()
+		nodes       = []*AnimalType{}
+		_spec       = atq.querySpec()
+		loadedTypes = [1]bool{
+			atq.withAnimalTagsTypes != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*AnimalType).scanValues(nil, columns)
@@ -340,6 +380,7 @@ func (atq *AnimalTypeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &AnimalType{config: atq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -351,7 +392,76 @@ func (atq *AnimalTypeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := atq.withAnimalTagsTypes; query != nil {
+		if err := atq.loadAnimalTagsTypes(ctx, query, nodes,
+			func(n *AnimalType) { n.Edges.AnimalTagsTypes = []*Animal{} },
+			func(n *AnimalType, e *Animal) { n.Edges.AnimalTagsTypes = append(n.Edges.AnimalTagsTypes, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (atq *AnimalTypeQuery) loadAnimalTagsTypes(ctx context.Context, query *AnimalQuery, nodes []*AnimalType, init func(*AnimalType), assign func(*AnimalType, *Animal)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[uint64]*AnimalType)
+	nids := make(map[uint64]map[*AnimalType]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(animaltype.AnimalTagsTypesTable)
+		s.Join(joinT).On(s.C(animal.FieldID), joinT.C(animaltype.AnimalTagsTypesPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(animaltype.AnimalTagsTypesPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(animaltype.AnimalTagsTypesPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := uint64(values[0].(*sql.NullInt64).Int64)
+				inValue := uint64(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*AnimalType]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Animal](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "animal_tags_types" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
 }
 
 func (atq *AnimalTypeQuery) sqlCount(ctx context.Context) (int, error) {

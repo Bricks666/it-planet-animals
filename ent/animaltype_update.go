@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"animals/ent/animal"
 	"animals/ent/animaltype"
 	"animals/ent/predicate"
 	"context"
@@ -33,9 +34,45 @@ func (atu *AnimalTypeUpdate) SetType(s string) *AnimalTypeUpdate {
 	return atu
 }
 
+// AddAnimalTagsTypeIDs adds the "animal_tags_types" edge to the Animal entity by IDs.
+func (atu *AnimalTypeUpdate) AddAnimalTagsTypeIDs(ids ...uint64) *AnimalTypeUpdate {
+	atu.mutation.AddAnimalTagsTypeIDs(ids...)
+	return atu
+}
+
+// AddAnimalTagsTypes adds the "animal_tags_types" edges to the Animal entity.
+func (atu *AnimalTypeUpdate) AddAnimalTagsTypes(a ...*Animal) *AnimalTypeUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return atu.AddAnimalTagsTypeIDs(ids...)
+}
+
 // Mutation returns the AnimalTypeMutation object of the builder.
 func (atu *AnimalTypeUpdate) Mutation() *AnimalTypeMutation {
 	return atu.mutation
+}
+
+// ClearAnimalTagsTypes clears all "animal_tags_types" edges to the Animal entity.
+func (atu *AnimalTypeUpdate) ClearAnimalTagsTypes() *AnimalTypeUpdate {
+	atu.mutation.ClearAnimalTagsTypes()
+	return atu
+}
+
+// RemoveAnimalTagsTypeIDs removes the "animal_tags_types" edge to Animal entities by IDs.
+func (atu *AnimalTypeUpdate) RemoveAnimalTagsTypeIDs(ids ...uint64) *AnimalTypeUpdate {
+	atu.mutation.RemoveAnimalTagsTypeIDs(ids...)
+	return atu
+}
+
+// RemoveAnimalTagsTypes removes "animal_tags_types" edges to Animal entities.
+func (atu *AnimalTypeUpdate) RemoveAnimalTagsTypes(a ...*Animal) *AnimalTypeUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return atu.RemoveAnimalTagsTypeIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -90,6 +127,60 @@ func (atu *AnimalTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := atu.mutation.GetType(); ok {
 		_spec.SetField(animaltype.FieldType, field.TypeString, value)
 	}
+	if atu.mutation.AnimalTagsTypesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   animaltype.AnimalTagsTypesTable,
+			Columns: animaltype.AnimalTagsTypesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atu.mutation.RemovedAnimalTagsTypesIDs(); len(nodes) > 0 && !atu.mutation.AnimalTagsTypesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   animaltype.AnimalTagsTypesTable,
+			Columns: animaltype.AnimalTagsTypesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atu.mutation.AnimalTagsTypesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   animaltype.AnimalTagsTypesTable,
+			Columns: animaltype.AnimalTagsTypesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, atu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{animaltype.Label}
@@ -116,9 +207,45 @@ func (atuo *AnimalTypeUpdateOne) SetType(s string) *AnimalTypeUpdateOne {
 	return atuo
 }
 
+// AddAnimalTagsTypeIDs adds the "animal_tags_types" edge to the Animal entity by IDs.
+func (atuo *AnimalTypeUpdateOne) AddAnimalTagsTypeIDs(ids ...uint64) *AnimalTypeUpdateOne {
+	atuo.mutation.AddAnimalTagsTypeIDs(ids...)
+	return atuo
+}
+
+// AddAnimalTagsTypes adds the "animal_tags_types" edges to the Animal entity.
+func (atuo *AnimalTypeUpdateOne) AddAnimalTagsTypes(a ...*Animal) *AnimalTypeUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return atuo.AddAnimalTagsTypeIDs(ids...)
+}
+
 // Mutation returns the AnimalTypeMutation object of the builder.
 func (atuo *AnimalTypeUpdateOne) Mutation() *AnimalTypeMutation {
 	return atuo.mutation
+}
+
+// ClearAnimalTagsTypes clears all "animal_tags_types" edges to the Animal entity.
+func (atuo *AnimalTypeUpdateOne) ClearAnimalTagsTypes() *AnimalTypeUpdateOne {
+	atuo.mutation.ClearAnimalTagsTypes()
+	return atuo
+}
+
+// RemoveAnimalTagsTypeIDs removes the "animal_tags_types" edge to Animal entities by IDs.
+func (atuo *AnimalTypeUpdateOne) RemoveAnimalTagsTypeIDs(ids ...uint64) *AnimalTypeUpdateOne {
+	atuo.mutation.RemoveAnimalTagsTypeIDs(ids...)
+	return atuo
+}
+
+// RemoveAnimalTagsTypes removes "animal_tags_types" edges to Animal entities.
+func (atuo *AnimalTypeUpdateOne) RemoveAnimalTagsTypes(a ...*Animal) *AnimalTypeUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return atuo.RemoveAnimalTagsTypeIDs(ids...)
 }
 
 // Where appends a list predicates to the AnimalTypeUpdate builder.
@@ -202,6 +329,60 @@ func (atuo *AnimalTypeUpdateOne) sqlSave(ctx context.Context) (_node *AnimalType
 	}
 	if value, ok := atuo.mutation.GetType(); ok {
 		_spec.SetField(animaltype.FieldType, field.TypeString, value)
+	}
+	if atuo.mutation.AnimalTagsTypesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   animaltype.AnimalTagsTypesTable,
+			Columns: animaltype.AnimalTagsTypesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atuo.mutation.RemovedAnimalTagsTypesIDs(); len(nodes) > 0 && !atuo.mutation.AnimalTagsTypesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   animaltype.AnimalTagsTypesTable,
+			Columns: animaltype.AnimalTagsTypesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atuo.mutation.AnimalTagsTypesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   animaltype.AnimalTagsTypesTable,
+			Columns: animaltype.AnimalTagsTypesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &AnimalType{config: atuo.config}
 	_spec.Assign = _node.assignValues

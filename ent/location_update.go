@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"animals/ent/animal"
 	"animals/ent/location"
 	"animals/ent/predicate"
 	"context"
@@ -53,9 +54,45 @@ func (lu *LocationUpdate) AddLongitude(f float64) *LocationUpdate {
 	return lu
 }
 
+// AddVisitedLocationsLocationIDs adds the "visited_locations_location" edge to the Animal entity by IDs.
+func (lu *LocationUpdate) AddVisitedLocationsLocationIDs(ids ...uint64) *LocationUpdate {
+	lu.mutation.AddVisitedLocationsLocationIDs(ids...)
+	return lu
+}
+
+// AddVisitedLocationsLocation adds the "visited_locations_location" edges to the Animal entity.
+func (lu *LocationUpdate) AddVisitedLocationsLocation(a ...*Animal) *LocationUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return lu.AddVisitedLocationsLocationIDs(ids...)
+}
+
 // Mutation returns the LocationMutation object of the builder.
 func (lu *LocationUpdate) Mutation() *LocationMutation {
 	return lu.mutation
+}
+
+// ClearVisitedLocationsLocation clears all "visited_locations_location" edges to the Animal entity.
+func (lu *LocationUpdate) ClearVisitedLocationsLocation() *LocationUpdate {
+	lu.mutation.ClearVisitedLocationsLocation()
+	return lu
+}
+
+// RemoveVisitedLocationsLocationIDs removes the "visited_locations_location" edge to Animal entities by IDs.
+func (lu *LocationUpdate) RemoveVisitedLocationsLocationIDs(ids ...uint64) *LocationUpdate {
+	lu.mutation.RemoveVisitedLocationsLocationIDs(ids...)
+	return lu
+}
+
+// RemoveVisitedLocationsLocation removes "visited_locations_location" edges to Animal entities.
+func (lu *LocationUpdate) RemoveVisitedLocationsLocation(a ...*Animal) *LocationUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return lu.RemoveVisitedLocationsLocationIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -124,6 +161,60 @@ func (lu *LocationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := lu.mutation.AddedLongitude(); ok {
 		_spec.AddField(location.FieldLongitude, field.TypeFloat64, value)
 	}
+	if lu.mutation.VisitedLocationsLocationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   location.VisitedLocationsLocationTable,
+			Columns: location.VisitedLocationsLocationPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := lu.mutation.RemovedVisitedLocationsLocationIDs(); len(nodes) > 0 && !lu.mutation.VisitedLocationsLocationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   location.VisitedLocationsLocationTable,
+			Columns: location.VisitedLocationsLocationPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := lu.mutation.VisitedLocationsLocationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   location.VisitedLocationsLocationTable,
+			Columns: location.VisitedLocationsLocationPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, lu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{location.Label}
@@ -170,9 +261,45 @@ func (luo *LocationUpdateOne) AddLongitude(f float64) *LocationUpdateOne {
 	return luo
 }
 
+// AddVisitedLocationsLocationIDs adds the "visited_locations_location" edge to the Animal entity by IDs.
+func (luo *LocationUpdateOne) AddVisitedLocationsLocationIDs(ids ...uint64) *LocationUpdateOne {
+	luo.mutation.AddVisitedLocationsLocationIDs(ids...)
+	return luo
+}
+
+// AddVisitedLocationsLocation adds the "visited_locations_location" edges to the Animal entity.
+func (luo *LocationUpdateOne) AddVisitedLocationsLocation(a ...*Animal) *LocationUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return luo.AddVisitedLocationsLocationIDs(ids...)
+}
+
 // Mutation returns the LocationMutation object of the builder.
 func (luo *LocationUpdateOne) Mutation() *LocationMutation {
 	return luo.mutation
+}
+
+// ClearVisitedLocationsLocation clears all "visited_locations_location" edges to the Animal entity.
+func (luo *LocationUpdateOne) ClearVisitedLocationsLocation() *LocationUpdateOne {
+	luo.mutation.ClearVisitedLocationsLocation()
+	return luo
+}
+
+// RemoveVisitedLocationsLocationIDs removes the "visited_locations_location" edge to Animal entities by IDs.
+func (luo *LocationUpdateOne) RemoveVisitedLocationsLocationIDs(ids ...uint64) *LocationUpdateOne {
+	luo.mutation.RemoveVisitedLocationsLocationIDs(ids...)
+	return luo
+}
+
+// RemoveVisitedLocationsLocation removes "visited_locations_location" edges to Animal entities.
+func (luo *LocationUpdateOne) RemoveVisitedLocationsLocation(a ...*Animal) *LocationUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return luo.RemoveVisitedLocationsLocationIDs(ids...)
 }
 
 // Where appends a list predicates to the LocationUpdate builder.
@@ -270,6 +397,60 @@ func (luo *LocationUpdateOne) sqlSave(ctx context.Context) (_node *Location, err
 	}
 	if value, ok := luo.mutation.AddedLongitude(); ok {
 		_spec.AddField(location.FieldLongitude, field.TypeFloat64, value)
+	}
+	if luo.mutation.VisitedLocationsLocationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   location.VisitedLocationsLocationTable,
+			Columns: location.VisitedLocationsLocationPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := luo.mutation.RemovedVisitedLocationsLocationIDs(); len(nodes) > 0 && !luo.mutation.VisitedLocationsLocationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   location.VisitedLocationsLocationTable,
+			Columns: location.VisitedLocationsLocationPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := luo.mutation.VisitedLocationsLocationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   location.VisitedLocationsLocationTable,
+			Columns: location.VisitedLocationsLocationPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Location{config: luo.config}
 	_spec.Assign = _node.assignValues

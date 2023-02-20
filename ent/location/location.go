@@ -11,8 +11,15 @@ const (
 	FieldLatitude = "latitude"
 	// FieldLongitude holds the string denoting the longitude field in the database.
 	FieldLongitude = "longitude"
+	// EdgeVisitedLocationsLocation holds the string denoting the visited_locations_location edge name in mutations.
+	EdgeVisitedLocationsLocation = "visited_locations_location"
 	// Table holds the table name of the location in the database.
 	Table = "locations"
+	// VisitedLocationsLocationTable is the table that holds the visited_locations_location relation/edge. The primary key declared below.
+	VisitedLocationsLocationTable = "animal_visited_locations_animals"
+	// VisitedLocationsLocationInverseTable is the table name for the Animal entity.
+	// It exists in this package in order to avoid circular dependency with the "animal" package.
+	VisitedLocationsLocationInverseTable = "animals"
 )
 
 // Columns holds all SQL columns for location fields.
@@ -21,6 +28,12 @@ var Columns = []string{
 	FieldLatitude,
 	FieldLongitude,
 }
+
+var (
+	// VisitedLocationsLocationPrimaryKey and VisitedLocationsLocationColumn2 are the table columns denoting the
+	// primary key for the visited_locations_location relation (M2M).
+	VisitedLocationsLocationPrimaryKey = []string{"animal_id", "location_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
