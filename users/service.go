@@ -20,8 +20,8 @@ type UsersService struct {
 	usersRepository *UserRepository
 }
 
-func (us *UsersService) GetAll(dto *UsersSearchQueryDto) ([]*SecurityUserDto, error) {
-	users, err := us.usersRepository.GetAll(dto)
+func (this *UsersService) GetAll(dto *UsersSearchQueryDto) ([]*SecurityUserDto, error) {
+	users, err := this.usersRepository.GetAll(dto)
 
 	if err != nil {
 		return nil, err
@@ -36,8 +36,8 @@ func (us *UsersService) GetAll(dto *UsersSearchQueryDto) ([]*SecurityUserDto, er
 	return securityUsers, err
 }
 
-func (us *UsersService) GetOne(id uint32) (*SecurityUserDto, error) {
-	user, err := us.usersRepository.GetOne(id)
+func (this *UsersService) GetOne(id uint32) (*SecurityUserDto, error) {
+	user, err := this.usersRepository.GetOne(id)
 
 	if err != nil {
 		return nil, err
@@ -46,13 +46,13 @@ func (us *UsersService) GetOne(id uint32) (*SecurityUserDto, error) {
 	return prepareSecurityUser(user), nil
 }
 
-func (us *UsersService) Create(dto *CreateUserDto) (*SecurityUserDto, error) {
+func (this *UsersService) Create(dto *CreateUserDto) (*SecurityUserDto, error) {
 	hashed, _ := bcrypt.GenerateFromPassword([]byte(dto.Password), shared.ROUND_COUNT)
 
 	// May be should replace this mutation
 	dto.Password = string(hashed)
 
-	user, err := us.usersRepository.Create(dto)
+	user, err := this.usersRepository.Create(dto)
 
 	if err != nil {
 		return nil, err
@@ -61,8 +61,8 @@ func (us *UsersService) Create(dto *CreateUserDto) (*SecurityUserDto, error) {
 	return prepareSecurityUser(user), nil
 }
 
-func (us *UsersService) Update(id uint32, dto *UpdateUserDto) (*SecurityUserDto, error) {
-	isExists, _ := us.usersRepository.HasWithThisEmail(dto.Email)
+func (this *UsersService) Update(id uint32, dto *UpdateUserDto) (*SecurityUserDto, error) {
+	isExists, _ := this.usersRepository.HasWithThisEmail(dto.Email)
 
 	if isExists {
 		return nil, &ent.ConstraintError{}
@@ -72,7 +72,7 @@ func (us *UsersService) Update(id uint32, dto *UpdateUserDto) (*SecurityUserDto,
 
 	dto.Password = string(hashed)
 
-	user, err := us.usersRepository.Update(id, dto)
+	user, err := this.usersRepository.Update(id, dto)
 
 	if err != nil {
 		return nil, err
@@ -81,14 +81,14 @@ func (us *UsersService) Update(id uint32, dto *UpdateUserDto) (*SecurityUserDto,
 	return prepareSecurityUser(user), nil
 }
 
-func (us *UsersService) Remove(id uint32) error {
-	user, _ := us.usersRepository.GetOne(id)
+func (this *UsersService) Remove(id uint32) error {
+	user, _ := this.usersRepository.GetOne(id)
 
 	if user == nil {
 		return errors.New("User doesn't exist")
 	}
 
-	return us.usersRepository.Remove(id)
+	return this.usersRepository.Remove(id)
 }
 
 func prepareSecurityUser(user *ent.User) *SecurityUserDto {

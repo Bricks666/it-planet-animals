@@ -18,8 +18,9 @@ func init() {
 	}
 }
 
-func (ur *UserRepository) GetAll(dto *UsersSearchQueryDto) ([]*ent.User, error) {
-	return ur.db.Client.User.Query().
+func (this *UserRepository) GetAll(dto *UsersSearchQueryDto) ([]*ent.User, error) {
+	return this.db.Client.User.
+		Query().
 		Where(
 			user.FirstNameContains(dto.FirstName),
 			user.LastNameContains(dto.LastName),
@@ -27,41 +28,48 @@ func (ur *UserRepository) GetAll(dto *UsersSearchQueryDto) ([]*ent.User, error) 
 		).
 		Offset(int(dto.From)).
 		Limit(int(dto.Size)).
-		All(ur.db.Context)
+		All(this.db.Context)
 }
 
-func (ur *UserRepository) GetOne(id uint32) (*ent.User, error) {
-	return ur.db.Client.User.Query().
+func (this *UserRepository) GetOne(id uint32) (*ent.User, error) {
+	return this.db.Client.User.
+		Query().
 		Where(user.ID(id)).
 		Select(user.FieldEmail, user.FieldFirstName, user.FieldLastName, user.FieldID).
-		Only(ur.db.Context)
+		Only(this.db.Context)
 
 }
 
-func (ur *UserRepository) HasWithThisEmail(email string) (bool, error) {
-	return ur.db.Client.User.Query().Where(user.Email(email)).Exist(ur.db.Context)
+func (this *UserRepository) HasWithThisEmail(email string) (bool, error) {
+	return this.db.Client.User.
+		Query().
+		Where(user.Email(email)).
+		Exist(this.db.Context)
 }
 
-func (ur *UserRepository) Create(dto *CreateUserDto) (*ent.User, error) {
-	return ur.db.Client.User.Create().
+func (this *UserRepository) Create(dto *CreateUserDto) (*ent.User, error) {
+	return this.db.Client.User.
+		Create().
 		SetEmail(dto.Email).
 		SetFirstName(dto.FirstName).
 		SetLastName(dto.LastName).
 		SetPassword(dto.Password).
-		Save(ur.db.Context)
+		Save(this.db.Context)
 
 }
 
-func (ur *UserRepository) Update(id uint32, dto *UpdateUserDto) (*ent.User, error) {
-	return ur.db.Client.User.
+func (this *UserRepository) Update(id uint32, dto *UpdateUserDto) (*ent.User, error) {
+	return this.db.Client.User.
 		UpdateOneID(id).
 		SetEmail(dto.Email).
 		SetFirstName(dto.FirstName).
 		SetLastName(dto.LastName).
 		SetPassword(dto.Password).
-		Save(ur.db.Context)
+		Save(this.db.Context)
 }
 
-func (ur *UserRepository) Remove(id uint32) error {
-	return ur.db.Client.User.DeleteOneID(id).Exec(ur.db.Context)
+func (this *UserRepository) Remove(id uint32) error {
+	return this.db.Client.User.
+		DeleteOneID(id).
+		Exec(this.db.Context)
 }
