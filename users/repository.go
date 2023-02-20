@@ -40,11 +40,11 @@ func (this *UserRepository) GetOne(id uint32) (*ent.User, error) {
 
 }
 
-func (this *UserRepository) HasWithThisEmail(email string) (bool, error) {
+func (this *UserRepository) GetByEmail(email string) (*ent.User, error) {
 	return this.db.Client.User.
 		Query().
 		Where(user.Email(email)).
-		Exist(this.db.Context)
+		Only(this.db.Context)
 }
 
 func (this *UserRepository) Create(dto *CreateUserDto) (*ent.User, error) {

@@ -62,9 +62,9 @@ func (this *UsersService) Create(dto *CreateUserDto) (*SecurityUserDto, error) {
 }
 
 func (this *UsersService) Update(id uint32, dto *UpdateUserDto) (*SecurityUserDto, error) {
-	isExists, _ := this.usersRepository.HasWithThisEmail(dto.Email)
+	user, _ := this.usersRepository.GetByEmail(dto.Email)
 
-	if isExists {
+	if user == nil {
 		return nil, &ent.ConstraintError{}
 	}
 
@@ -89,6 +89,21 @@ func (this *UsersService) Remove(id uint32) error {
 	}
 
 	return this.usersRepository.Remove(id)
+}
+
+func (this *UsersService) VerifyUser(email string, password string) (*SecurityUserDto, error) {
+	user, err := this.usersRepository.GetByEmail(email)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return nil, err
+	}
+
+	return prepareSecurityUser(user), nil
 }
 
 func prepareSecurityUser(user *ent.User) *SecurityUserDto {

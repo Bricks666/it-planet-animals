@@ -16,8 +16,8 @@ type UpdateUserDto struct {
 
 type SecurityUserDto struct {
 	Id        uint32 `json:"id"`
-	FirstName string `json:"firstname"`
-	LastName  string `json:"lastname"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 }
 
