@@ -47,6 +47,10 @@ func (lc *LocationsController) Create(ct *fiber.Ctx) error {
 	var validationErrors []*shared.ErrorResponse
 	var err error
 
+	if bodyContainsNull(ct.Body()) {
+		return ct.Status(fiber.StatusBadRequest).JSON("")
+	}
+
 	err = ct.BodyParser(&dto)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
@@ -60,6 +64,9 @@ func (lc *LocationsController) Create(ct *fiber.Ctx) error {
 	var location *LocationDto
 	location, err = lc.locationsService.Create(&dto)
 	if err != nil {
+		if ent.IsConstraintError(err) {
+			return ct.Status(fiber.StatusConflict).JSON(err.Error())
+		}
 		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
 	}
 
@@ -82,6 +89,10 @@ func (lc *LocationsController) Update(ct *fiber.Ctx) error {
 		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
 	}
 
+	if bodyContainsNull(ct.Body()) {
+		return ct.Status(fiber.StatusBadRequest).JSON("")
+	}
+
 	err = ct.BodyParser(&dto)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
@@ -95,7 +106,7 @@ func (lc *LocationsController) Update(ct *fiber.Ctx) error {
 	var location *LocationDto
 	location, err = lc.locationsService.Update(params.Id, &dto)
 	if err != nil {
-		if shared.IsInstanceOf(&err, new(*ent.NotFoundError)) {
+		if ent.IsNotFound(err) {
 			return ct.Status(fiber.StatusNotFound).JSON(err.Error())
 		}
 		return ct.Status(fiber.StatusConflict).JSON(err.Error())

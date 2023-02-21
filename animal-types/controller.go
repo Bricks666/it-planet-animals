@@ -26,22 +26,22 @@ func (this *AnimalTypesController) GetOne(ct *fiber.Ctx) error {
 
 	err = ct.ParamsParser(&params)
 	if err != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(err)
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
 	validationErrors = shared.ValidateStruct(&params)
 	if validationErrors != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(err)
+		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
 	}
 
 	var animalType *AnimalTypeDto
 	animalType, err = this.animalTypesService.GetOne(params.Id)
 	if err != nil {
-		if shared.IsInstanceOf(&err, new(*ent.NotFoundError)) {
-			return ct.Status(fiber.StatusNotFound).JSON(err)
+		if ent.IsNotFound(err) {
+			return ct.Status(fiber.StatusNotFound).JSON(err.Error())
 		}
 
-		return ct.Status(fiber.StatusInternalServerError).JSON(err)
+		return ct.Status(fiber.StatusInternalServerError).JSON(err.Error())
 	}
 
 	return ct.Status(fiber.StatusOK).JSON(animalType)
@@ -55,22 +55,22 @@ func (this *AnimalTypesController) Create(ct *fiber.Ctx) error {
 
 	err = ct.BodyParser(&dto)
 	if err != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(err)
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
 	validationErrors = shared.ValidateStruct(&dto)
 	if validationErrors != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(err)
+		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
 	}
 
 	var animalType *AnimalTypeDto
 	animalType, err = this.animalTypesService.Create(&dto)
 	if err != nil {
-		if shared.IsInstanceOf(&err, new(*ent.ConstraintError)) {
-			return ct.Status(fiber.StatusConflict).JSON(err)
+		if ent.IsConstraintError(err) {
+			return ct.Status(fiber.StatusConflict).JSON(err.Error())
 		}
 
-		return ct.Status(fiber.StatusInternalServerError).JSON(err)
+		return ct.Status(fiber.StatusInternalServerError).JSON(err.Error())
 	}
 
 	return ct.Status(fiber.StatusCreated).JSON(animalType)
@@ -84,36 +84,37 @@ func (this *AnimalTypesController) Update(ct *fiber.Ctx) error {
 
 	err = ct.ParamsParser(&params)
 	if err != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(err)
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
 	validationErrors = shared.ValidateStruct(&params)
 	if validationErrors != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(err)
+		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
 	}
 
 	err = ct.BodyParser(&dto)
 	if err != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(err)
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
 	validationErrors = shared.ValidateStruct(&dto)
 	if validationErrors != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(err)
+		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
 	}
 
 	var animalType *AnimalTypeDto
 	animalType, err = this.animalTypesService.Update(params.Id, &dto)
 	if err != nil {
-		if shared.IsInstanceOf(&err, new(*ent.ConstraintError)) {
-			return ct.Status(fiber.StatusConflict).JSON(err)
+
+		if ent.IsConstraintError(err) {
+			return ct.Status(fiber.StatusConflict).JSON(err.Error())
 		}
 
-		if shared.IsInstanceOf(&err, new(*ent.NotFoundError)) {
-			return ct.Status(fiber.StatusNotFound).JSON(err)
+		if ent.IsNotFound(err) {
+			return ct.Status(fiber.StatusNotFound).JSON(err.Error())
 		}
 
-		return ct.Status(fiber.StatusInternalServerError).JSON(err)
+		return ct.Status(fiber.StatusInternalServerError).JSON(err.Error())
 	}
 
 	return ct.Status(fiber.StatusOK).JSON(animalType)
@@ -126,22 +127,22 @@ func (this *AnimalTypesController) Remove(ct *fiber.Ctx) error {
 
 	err = ct.ParamsParser(&params)
 	if err != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(err)
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
 	validationErrors = shared.ValidateStruct(&params)
 	if validationErrors != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(err)
+		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
 	}
 
 	err = this.animalTypesService.Remove(params.Id)
 
 	if err != nil {
-		if shared.IsInstanceOf(&err, new(*ent.NotFoundError)) {
-			return ct.Status(fiber.StatusNotFound).JSON(err)
+		if ent.IsNotFound(err) {
+			return ct.Status(fiber.StatusNotFound).JSON(err.Error())
 		}
 
-		return ct.Status(fiber.StatusInternalServerError).JSON(err)
+		return ct.Status(fiber.StatusInternalServerError).JSON(err.Error())
 	}
 
 	return ct.Status(fiber.StatusOK).JSON("")

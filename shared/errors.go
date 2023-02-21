@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
 )
 
 type ErrorResponse struct {
@@ -14,16 +14,17 @@ type ErrorResponse struct {
 	Value       string
 }
 
-var validate = validator.New()
+var Validator = validator.New()
 
 func init() {
-	validate.RegisterValidation("notblank", NotBlank)
-	validate.RegisterValidation("iso-8601", ISO8601)
+	Validator.RegisterValidation("notblank", NotBlank)
+	Validator.RegisterValidation("iso-8601", ISO8601)
+	Validator.RegisterValidation("any-number", AnyNumber)
 }
 
 func ValidateStruct[T interface{}](obj *T) []*ErrorResponse {
 	var errors []*ErrorResponse
-	err := validate.Struct(obj)
+	err := Validator.Struct(obj)
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
 			var element ErrorResponse
@@ -62,4 +63,25 @@ func ISO8601(fl validator.FieldLevel) bool {
 	}
 
 	return false
+}
+
+func AnyNumber(fl validator.FieldLevel) bool {
+	field := fl.Field()
+	switch field.Kind() {
+	case reflect.Float32,
+		reflect.Float64,
+		reflect.Uint,
+		reflect.Uint32,
+		reflect.Uint8,
+		reflect.Uint16,
+		reflect.Uint64,
+		reflect.Int,
+		reflect.Int8,
+		reflect.Int16,
+		reflect.Int32,
+		reflect.Int64:
+		return true
+	default:
+		return false
+	}
 }

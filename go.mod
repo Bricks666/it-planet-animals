@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	entgo.io/ent v0.11.8
-	github.com/go-playground/validator v9.31.0+incompatible
+	github.com/go-playground/validator/v10 v10.11.2
 	github.com/gofiber/fiber/v2 v2.42.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.7
@@ -41,5 +41,4 @@ require (
 	golang.org/x/mod v0.8.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
-	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )

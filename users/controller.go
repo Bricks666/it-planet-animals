@@ -131,7 +131,7 @@ func (this *UsersController) Update(ct *fiber.Ctx) error {
 	var user *SecurityUserDto
 	user, err = this.usersService.Update(params.Id, &dto)
 	if err != nil {
-		if shared.IsInstanceOf(&err, new(*ent.ConstraintError)) {
+		if ent.IsConstraintError(err) {
 			return ct.Status(fiber.StatusConflict).JSON("Email already exists")
 		}
 
