@@ -1,13 +1,26 @@
 package main
 
 import (
+	animaltypes "animals/animal-types"
 	"animals/animals"
-	"animals/animaltypes"
+	animalslocations "animals/animals-locations"
 	"animals/locations"
 	"animals/users"
 
 	"github.com/gofiber/fiber/v2"
 )
+
+func main() {
+	router := setupRouter()
+
+	router.Get("/ping", func(ct *fiber.Ctx) error {
+		ct.Status(200).SendString("pong!")
+
+		return nil
+	})
+
+	router.Listen(":5000")
+}
 
 func setupRouter() *fiber.App {
 	router := fiber.New()
@@ -49,17 +62,12 @@ func setupRouter() *fiber.App {
 	animalTypesRouter.Put("/:id", users.AuthMiddleware, animaltypes.Controller.Update)
 	animalTypesRouter.Delete("/:id", users.AuthMiddleware, animaltypes.Controller.Remove)
 
+	animalsLocationsRouter := animalsRouter.Group(":animalId/locations")
+
+	animalsLocationsRouter.Get("/", users.DisableAuthCheck, users.AuthMiddleware, animalslocations.Controller.GetAll)
+	animalsLocationsRouter.Post("/:typeId", users.AuthMiddleware, animalslocations.Controller.Update)
+	animalsLocationsRouter.Put("/", users.AuthMiddleware, animalslocations.Controller.Update)
+	animalsLocationsRouter.Delete("/:typeId", users.AuthMiddleware, animalslocations.Controller.Remove)
+
 	return router
-}
-
-func main() {
-	router := setupRouter()
-
-	router.Get("/ping", func(ct *fiber.Ctx) error {
-		ct.Status(200).SendString("pong!")
-
-		return nil
-	})
-
-	router.Listen(":5000")
 }

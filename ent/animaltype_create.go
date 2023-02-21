@@ -32,19 +32,19 @@ func (atc *AnimalTypeCreate) SetID(u uint64) *AnimalTypeCreate {
 	return atc
 }
 
-// AddAnimalTagsTypeIDs adds the "animal_tags_types" edge to the Animal entity by IDs.
-func (atc *AnimalTypeCreate) AddAnimalTagsTypeIDs(ids ...uint64) *AnimalTypeCreate {
-	atc.mutation.AddAnimalTagsTypeIDs(ids...)
+// AddAnimalTypeTypeIDs adds the "animal_type_type" edge to the Animal entity by IDs.
+func (atc *AnimalTypeCreate) AddAnimalTypeTypeIDs(ids ...uint64) *AnimalTypeCreate {
+	atc.mutation.AddAnimalTypeTypeIDs(ids...)
 	return atc
 }
 
-// AddAnimalTagsTypes adds the "animal_tags_types" edges to the Animal entity.
-func (atc *AnimalTypeCreate) AddAnimalTagsTypes(a ...*Animal) *AnimalTypeCreate {
+// AddAnimalTypeType adds the "animal_type_type" edges to the Animal entity.
+func (atc *AnimalTypeCreate) AddAnimalTypeType(a ...*Animal) *AnimalTypeCreate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return atc.AddAnimalTagsTypeIDs(ids...)
+	return atc.AddAnimalTypeTypeIDs(ids...)
 }
 
 // Mutation returns the AnimalTypeMutation object of the builder.
@@ -130,12 +130,12 @@ func (atc *AnimalTypeCreate) createSpec() (*AnimalType, *sqlgraph.CreateSpec) {
 		_spec.SetField(animaltype.FieldType, field.TypeString, value)
 		_node.Type = value
 	}
-	if nodes := atc.mutation.AnimalTagsTypesIDs(); len(nodes) > 0 {
+	if nodes := atc.mutation.AnimalTypeTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   animaltype.AnimalTagsTypesTable,
-			Columns: animaltype.AnimalTagsTypesPrimaryKey,
+			Table:   animaltype.AnimalTypeTypeTable,
+			Columns: animaltype.AnimalTypeTypePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

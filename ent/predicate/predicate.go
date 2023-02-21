@@ -12,6 +12,9 @@ type Animal func(*sql.Selector)
 // AnimalType is the predicate function for animaltype builders.
 type AnimalType func(*sql.Selector)
 
+// AnimalsLocations is the predicate function for animalslocations builders.
+type AnimalsLocations func(*sql.Selector)
+
 // Location is the predicate function for location builders.
 type Location func(*sql.Selector)
 

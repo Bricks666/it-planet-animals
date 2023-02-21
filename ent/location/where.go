@@ -144,24 +144,51 @@ func LongitudeLTE(v float64) predicate.Location {
 	return predicate.Location(sql.FieldLTE(FieldLongitude, v))
 }
 
-// HasVisitedLocationsLocation applies the HasEdge predicate on the "visited_locations_location" edge.
-func HasVisitedLocationsLocation() predicate.Location {
+// HasVisitedLocationsAnimals applies the HasEdge predicate on the "visited_locations_animals" edge.
+func HasVisitedLocationsAnimals() predicate.Location {
 	return predicate.Location(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, VisitedLocationsLocationTable, VisitedLocationsLocationPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, true, VisitedLocationsAnimalsTable, VisitedLocationsAnimalsPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasVisitedLocationsLocationWith applies the HasEdge predicate on the "visited_locations_location" edge with a given conditions (other predicates).
-func HasVisitedLocationsLocationWith(preds ...predicate.Animal) predicate.Location {
+// HasVisitedLocationsAnimalsWith applies the HasEdge predicate on the "visited_locations_animals" edge with a given conditions (other predicates).
+func HasVisitedLocationsAnimalsWith(preds ...predicate.Animal) predicate.Location {
 	return predicate.Location(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(VisitedLocationsLocationInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, VisitedLocationsLocationTable, VisitedLocationsLocationPrimaryKey...),
+			sqlgraph.To(VisitedLocationsAnimalsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, VisitedLocationsAnimalsTable, VisitedLocationsAnimalsPrimaryKey...),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasLocations applies the HasEdge predicate on the "locations" edge.
+func HasLocations() predicate.Location {
+	return predicate.Location(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, LocationsTable, LocationsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasLocationsWith applies the HasEdge predicate on the "locations" edge with a given conditions (other predicates).
+func HasLocationsWith(preds ...predicate.AnimalsLocations) predicate.Location {
+	return predicate.Location(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(LocationsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, LocationsTable, LocationsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

@@ -1,6 +1,7 @@
 package animals
 
 import (
+	"animals/shared"
 	"time"
 )
 
@@ -8,7 +9,7 @@ type AnimalParamsDto struct {
 	Id uint64 `param:"id" validate:"required,gt=0"`
 }
 
-type AnimalResponseDto struct {
+type AnimalDto struct {
 	ID                 uint64     `json:"id"`
 	AnimalTypes        []uint64   `json:"animalTypes"`
 	Weight             float32    `json:"weight"`
@@ -24,14 +25,12 @@ type AnimalResponseDto struct {
 }
 
 type AnimalsSearchQueryDto struct {
-	AfterChippingDate  time.Time `query:"startdatetime" validate:"omitempty,iso-8601"`
-	BeforeChippingDate time.Time `query:"enddatetime" validate:"omitempty,iso-8601"`
-	ChipperId          uint32    `query:"chipperid" validate:"omitempty,number,gt=0"`
-	ChippingLocationId uint64    `query:"chippinglocationid" validate:"omitempty,number,gt=0"`
-	LifeStatus         string    `query:"lifestatus" validate:"omitempty,oneof=alive dead"`
-	Gender             string    `query:"gender" validate:"omitempty,oneof=male female other"`
-	From               uint32    `query:"from" validate:"number,gte=0"`
-	Size               uint32    `query:"size" validate:"number,gt=0"`
+	shared.PaginationDto
+	shared.TimeSearchQueryDto
+	ChipperId          uint32 `query:"chipperid" validate:"omitempty,number,gt=0"`
+	ChippingLocationId uint64 `query:"chippinglocationid" validate:"omitempty,number,gt=0"`
+	LifeStatus         string `query:"lifestatus" validate:"omitempty,oneof=alive dead"`
+	Gender             string `query:"gender" validate:"omitempty,oneof=male female other"`
 }
 
 type CreateAnimalDto struct {

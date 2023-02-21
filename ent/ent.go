@@ -4,6 +4,7 @@ package ent
 
 import (
 	"animals/ent/animal"
+	"animals/ent/animalslocations"
 	"animals/ent/animaltype"
 	"animals/ent/location"
 	"animals/ent/user"
@@ -42,10 +43,11 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		animal.Table:     animal.ValidColumn,
-		animaltype.Table: animaltype.ValidColumn,
-		location.Table:   location.ValidColumn,
-		user.Table:       user.ValidColumn,
+		animal.Table:           animal.ValidColumn,
+		animaltype.Table:       animaltype.ValidColumn,
+		animalslocations.Table: animalslocations.ValidColumn,
+		location.Table:         location.ValidColumn,
+		user.Table:             user.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

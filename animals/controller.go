@@ -38,7 +38,7 @@ func (this *AnimalsController) GetAll(ct *fiber.Ctx) error {
 		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
 	}
 
-	var animals []*AnimalResponseDto
+	var animals []*AnimalDto
 	animals, err = this.animalsService.GetAll(&query)
 
 	if err != nil {
@@ -63,7 +63,7 @@ func (this *AnimalsController) GetOne(ct *fiber.Ctx) error {
 		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
 	}
 
-	var animal *AnimalResponseDto
+	var animal *AnimalDto
 	animal, err = this.animalsService.GetOne(params.Id)
 
 	if err != nil {

@@ -124,24 +124,24 @@ func TypeContainsFold(v string) predicate.AnimalType {
 	return predicate.AnimalType(sql.FieldContainsFold(FieldType, v))
 }
 
-// HasAnimalTagsTypes applies the HasEdge predicate on the "animal_tags_types" edge.
-func HasAnimalTagsTypes() predicate.AnimalType {
+// HasAnimalTypeType applies the HasEdge predicate on the "animal_type_type" edge.
+func HasAnimalTypeType() predicate.AnimalType {
 	return predicate.AnimalType(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, AnimalTagsTypesTable, AnimalTagsTypesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, true, AnimalTypeTypeTable, AnimalTypeTypePrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasAnimalTagsTypesWith applies the HasEdge predicate on the "animal_tags_types" edge with a given conditions (other predicates).
-func HasAnimalTagsTypesWith(preds ...predicate.Animal) predicate.AnimalType {
+// HasAnimalTypeTypeWith applies the HasEdge predicate on the "animal_type_type" edge with a given conditions (other predicates).
+func HasAnimalTypeTypeWith(preds ...predicate.Animal) predicate.AnimalType {
 	return predicate.AnimalType(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AnimalTagsTypesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, AnimalTagsTypesTable, AnimalTagsTypesPrimaryKey...),
+			sqlgraph.To(AnimalTypeTypeInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, AnimalTypeTypeTable, AnimalTypeTypePrimaryKey...),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

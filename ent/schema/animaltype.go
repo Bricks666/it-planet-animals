@@ -22,7 +22,7 @@ func (AnimalType) Fields() []ent.Field {
 // Edges of the AnimalType.
 func (AnimalType) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("animal_tags_types", Animal.Type).
-			Ref("animal_tags_animals"),
+		edge.From("animal_type_type", Animal.Type).
+			Ref("animal_type_animal"),
 	}
 }

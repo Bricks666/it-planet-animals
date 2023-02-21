@@ -30,28 +30,30 @@ const (
 	FieldChippingLocationId = "chipping_location_id"
 	// FieldDeathDateTime holds the string denoting the deathdatetime field in the database.
 	FieldDeathDateTime = "death_date_time"
-	// EdgeUserAnimals holds the string denoting the user_animals edge name in mutations.
-	EdgeUserAnimals = "user_animals"
-	// EdgeAnimalTagsAnimals holds the string denoting the animal_tags_animals edge name in mutations.
-	EdgeAnimalTagsAnimals = "animal_tags_animals"
+	// EdgeChipperAnimal holds the string denoting the chipper_animal edge name in mutations.
+	EdgeChipperAnimal = "chipper_animal"
+	// EdgeAnimalTypeAnimal holds the string denoting the animal_type_animal edge name in mutations.
+	EdgeAnimalTypeAnimal = "animal_type_animal"
 	// EdgeChippingLocation holds the string denoting the chipping_location edge name in mutations.
 	EdgeChippingLocation = "chipping_location"
-	// EdgeVisitedLocationsAnimals holds the string denoting the visited_locations_animals edge name in mutations.
-	EdgeVisitedLocationsAnimals = "visited_locations_animals"
+	// EdgeVisitedLocations holds the string denoting the visited_locations edge name in mutations.
+	EdgeVisitedLocations = "visited_locations"
+	// EdgeAnimals holds the string denoting the animals edge name in mutations.
+	EdgeAnimals = "animals"
 	// Table holds the table name of the animal in the database.
 	Table = "animals"
-	// UserAnimalsTable is the table that holds the user_animals relation/edge.
-	UserAnimalsTable = "animals"
-	// UserAnimalsInverseTable is the table name for the User entity.
+	// ChipperAnimalTable is the table that holds the chipper_animal relation/edge.
+	ChipperAnimalTable = "animals"
+	// ChipperAnimalInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
-	UserAnimalsInverseTable = "users"
-	// UserAnimalsColumn is the table column denoting the user_animals relation/edge.
-	UserAnimalsColumn = "chipper_id"
-	// AnimalTagsAnimalsTable is the table that holds the animal_tags_animals relation/edge. The primary key declared below.
-	AnimalTagsAnimalsTable = "animal_animal_tags_animals"
-	// AnimalTagsAnimalsInverseTable is the table name for the AnimalType entity.
+	ChipperAnimalInverseTable = "users"
+	// ChipperAnimalColumn is the table column denoting the chipper_animal relation/edge.
+	ChipperAnimalColumn = "chipper_id"
+	// AnimalTypeAnimalTable is the table that holds the animal_type_animal relation/edge. The primary key declared below.
+	AnimalTypeAnimalTable = "animal_animal_type_animal"
+	// AnimalTypeAnimalInverseTable is the table name for the AnimalType entity.
 	// It exists in this package in order to avoid circular dependency with the "animaltype" package.
-	AnimalTagsAnimalsInverseTable = "animal_types"
+	AnimalTypeAnimalInverseTable = "animal_types"
 	// ChippingLocationTable is the table that holds the chipping_location relation/edge.
 	ChippingLocationTable = "animals"
 	// ChippingLocationInverseTable is the table name for the Location entity.
@@ -59,11 +61,18 @@ const (
 	ChippingLocationInverseTable = "locations"
 	// ChippingLocationColumn is the table column denoting the chipping_location relation/edge.
 	ChippingLocationColumn = "chipping_location_id"
-	// VisitedLocationsAnimalsTable is the table that holds the visited_locations_animals relation/edge. The primary key declared below.
-	VisitedLocationsAnimalsTable = "animal_visited_locations_animals"
-	// VisitedLocationsAnimalsInverseTable is the table name for the Location entity.
+	// VisitedLocationsTable is the table that holds the visited_locations relation/edge. The primary key declared below.
+	VisitedLocationsTable = "animals_locations"
+	// VisitedLocationsInverseTable is the table name for the Location entity.
 	// It exists in this package in order to avoid circular dependency with the "location" package.
-	VisitedLocationsAnimalsInverseTable = "locations"
+	VisitedLocationsInverseTable = "locations"
+	// AnimalsTable is the table that holds the animals relation/edge.
+	AnimalsTable = "animals_locations"
+	// AnimalsInverseTable is the table name for the AnimalsLocations entity.
+	// It exists in this package in order to avoid circular dependency with the "animalslocations" package.
+	AnimalsInverseTable = "animals_locations"
+	// AnimalsColumn is the table column denoting the animals relation/edge.
+	AnimalsColumn = "animal_id"
 )
 
 // Columns holds all SQL columns for animal fields.
@@ -81,12 +90,12 @@ var Columns = []string{
 }
 
 var (
-	// AnimalTagsAnimalsPrimaryKey and AnimalTagsAnimalsColumn2 are the table columns denoting the
-	// primary key for the animal_tags_animals relation (M2M).
-	AnimalTagsAnimalsPrimaryKey = []string{"animal_id", "animal_type_id"}
-	// VisitedLocationsAnimalsPrimaryKey and VisitedLocationsAnimalsColumn2 are the table columns denoting the
-	// primary key for the visited_locations_animals relation (M2M).
-	VisitedLocationsAnimalsPrimaryKey = []string{"animal_id", "location_id"}
+	// AnimalTypeAnimalPrimaryKey and AnimalTypeAnimalColumn2 are the table columns denoting the
+	// primary key for the animal_type_animal relation (M2M).
+	AnimalTypeAnimalPrimaryKey = []string{"animal_id", "animal_type_id"}
+	// VisitedLocationsPrimaryKey and VisitedLocationsColumn2 are the table columns denoting the
+	// primary key for the visited_locations relation (M2M).
+	VisitedLocationsPrimaryKey = []string{"animalId", "locationId"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).

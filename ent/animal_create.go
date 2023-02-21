@@ -4,6 +4,7 @@ package ent
 
 import (
 	"animals/ent/animal"
+	"animals/ent/animalslocations"
 	"animals/ent/animaltype"
 	"animals/ent/location"
 	"animals/ent/user"
@@ -123,38 +124,38 @@ func (ac *AnimalCreate) SetID(u uint64) *AnimalCreate {
 	return ac
 }
 
-// SetUserAnimalsID sets the "user_animals" edge to the User entity by ID.
-func (ac *AnimalCreate) SetUserAnimalsID(id uint32) *AnimalCreate {
-	ac.mutation.SetUserAnimalsID(id)
+// SetChipperAnimalID sets the "chipper_animal" edge to the User entity by ID.
+func (ac *AnimalCreate) SetChipperAnimalID(id uint32) *AnimalCreate {
+	ac.mutation.SetChipperAnimalID(id)
 	return ac
 }
 
-// SetNillableUserAnimalsID sets the "user_animals" edge to the User entity by ID if the given value is not nil.
-func (ac *AnimalCreate) SetNillableUserAnimalsID(id *uint32) *AnimalCreate {
+// SetNillableChipperAnimalID sets the "chipper_animal" edge to the User entity by ID if the given value is not nil.
+func (ac *AnimalCreate) SetNillableChipperAnimalID(id *uint32) *AnimalCreate {
 	if id != nil {
-		ac = ac.SetUserAnimalsID(*id)
+		ac = ac.SetChipperAnimalID(*id)
 	}
 	return ac
 }
 
-// SetUserAnimals sets the "user_animals" edge to the User entity.
-func (ac *AnimalCreate) SetUserAnimals(u *User) *AnimalCreate {
-	return ac.SetUserAnimalsID(u.ID)
+// SetChipperAnimal sets the "chipper_animal" edge to the User entity.
+func (ac *AnimalCreate) SetChipperAnimal(u *User) *AnimalCreate {
+	return ac.SetChipperAnimalID(u.ID)
 }
 
-// AddAnimalTagsAnimalIDs adds the "animal_tags_animals" edge to the AnimalType entity by IDs.
-func (ac *AnimalCreate) AddAnimalTagsAnimalIDs(ids ...uint64) *AnimalCreate {
-	ac.mutation.AddAnimalTagsAnimalIDs(ids...)
+// AddAnimalTypeAnimalIDs adds the "animal_type_animal" edge to the AnimalType entity by IDs.
+func (ac *AnimalCreate) AddAnimalTypeAnimalIDs(ids ...uint64) *AnimalCreate {
+	ac.mutation.AddAnimalTypeAnimalIDs(ids...)
 	return ac
 }
 
-// AddAnimalTagsAnimals adds the "animal_tags_animals" edges to the AnimalType entity.
-func (ac *AnimalCreate) AddAnimalTagsAnimals(a ...*AnimalType) *AnimalCreate {
+// AddAnimalTypeAnimal adds the "animal_type_animal" edges to the AnimalType entity.
+func (ac *AnimalCreate) AddAnimalTypeAnimal(a ...*AnimalType) *AnimalCreate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return ac.AddAnimalTagsAnimalIDs(ids...)
+	return ac.AddAnimalTypeAnimalIDs(ids...)
 }
 
 // SetChippingLocationID sets the "chipping_location" edge to the Location entity by ID.
@@ -176,19 +177,34 @@ func (ac *AnimalCreate) SetChippingLocation(l *Location) *AnimalCreate {
 	return ac.SetChippingLocationID(l.ID)
 }
 
-// AddVisitedLocationsAnimalIDs adds the "visited_locations_animals" edge to the Location entity by IDs.
-func (ac *AnimalCreate) AddVisitedLocationsAnimalIDs(ids ...uint64) *AnimalCreate {
-	ac.mutation.AddVisitedLocationsAnimalIDs(ids...)
+// AddVisitedLocationIDs adds the "visited_locations" edge to the Location entity by IDs.
+func (ac *AnimalCreate) AddVisitedLocationIDs(ids ...uint64) *AnimalCreate {
+	ac.mutation.AddVisitedLocationIDs(ids...)
 	return ac
 }
 
-// AddVisitedLocationsAnimals adds the "visited_locations_animals" edges to the Location entity.
-func (ac *AnimalCreate) AddVisitedLocationsAnimals(l ...*Location) *AnimalCreate {
+// AddVisitedLocations adds the "visited_locations" edges to the Location entity.
+func (ac *AnimalCreate) AddVisitedLocations(l ...*Location) *AnimalCreate {
 	ids := make([]uint64, len(l))
 	for i := range l {
 		ids[i] = l[i].ID
 	}
-	return ac.AddVisitedLocationsAnimalIDs(ids...)
+	return ac.AddVisitedLocationIDs(ids...)
+}
+
+// AddAnimalIDs adds the "animals" edge to the AnimalsLocations entity by IDs.
+func (ac *AnimalCreate) AddAnimalIDs(ids ...uint64) *AnimalCreate {
+	ac.mutation.AddAnimalIDs(ids...)
+	return ac
+}
+
+// AddAnimals adds the "animals" edges to the AnimalsLocations entity.
+func (ac *AnimalCreate) AddAnimals(a ...*AnimalsLocations) *AnimalCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ac.AddAnimalIDs(ids...)
 }
 
 // Mutation returns the AnimalMutation object of the builder.
@@ -346,12 +362,12 @@ func (ac *AnimalCreate) createSpec() (*Animal, *sqlgraph.CreateSpec) {
 		_spec.SetField(animal.FieldDeathDateTime, field.TypeTime, value)
 		_node.DeathDateTime = &value
 	}
-	if nodes := ac.mutation.UserAnimalsIDs(); len(nodes) > 0 {
+	if nodes := ac.mutation.ChipperAnimalIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   animal.UserAnimalsTable,
-			Columns: []string{animal.UserAnimalsColumn},
+			Table:   animal.ChipperAnimalTable,
+			Columns: []string{animal.ChipperAnimalColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -366,12 +382,12 @@ func (ac *AnimalCreate) createSpec() (*Animal, *sqlgraph.CreateSpec) {
 		_node.ChipperId = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.AnimalTagsAnimalsIDs(); len(nodes) > 0 {
+	if nodes := ac.mutation.AnimalTypeAnimalIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   animal.AnimalTagsAnimalsTable,
-			Columns: animal.AnimalTagsAnimalsPrimaryKey,
+			Table:   animal.AnimalTypeAnimalTable,
+			Columns: animal.AnimalTypeAnimalPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -405,17 +421,40 @@ func (ac *AnimalCreate) createSpec() (*Animal, *sqlgraph.CreateSpec) {
 		_node.ChippingLocationId = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.VisitedLocationsAnimalsIDs(); len(nodes) > 0 {
+	if nodes := ac.mutation.VisitedLocationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   animal.VisitedLocationsAnimalsTable,
-			Columns: animal.VisitedLocationsAnimalsPrimaryKey,
+			Table:   animal.VisitedLocationsTable,
+			Columns: animal.VisitedLocationsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: location.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &AnimalsLocationsCreate{config: ac.config, mutation: newAnimalsLocationsMutation(ac.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.AnimalsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   animal.AnimalsTable,
+			Columns: []string{animal.AnimalsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animalslocations.FieldID,
 				},
 			},
 		}

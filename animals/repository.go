@@ -36,12 +36,12 @@ func (this *AnimalsRepository) GetAll(dto *AnimalsSearchQueryDto) ([]*ent.Animal
 	}
 	var conditions []predicate.Animal
 
-	if !dto.AfterChippingDate.IsZero() {
-		conditions = append(conditions, animal.ChippingDateTimeGTE(dto.AfterChippingDate))
+	if !dto.AfterDateTime.IsZero() {
+		conditions = append(conditions, animal.ChippingDateTimeGTE(dto.AfterDateTime))
 	}
 
-	if !dto.BeforeChippingDate.IsZero() {
-		conditions = append(conditions, animal.ChippingDateTimeGTE(dto.BeforeChippingDate))
+	if !dto.BeforeDateTime.IsZero() {
+		conditions = append(conditions, animal.ChippingDateTimeLTE(dto.BeforeDateTime))
 	}
 
 	if len(conditions) != 0 {
@@ -49,7 +49,7 @@ func (this *AnimalsRepository) GetAll(dto *AnimalsSearchQueryDto) ([]*ent.Animal
 	}
 
 	return query.
-		WithAnimalTagsAnimals(func(query *ent.AnimalTypeQuery) {
+		WithAnimalTypeAnimal(func(query *ent.AnimalTypeQuery) {
 			query.OnlyID(this.db.Context)
 		}).
 		Offset(int(dto.From)).

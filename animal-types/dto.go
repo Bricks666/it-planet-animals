@@ -1,5 +1,10 @@
 package animaltypes
 
+type AnimalTypeDto struct {
+	Id         uint64 `json:"id"`
+	AnimalType string `json:"type"`
+}
+
 type CreateAnimaTypeDto struct {
 	AnimalType string `json:"type" validate:"required,notblank,min=1"`
 }

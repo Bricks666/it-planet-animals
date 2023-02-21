@@ -24,20 +24,20 @@ type AnimalType struct {
 
 // AnimalTypeEdges holds the relations/edges for other nodes in the graph.
 type AnimalTypeEdges struct {
-	// AnimalTagsTypes holds the value of the animal_tags_types edge.
-	AnimalTagsTypes []*Animal `json:"animal_tags_types,omitempty"`
+	// AnimalTypeType holds the value of the animal_type_type edge.
+	AnimalTypeType []*Animal `json:"animal_type_type,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// AnimalTagsTypesOrErr returns the AnimalTagsTypes value or an error if the edge
+// AnimalTypeTypeOrErr returns the AnimalTypeType value or an error if the edge
 // was not loaded in eager-loading.
-func (e AnimalTypeEdges) AnimalTagsTypesOrErr() ([]*Animal, error) {
+func (e AnimalTypeEdges) AnimalTypeTypeOrErr() ([]*Animal, error) {
 	if e.loadedTypes[0] {
-		return e.AnimalTagsTypes, nil
+		return e.AnimalTypeType, nil
 	}
-	return nil, &NotLoadedError{edge: "animal_tags_types"}
+	return nil, &NotLoadedError{edge: "animal_type_type"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -81,9 +81,9 @@ func (at *AnimalType) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// QueryAnimalTagsTypes queries the "animal_tags_types" edge of the AnimalType entity.
-func (at *AnimalType) QueryAnimalTagsTypes() *AnimalQuery {
-	return NewAnimalTypeClient(at.config).QueryAnimalTagsTypes(at)
+// QueryAnimalTypeType queries the "animal_type_type" edge of the AnimalType entity.
+func (at *AnimalType) QueryAnimalTypeType() *AnimalQuery {
+	return NewAnimalTypeClient(at.config).QueryAnimalTypeType(at)
 }
 
 // Update returns a builder for updating this AnimalType.

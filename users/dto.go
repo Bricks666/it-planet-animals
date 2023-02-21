@@ -1,5 +1,7 @@
 package users
 
+import "animals/shared"
+
 type CreateUserDto struct {
 	FirstName string `json:"firstname" validate:"required,notblank,min=1"`
 	LastName  string `json:"lastname" validate:"required,notblank,min=1"`
@@ -26,9 +28,8 @@ type UserParamsDto struct {
 }
 
 type UsersSearchQueryDto struct {
+	shared.PaginationDto
 	FirstName string `query:"firstname" validate:"omitempty,notblank"`
 	LastName  string `query:"lastname" validate:"omitempty,notblank"`
 	Email     string `query:"email" validate:"omitempty,notblank"`
-	From      uint32 `query:"from" validate:"number,min=0"`
-	Size      uint32 `query:"size" validate:"number,gt=0"`
 }

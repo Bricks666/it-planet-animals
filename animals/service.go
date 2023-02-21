@@ -16,14 +16,14 @@ func init() {
 	}
 }
 
-func (this *AnimalsService) GetAll(dto *AnimalsSearchQueryDto) ([]*AnimalResponseDto, error) {
+func (this *AnimalsService) GetAll(dto *AnimalsSearchQueryDto) ([]*AnimalDto, error) {
 	animals, err := this.animalsRepository.GetAll(dto)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var animalsResponse = []*AnimalResponseDto{}
+	var animalsResponse = []*AnimalDto{}
 
 	for _, animal := range animals {
 		animalsResponse = append(animalsResponse, prepareAnimal(animal))
@@ -33,7 +33,7 @@ func (this *AnimalsService) GetAll(dto *AnimalsSearchQueryDto) ([]*AnimalRespons
 
 }
 
-func (this *AnimalsService) GetOne(id uint64) (*AnimalResponseDto, error) {
+func (this *AnimalsService) GetOne(id uint64) (*AnimalDto, error) {
 	animal, err := this.animalsRepository.GetOne(id)
 
 	if err != nil {
@@ -61,19 +61,19 @@ func (this *AnimalsService) RemoveType() (*ent.Animal, error) {
 	return nil, nil
 }
 
-func prepareAnimal(animal *ent.Animal) *AnimalResponseDto {
+func prepareAnimal(animal *ent.Animal) *AnimalDto {
 	var typeIds = []uint64{}
 	var locationIds = []uint64{}
 
-	for _, t := range animal.Edges.AnimalTagsAnimals {
+	for _, t := range animal.Edges.AnimalTypeAnimal {
 		typeIds = append(typeIds, t.ID)
 	}
 
-	for _, l := range animal.Edges.VisitedLocationsAnimals {
+	for _, l := range animal.Edges.VisitedLocations {
 		locationIds = append(locationIds, l.ID)
 	}
 
-	return &AnimalResponseDto{
+	return &AnimalDto{
 		ID:                 animal.ID,
 		AnimalTypes:        typeIds,
 		Weight:             animal.Weight,

@@ -26,20 +26,31 @@ type Location struct {
 
 // LocationEdges holds the relations/edges for other nodes in the graph.
 type LocationEdges struct {
-	// VisitedLocationsLocation holds the value of the visited_locations_location edge.
-	VisitedLocationsLocation []*Animal `json:"visited_locations_location,omitempty"`
+	// VisitedLocationsAnimals holds the value of the visited_locations_animals edge.
+	VisitedLocationsAnimals []*Animal `json:"visited_locations_animals,omitempty"`
+	// Locations holds the value of the locations edge.
+	Locations []*AnimalsLocations `json:"locations,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
-// VisitedLocationsLocationOrErr returns the VisitedLocationsLocation value or an error if the edge
+// VisitedLocationsAnimalsOrErr returns the VisitedLocationsAnimals value or an error if the edge
 // was not loaded in eager-loading.
-func (e LocationEdges) VisitedLocationsLocationOrErr() ([]*Animal, error) {
+func (e LocationEdges) VisitedLocationsAnimalsOrErr() ([]*Animal, error) {
 	if e.loadedTypes[0] {
-		return e.VisitedLocationsLocation, nil
+		return e.VisitedLocationsAnimals, nil
 	}
-	return nil, &NotLoadedError{edge: "visited_locations_location"}
+	return nil, &NotLoadedError{edge: "visited_locations_animals"}
+}
+
+// LocationsOrErr returns the Locations value or an error if the edge
+// was not loaded in eager-loading.
+func (e LocationEdges) LocationsOrErr() ([]*AnimalsLocations, error) {
+	if e.loadedTypes[1] {
+		return e.Locations, nil
+	}
+	return nil, &NotLoadedError{edge: "locations"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -89,9 +100,14 @@ func (l *Location) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// QueryVisitedLocationsLocation queries the "visited_locations_location" edge of the Location entity.
-func (l *Location) QueryVisitedLocationsLocation() *AnimalQuery {
-	return NewLocationClient(l.config).QueryVisitedLocationsLocation(l)
+// QueryVisitedLocationsAnimals queries the "visited_locations_animals" edge of the Location entity.
+func (l *Location) QueryVisitedLocationsAnimals() *AnimalQuery {
+	return NewLocationClient(l.config).QueryVisitedLocationsAnimals(l)
+}
+
+// QueryLocations queries the "locations" edge of the Location entity.
+func (l *Location) QueryLocations() *AnimalsLocationsQuery {
+	return NewLocationClient(l.config).QueryLocations(l)
 }
 
 // Update returns a builder for updating this Location.

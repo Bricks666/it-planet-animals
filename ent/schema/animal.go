@@ -32,9 +32,14 @@ func (Animal) Fields() []ent.Field {
 // Edges of the Animal.
 func (Animal) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("user_animals", User.Type).Field("chipperId").Unique(),
-		edge.To("animal_tags_animals", AnimalType.Type),
-		edge.To("chipping_location", Location.Type).Field("chippingLocationId").Unique(),
-		edge.To("visited_locations_animals", Location.Type),
+		edge.To("chipper_animal", User.Type).
+			Field("chipperId").
+			Unique(),
+		edge.To("animal_type_animal", AnimalType.Type),
+		edge.To("chipping_location", Location.Type).
+			Field("chippingLocationId").
+			Unique(),
+		edge.To("visited_locations", Location.Type).
+			Through("animals", AnimalsLocations.Type),
 	}
 }

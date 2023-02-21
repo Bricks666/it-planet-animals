@@ -32,6 +32,18 @@ func (f AnimalTypeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AnimalTypeMutation", m)
 }
 
+// The AnimalsLocationsFunc type is an adapter to allow the use of ordinary
+// function as AnimalsLocations mutator.
+type AnimalsLocationsFunc func(context.Context, *ent.AnimalsLocationsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AnimalsLocationsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AnimalsLocationsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AnimalsLocationsMutation", m)
+}
+
 // The LocationFunc type is an adapter to allow the use of ordinary
 // function as Location mutator.
 type LocationFunc func(context.Context, *ent.LocationMutation) (ent.Value, error)

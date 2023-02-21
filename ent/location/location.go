@@ -11,15 +11,24 @@ const (
 	FieldLatitude = "latitude"
 	// FieldLongitude holds the string denoting the longitude field in the database.
 	FieldLongitude = "longitude"
-	// EdgeVisitedLocationsLocation holds the string denoting the visited_locations_location edge name in mutations.
-	EdgeVisitedLocationsLocation = "visited_locations_location"
+	// EdgeVisitedLocationsAnimals holds the string denoting the visited_locations_animals edge name in mutations.
+	EdgeVisitedLocationsAnimals = "visited_locations_animals"
+	// EdgeLocations holds the string denoting the locations edge name in mutations.
+	EdgeLocations = "locations"
 	// Table holds the table name of the location in the database.
 	Table = "locations"
-	// VisitedLocationsLocationTable is the table that holds the visited_locations_location relation/edge. The primary key declared below.
-	VisitedLocationsLocationTable = "animal_visited_locations_animals"
-	// VisitedLocationsLocationInverseTable is the table name for the Animal entity.
+	// VisitedLocationsAnimalsTable is the table that holds the visited_locations_animals relation/edge. The primary key declared below.
+	VisitedLocationsAnimalsTable = "animals_locations"
+	// VisitedLocationsAnimalsInverseTable is the table name for the Animal entity.
 	// It exists in this package in order to avoid circular dependency with the "animal" package.
-	VisitedLocationsLocationInverseTable = "animals"
+	VisitedLocationsAnimalsInverseTable = "animals"
+	// LocationsTable is the table that holds the locations relation/edge.
+	LocationsTable = "animals_locations"
+	// LocationsInverseTable is the table name for the AnimalsLocations entity.
+	// It exists in this package in order to avoid circular dependency with the "animalslocations" package.
+	LocationsInverseTable = "animals_locations"
+	// LocationsColumn is the table column denoting the locations relation/edge.
+	LocationsColumn = "location_id"
 )
 
 // Columns holds all SQL columns for location fields.
@@ -30,9 +39,9 @@ var Columns = []string{
 }
 
 var (
-	// VisitedLocationsLocationPrimaryKey and VisitedLocationsLocationColumn2 are the table columns denoting the
-	// primary key for the visited_locations_location relation (M2M).
-	VisitedLocationsLocationPrimaryKey = []string{"animal_id", "location_id"}
+	// VisitedLocationsAnimalsPrimaryKey and VisitedLocationsAnimalsColumn2 are the table columns denoting the
+	// primary key for the visited_locations_animals relation (M2M).
+	VisitedLocationsAnimalsPrimaryKey = []string{"animalId", "locationId"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).

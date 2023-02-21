@@ -9,15 +9,15 @@ const (
 	FieldID = "id"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
-	// EdgeAnimalTagsTypes holds the string denoting the animal_tags_types edge name in mutations.
-	EdgeAnimalTagsTypes = "animal_tags_types"
+	// EdgeAnimalTypeType holds the string denoting the animal_type_type edge name in mutations.
+	EdgeAnimalTypeType = "animal_type_type"
 	// Table holds the table name of the animaltype in the database.
 	Table = "animal_types"
-	// AnimalTagsTypesTable is the table that holds the animal_tags_types relation/edge. The primary key declared below.
-	AnimalTagsTypesTable = "animal_animal_tags_animals"
-	// AnimalTagsTypesInverseTable is the table name for the Animal entity.
+	// AnimalTypeTypeTable is the table that holds the animal_type_type relation/edge. The primary key declared below.
+	AnimalTypeTypeTable = "animal_animal_type_animal"
+	// AnimalTypeTypeInverseTable is the table name for the Animal entity.
 	// It exists in this package in order to avoid circular dependency with the "animal" package.
-	AnimalTagsTypesInverseTable = "animals"
+	AnimalTypeTypeInverseTable = "animals"
 )
 
 // Columns holds all SQL columns for animaltype fields.
@@ -27,9 +27,9 @@ var Columns = []string{
 }
 
 var (
-	// AnimalTagsTypesPrimaryKey and AnimalTagsTypesColumn2 are the table columns denoting the
-	// primary key for the animal_tags_types relation (M2M).
-	AnimalTagsTypesPrimaryKey = []string{"animal_id", "animal_type_id"}
+	// AnimalTypeTypePrimaryKey and AnimalTypeTypeColumn2 are the table columns denoting the
+	// primary key for the animal_type_type relation (M2M).
+	AnimalTypeTypePrimaryKey = []string{"animal_id", "animal_type_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).

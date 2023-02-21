@@ -34,7 +34,7 @@ func (lc *LocationsController) GetOne(ct *fiber.Ctx) error {
 		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
 	}
 
-	var location *ent.Location
+	var location *LocationDto
 	location, err = lc.locationsService.GetOne(params.Id)
 	if err != nil {
 		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
@@ -57,7 +57,7 @@ func (lc *LocationsController) Create(ct *fiber.Ctx) error {
 		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
 	}
 
-	var location *ent.Location
+	var location *LocationDto
 	location, err = lc.locationsService.Create(&dto)
 	if err != nil {
 		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
@@ -92,7 +92,7 @@ func (lc *LocationsController) Update(ct *fiber.Ctx) error {
 		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
 	}
 
-	var location *ent.Location
+	var location *LocationDto
 	location, err = lc.locationsService.Update(params.Id, &dto)
 	if err != nil {
 		if shared.IsInstanceOf(&err, new(*ent.NotFoundError)) {

@@ -34,7 +34,7 @@ func (this *AnimalTypesController) GetOne(ct *fiber.Ctx) error {
 		return ct.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	var animalType *ent.AnimalType
+	var animalType *AnimalTypeDto
 	animalType, err = this.animalTypesService.GetOne(params.Id)
 	if err != nil {
 		if shared.IsInstanceOf(&err, new(*ent.NotFoundError)) {
@@ -63,7 +63,7 @@ func (this *AnimalTypesController) Create(ct *fiber.Ctx) error {
 		return ct.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	var animalType *ent.AnimalType
+	var animalType *AnimalTypeDto
 	animalType, err = this.animalTypesService.Create(&dto)
 	if err != nil {
 		if shared.IsInstanceOf(&err, new(*ent.ConstraintError)) {
@@ -102,7 +102,7 @@ func (this *AnimalTypesController) Update(ct *fiber.Ctx) error {
 		return ct.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	var animalType *ent.AnimalType
+	var animalType *AnimalTypeDto
 	animalType, err = this.animalTypesService.Update(params.Id, &dto)
 	if err != nil {
 		if shared.IsInstanceOf(&err, new(*ent.ConstraintError)) {

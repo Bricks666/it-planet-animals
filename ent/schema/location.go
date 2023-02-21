@@ -24,7 +24,9 @@ func (Location) Fields() []ent.Field {
 // Edges of the Location.
 func (Location) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("visited_locations_location", Animal.Type).Ref("visited_locations_animals"),
+		edge.From("visited_locations_animals", Animal.Type).
+			Ref("visited_locations").
+			Through("locations", AnimalsLocations.Type),
 	}
 }
 

@@ -28,7 +28,7 @@ var (
 		PrimaryKey: []*schema.Column{AnimalsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "animals_users_user_animals",
+				Symbol:     "animals_users_chipper_animal",
 				Columns:    []*schema.Column{AnimalsColumns[8]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -51,6 +51,40 @@ var (
 		Name:       "animal_types",
 		Columns:    AnimalTypesColumns,
 		PrimaryKey: []*schema.Column{AnimalTypesColumns[0]},
+	}
+	// AnimalsLocationsColumns holds the columns for the "animals_locations" table.
+	AnimalsLocationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "date_time_of_visit_location_point", Type: field.TypeTime},
+		{Name: "animal_id", Type: field.TypeUint64},
+		{Name: "location_id", Type: field.TypeUint64},
+	}
+	// AnimalsLocationsTable holds the schema information for the "animals_locations" table.
+	AnimalsLocationsTable = &schema.Table{
+		Name:       "animals_locations",
+		Columns:    AnimalsLocationsColumns,
+		PrimaryKey: []*schema.Column{AnimalsLocationsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "animals_locations_animals_animals_locations_animal",
+				Columns:    []*schema.Column{AnimalsLocationsColumns[2]},
+				RefColumns: []*schema.Column{AnimalsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "animals_locations_locations_animals_locations_location",
+				Columns:    []*schema.Column{AnimalsLocationsColumns[3]},
+				RefColumns: []*schema.Column{LocationsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "animalslocations_animal_id_location_id",
+				Unique:  false,
+				Columns: []*schema.Column{AnimalsLocationsColumns[2], AnimalsLocationsColumns[3]},
+			},
+		},
 	}
 	// LocationsColumns holds the columns for the "locations" table.
 	LocationsColumns = []*schema.Column{
@@ -85,52 +119,27 @@ var (
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
-	// AnimalAnimalTagsAnimalsColumns holds the columns for the "animal_animal_tags_animals" table.
-	AnimalAnimalTagsAnimalsColumns = []*schema.Column{
+	// AnimalAnimalTypeAnimalColumns holds the columns for the "animal_animal_type_animal" table.
+	AnimalAnimalTypeAnimalColumns = []*schema.Column{
 		{Name: "animal_id", Type: field.TypeUint64},
 		{Name: "animal_type_id", Type: field.TypeUint64},
 	}
-	// AnimalAnimalTagsAnimalsTable holds the schema information for the "animal_animal_tags_animals" table.
-	AnimalAnimalTagsAnimalsTable = &schema.Table{
-		Name:       "animal_animal_tags_animals",
-		Columns:    AnimalAnimalTagsAnimalsColumns,
-		PrimaryKey: []*schema.Column{AnimalAnimalTagsAnimalsColumns[0], AnimalAnimalTagsAnimalsColumns[1]},
+	// AnimalAnimalTypeAnimalTable holds the schema information for the "animal_animal_type_animal" table.
+	AnimalAnimalTypeAnimalTable = &schema.Table{
+		Name:       "animal_animal_type_animal",
+		Columns:    AnimalAnimalTypeAnimalColumns,
+		PrimaryKey: []*schema.Column{AnimalAnimalTypeAnimalColumns[0], AnimalAnimalTypeAnimalColumns[1]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "animal_animal_tags_animals_animal_id",
-				Columns:    []*schema.Column{AnimalAnimalTagsAnimalsColumns[0]},
+				Symbol:     "animal_animal_type_animal_animal_id",
+				Columns:    []*schema.Column{AnimalAnimalTypeAnimalColumns[0]},
 				RefColumns: []*schema.Column{AnimalsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
-				Symbol:     "animal_animal_tags_animals_animal_type_id",
-				Columns:    []*schema.Column{AnimalAnimalTagsAnimalsColumns[1]},
+				Symbol:     "animal_animal_type_animal_animal_type_id",
+				Columns:    []*schema.Column{AnimalAnimalTypeAnimalColumns[1]},
 				RefColumns: []*schema.Column{AnimalTypesColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-	}
-	// AnimalVisitedLocationsAnimalsColumns holds the columns for the "animal_visited_locations_animals" table.
-	AnimalVisitedLocationsAnimalsColumns = []*schema.Column{
-		{Name: "animal_id", Type: field.TypeUint64},
-		{Name: "location_id", Type: field.TypeUint64},
-	}
-	// AnimalVisitedLocationsAnimalsTable holds the schema information for the "animal_visited_locations_animals" table.
-	AnimalVisitedLocationsAnimalsTable = &schema.Table{
-		Name:       "animal_visited_locations_animals",
-		Columns:    AnimalVisitedLocationsAnimalsColumns,
-		PrimaryKey: []*schema.Column{AnimalVisitedLocationsAnimalsColumns[0], AnimalVisitedLocationsAnimalsColumns[1]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "animal_visited_locations_animals_animal_id",
-				Columns:    []*schema.Column{AnimalVisitedLocationsAnimalsColumns[0]},
-				RefColumns: []*schema.Column{AnimalsColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-			{
-				Symbol:     "animal_visited_locations_animals_location_id",
-				Columns:    []*schema.Column{AnimalVisitedLocationsAnimalsColumns[1]},
-				RefColumns: []*schema.Column{LocationsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -139,18 +148,18 @@ var (
 	Tables = []*schema.Table{
 		AnimalsTable,
 		AnimalTypesTable,
+		AnimalsLocationsTable,
 		LocationsTable,
 		UsersTable,
-		AnimalAnimalTagsAnimalsTable,
-		AnimalVisitedLocationsAnimalsTable,
+		AnimalAnimalTypeAnimalTable,
 	}
 )
 
 func init() {
 	AnimalsTable.ForeignKeys[0].RefTable = UsersTable
 	AnimalsTable.ForeignKeys[1].RefTable = LocationsTable
-	AnimalAnimalTagsAnimalsTable.ForeignKeys[0].RefTable = AnimalsTable
-	AnimalAnimalTagsAnimalsTable.ForeignKeys[1].RefTable = AnimalTypesTable
-	AnimalVisitedLocationsAnimalsTable.ForeignKeys[0].RefTable = AnimalsTable
-	AnimalVisitedLocationsAnimalsTable.ForeignKeys[1].RefTable = LocationsTable
+	AnimalsLocationsTable.ForeignKeys[0].RefTable = AnimalsTable
+	AnimalsLocationsTable.ForeignKeys[1].RefTable = LocationsTable
+	AnimalAnimalTypeAnimalTable.ForeignKeys[0].RefTable = AnimalsTable
+	AnimalAnimalTypeAnimalTable.ForeignKeys[1].RefTable = AnimalTypesTable
 }
