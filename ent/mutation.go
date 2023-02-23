@@ -48,9 +48,9 @@ type AnimalMutation struct {
 	height                    *float32
 	addheight                 *float32
 	gender                    *animal.Gender
-	lifestatus                *animal.Lifestatus
-	chippingDateTime          *time.Time
-	deathDateTime             *time.Time
+	life_status               *animal.LifeStatus
+	chipping_date_time        *time.Time
+	death_date_time           *time.Time
 	clearedFields             map[string]struct{}
 	chipper_animal            *uint32
 	clearedchipper_animal     bool
@@ -378,57 +378,57 @@ func (m *AnimalMutation) ResetGender() {
 	m.gender = nil
 }
 
-// SetLifestatus sets the "lifestatus" field.
-func (m *AnimalMutation) SetLifestatus(a animal.Lifestatus) {
-	m.lifestatus = &a
+// SetLifeStatus sets the "life_status" field.
+func (m *AnimalMutation) SetLifeStatus(as animal.LifeStatus) {
+	m.life_status = &as
 }
 
-// Lifestatus returns the value of the "lifestatus" field in the mutation.
-func (m *AnimalMutation) Lifestatus() (r animal.Lifestatus, exists bool) {
-	v := m.lifestatus
+// LifeStatus returns the value of the "life_status" field in the mutation.
+func (m *AnimalMutation) LifeStatus() (r animal.LifeStatus, exists bool) {
+	v := m.life_status
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldLifestatus returns the old "lifestatus" field's value of the Animal entity.
+// OldLifeStatus returns the old "life_status" field's value of the Animal entity.
 // If the Animal object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AnimalMutation) OldLifestatus(ctx context.Context) (v animal.Lifestatus, err error) {
+func (m *AnimalMutation) OldLifeStatus(ctx context.Context) (v animal.LifeStatus, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLifestatus is only allowed on UpdateOne operations")
+		return v, errors.New("OldLifeStatus is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLifestatus requires an ID field in the mutation")
+		return v, errors.New("OldLifeStatus requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLifestatus: %w", err)
+		return v, fmt.Errorf("querying old value for OldLifeStatus: %w", err)
 	}
-	return oldValue.Lifestatus, nil
+	return oldValue.LifeStatus, nil
 }
 
-// ResetLifestatus resets all changes to the "lifestatus" field.
-func (m *AnimalMutation) ResetLifestatus() {
-	m.lifestatus = nil
+// ResetLifeStatus resets all changes to the "life_status" field.
+func (m *AnimalMutation) ResetLifeStatus() {
+	m.life_status = nil
 }
 
-// SetChippingDateTime sets the "chippingDateTime" field.
+// SetChippingDateTime sets the "chipping_date_time" field.
 func (m *AnimalMutation) SetChippingDateTime(t time.Time) {
-	m.chippingDateTime = &t
+	m.chipping_date_time = &t
 }
 
-// ChippingDateTime returns the value of the "chippingDateTime" field in the mutation.
+// ChippingDateTime returns the value of the "chipping_date_time" field in the mutation.
 func (m *AnimalMutation) ChippingDateTime() (r time.Time, exists bool) {
-	v := m.chippingDateTime
+	v := m.chipping_date_time
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldChippingDateTime returns the old "chippingDateTime" field's value of the Animal entity.
+// OldChippingDateTime returns the old "chipping_date_time" field's value of the Animal entity.
 // If the Animal object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
 func (m *AnimalMutation) OldChippingDateTime(ctx context.Context) (v time.Time, err error) {
@@ -445,18 +445,18 @@ func (m *AnimalMutation) OldChippingDateTime(ctx context.Context) (v time.Time, 
 	return oldValue.ChippingDateTime, nil
 }
 
-// ResetChippingDateTime resets all changes to the "chippingDateTime" field.
+// ResetChippingDateTime resets all changes to the "chipping_date_time" field.
 func (m *AnimalMutation) ResetChippingDateTime() {
-	m.chippingDateTime = nil
+	m.chipping_date_time = nil
 }
 
-// SetChipperId sets the "chipperId" field.
-func (m *AnimalMutation) SetChipperId(u uint32) {
+// SetChipperID sets the "chipper_id" field.
+func (m *AnimalMutation) SetChipperID(u uint32) {
 	m.chipper_animal = &u
 }
 
-// ChipperId returns the value of the "chipperId" field in the mutation.
-func (m *AnimalMutation) ChipperId() (r uint32, exists bool) {
+// ChipperID returns the value of the "chipper_id" field in the mutation.
+func (m *AnimalMutation) ChipperID() (r uint32, exists bool) {
 	v := m.chipper_animal
 	if v == nil {
 		return
@@ -464,48 +464,48 @@ func (m *AnimalMutation) ChipperId() (r uint32, exists bool) {
 	return *v, true
 }
 
-// OldChipperId returns the old "chipperId" field's value of the Animal entity.
+// OldChipperID returns the old "chipper_id" field's value of the Animal entity.
 // If the Animal object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AnimalMutation) OldChipperId(ctx context.Context) (v uint32, err error) {
+func (m *AnimalMutation) OldChipperID(ctx context.Context) (v uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldChipperId is only allowed on UpdateOne operations")
+		return v, errors.New("OldChipperID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldChipperId requires an ID field in the mutation")
+		return v, errors.New("OldChipperID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldChipperId: %w", err)
+		return v, fmt.Errorf("querying old value for OldChipperID: %w", err)
 	}
-	return oldValue.ChipperId, nil
+	return oldValue.ChipperID, nil
 }
 
-// ClearChipperId clears the value of the "chipperId" field.
-func (m *AnimalMutation) ClearChipperId() {
+// ClearChipperID clears the value of the "chipper_id" field.
+func (m *AnimalMutation) ClearChipperID() {
 	m.chipper_animal = nil
-	m.clearedFields[animal.FieldChipperId] = struct{}{}
+	m.clearedFields[animal.FieldChipperID] = struct{}{}
 }
 
-// ChipperIdCleared returns if the "chipperId" field was cleared in this mutation.
-func (m *AnimalMutation) ChipperIdCleared() bool {
-	_, ok := m.clearedFields[animal.FieldChipperId]
+// ChipperIDCleared returns if the "chipper_id" field was cleared in this mutation.
+func (m *AnimalMutation) ChipperIDCleared() bool {
+	_, ok := m.clearedFields[animal.FieldChipperID]
 	return ok
 }
 
-// ResetChipperId resets all changes to the "chipperId" field.
-func (m *AnimalMutation) ResetChipperId() {
+// ResetChipperID resets all changes to the "chipper_id" field.
+func (m *AnimalMutation) ResetChipperID() {
 	m.chipper_animal = nil
-	delete(m.clearedFields, animal.FieldChipperId)
+	delete(m.clearedFields, animal.FieldChipperID)
 }
 
-// SetChippingLocationId sets the "chippingLocationId" field.
-func (m *AnimalMutation) SetChippingLocationId(u uint64) {
+// SetChippingLocationID sets the "chipping_location_id" field.
+func (m *AnimalMutation) SetChippingLocationID(u uint64) {
 	m.chipping_location = &u
 }
 
-// ChippingLocationId returns the value of the "chippingLocationId" field in the mutation.
-func (m *AnimalMutation) ChippingLocationId() (r uint64, exists bool) {
+// ChippingLocationID returns the value of the "chipping_location_id" field in the mutation.
+func (m *AnimalMutation) ChippingLocationID() (r uint64, exists bool) {
 	v := m.chipping_location
 	if v == nil {
 		return
@@ -513,56 +513,56 @@ func (m *AnimalMutation) ChippingLocationId() (r uint64, exists bool) {
 	return *v, true
 }
 
-// OldChippingLocationId returns the old "chippingLocationId" field's value of the Animal entity.
+// OldChippingLocationID returns the old "chipping_location_id" field's value of the Animal entity.
 // If the Animal object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AnimalMutation) OldChippingLocationId(ctx context.Context) (v uint64, err error) {
+func (m *AnimalMutation) OldChippingLocationID(ctx context.Context) (v uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldChippingLocationId is only allowed on UpdateOne operations")
+		return v, errors.New("OldChippingLocationID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldChippingLocationId requires an ID field in the mutation")
+		return v, errors.New("OldChippingLocationID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldChippingLocationId: %w", err)
+		return v, fmt.Errorf("querying old value for OldChippingLocationID: %w", err)
 	}
-	return oldValue.ChippingLocationId, nil
+	return oldValue.ChippingLocationID, nil
 }
 
-// ClearChippingLocationId clears the value of the "chippingLocationId" field.
-func (m *AnimalMutation) ClearChippingLocationId() {
+// ClearChippingLocationID clears the value of the "chipping_location_id" field.
+func (m *AnimalMutation) ClearChippingLocationID() {
 	m.chipping_location = nil
-	m.clearedFields[animal.FieldChippingLocationId] = struct{}{}
+	m.clearedFields[animal.FieldChippingLocationID] = struct{}{}
 }
 
-// ChippingLocationIdCleared returns if the "chippingLocationId" field was cleared in this mutation.
-func (m *AnimalMutation) ChippingLocationIdCleared() bool {
-	_, ok := m.clearedFields[animal.FieldChippingLocationId]
+// ChippingLocationIDCleared returns if the "chipping_location_id" field was cleared in this mutation.
+func (m *AnimalMutation) ChippingLocationIDCleared() bool {
+	_, ok := m.clearedFields[animal.FieldChippingLocationID]
 	return ok
 }
 
-// ResetChippingLocationId resets all changes to the "chippingLocationId" field.
-func (m *AnimalMutation) ResetChippingLocationId() {
+// ResetChippingLocationID resets all changes to the "chipping_location_id" field.
+func (m *AnimalMutation) ResetChippingLocationID() {
 	m.chipping_location = nil
-	delete(m.clearedFields, animal.FieldChippingLocationId)
+	delete(m.clearedFields, animal.FieldChippingLocationID)
 }
 
-// SetDeathDateTime sets the "deathDateTime" field.
+// SetDeathDateTime sets the "death_date_time" field.
 func (m *AnimalMutation) SetDeathDateTime(t time.Time) {
-	m.deathDateTime = &t
+	m.death_date_time = &t
 }
 
-// DeathDateTime returns the value of the "deathDateTime" field in the mutation.
+// DeathDateTime returns the value of the "death_date_time" field in the mutation.
 func (m *AnimalMutation) DeathDateTime() (r time.Time, exists bool) {
-	v := m.deathDateTime
+	v := m.death_date_time
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldDeathDateTime returns the old "deathDateTime" field's value of the Animal entity.
+// OldDeathDateTime returns the old "death_date_time" field's value of the Animal entity.
 // If the Animal object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
 func (m *AnimalMutation) OldDeathDateTime(ctx context.Context) (v *time.Time, err error) {
@@ -579,21 +579,21 @@ func (m *AnimalMutation) OldDeathDateTime(ctx context.Context) (v *time.Time, er
 	return oldValue.DeathDateTime, nil
 }
 
-// ClearDeathDateTime clears the value of the "deathDateTime" field.
+// ClearDeathDateTime clears the value of the "death_date_time" field.
 func (m *AnimalMutation) ClearDeathDateTime() {
-	m.deathDateTime = nil
+	m.death_date_time = nil
 	m.clearedFields[animal.FieldDeathDateTime] = struct{}{}
 }
 
-// DeathDateTimeCleared returns if the "deathDateTime" field was cleared in this mutation.
+// DeathDateTimeCleared returns if the "death_date_time" field was cleared in this mutation.
 func (m *AnimalMutation) DeathDateTimeCleared() bool {
 	_, ok := m.clearedFields[animal.FieldDeathDateTime]
 	return ok
 }
 
-// ResetDeathDateTime resets all changes to the "deathDateTime" field.
+// ResetDeathDateTime resets all changes to the "death_date_time" field.
 func (m *AnimalMutation) ResetDeathDateTime() {
-	m.deathDateTime = nil
+	m.death_date_time = nil
 	delete(m.clearedFields, animal.FieldDeathDateTime)
 }
 
@@ -609,7 +609,7 @@ func (m *AnimalMutation) ClearChipperAnimal() {
 
 // ChipperAnimalCleared reports if the "chipper_animal" edge to the User entity was cleared.
 func (m *AnimalMutation) ChipperAnimalCleared() bool {
-	return m.ChipperIdCleared() || m.clearedchipper_animal
+	return m.ChipperIDCleared() || m.clearedchipper_animal
 }
 
 // ChipperAnimalID returns the "chipper_animal" edge ID in the mutation.
@@ -690,11 +690,6 @@ func (m *AnimalMutation) ResetAnimalTypeAnimal() {
 	m.removedanimal_type_animal = nil
 }
 
-// SetChippingLocationID sets the "chipping_location" edge to the Location entity by id.
-func (m *AnimalMutation) SetChippingLocationID(id uint64) {
-	m.chipping_location = &id
-}
-
 // ClearChippingLocation clears the "chipping_location" edge to the Location entity.
 func (m *AnimalMutation) ClearChippingLocation() {
 	m.clearedchipping_location = true
@@ -702,15 +697,7 @@ func (m *AnimalMutation) ClearChippingLocation() {
 
 // ChippingLocationCleared reports if the "chipping_location" edge to the Location entity was cleared.
 func (m *AnimalMutation) ChippingLocationCleared() bool {
-	return m.ChippingLocationIdCleared() || m.clearedchipping_location
-}
-
-// ChippingLocationID returns the "chipping_location" edge ID in the mutation.
-func (m *AnimalMutation) ChippingLocationID() (id uint64, exists bool) {
-	if m.chipping_location != nil {
-		return *m.chipping_location, true
-	}
-	return
+	return m.ChippingLocationIDCleared() || m.clearedchipping_location
 }
 
 // ChippingLocationIDs returns the "chipping_location" edge IDs in the mutation.
@@ -884,19 +871,19 @@ func (m *AnimalMutation) Fields() []string {
 	if m.gender != nil {
 		fields = append(fields, animal.FieldGender)
 	}
-	if m.lifestatus != nil {
-		fields = append(fields, animal.FieldLifestatus)
+	if m.life_status != nil {
+		fields = append(fields, animal.FieldLifeStatus)
 	}
-	if m.chippingDateTime != nil {
+	if m.chipping_date_time != nil {
 		fields = append(fields, animal.FieldChippingDateTime)
 	}
 	if m.chipper_animal != nil {
-		fields = append(fields, animal.FieldChipperId)
+		fields = append(fields, animal.FieldChipperID)
 	}
 	if m.chipping_location != nil {
-		fields = append(fields, animal.FieldChippingLocationId)
+		fields = append(fields, animal.FieldChippingLocationID)
 	}
-	if m.deathDateTime != nil {
+	if m.death_date_time != nil {
 		fields = append(fields, animal.FieldDeathDateTime)
 	}
 	return fields
@@ -915,14 +902,14 @@ func (m *AnimalMutation) Field(name string) (ent.Value, bool) {
 		return m.Height()
 	case animal.FieldGender:
 		return m.Gender()
-	case animal.FieldLifestatus:
-		return m.Lifestatus()
+	case animal.FieldLifeStatus:
+		return m.LifeStatus()
 	case animal.FieldChippingDateTime:
 		return m.ChippingDateTime()
-	case animal.FieldChipperId:
-		return m.ChipperId()
-	case animal.FieldChippingLocationId:
-		return m.ChippingLocationId()
+	case animal.FieldChipperID:
+		return m.ChipperID()
+	case animal.FieldChippingLocationID:
+		return m.ChippingLocationID()
 	case animal.FieldDeathDateTime:
 		return m.DeathDateTime()
 	}
@@ -942,14 +929,14 @@ func (m *AnimalMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldHeight(ctx)
 	case animal.FieldGender:
 		return m.OldGender(ctx)
-	case animal.FieldLifestatus:
-		return m.OldLifestatus(ctx)
+	case animal.FieldLifeStatus:
+		return m.OldLifeStatus(ctx)
 	case animal.FieldChippingDateTime:
 		return m.OldChippingDateTime(ctx)
-	case animal.FieldChipperId:
-		return m.OldChipperId(ctx)
-	case animal.FieldChippingLocationId:
-		return m.OldChippingLocationId(ctx)
+	case animal.FieldChipperID:
+		return m.OldChipperID(ctx)
+	case animal.FieldChippingLocationID:
+		return m.OldChippingLocationID(ctx)
 	case animal.FieldDeathDateTime:
 		return m.OldDeathDateTime(ctx)
 	}
@@ -989,12 +976,12 @@ func (m *AnimalMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetGender(v)
 		return nil
-	case animal.FieldLifestatus:
-		v, ok := value.(animal.Lifestatus)
+	case animal.FieldLifeStatus:
+		v, ok := value.(animal.LifeStatus)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLifestatus(v)
+		m.SetLifeStatus(v)
 		return nil
 	case animal.FieldChippingDateTime:
 		v, ok := value.(time.Time)
@@ -1003,19 +990,19 @@ func (m *AnimalMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetChippingDateTime(v)
 		return nil
-	case animal.FieldChipperId:
+	case animal.FieldChipperID:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetChipperId(v)
+		m.SetChipperID(v)
 		return nil
-	case animal.FieldChippingLocationId:
+	case animal.FieldChippingLocationID:
 		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetChippingLocationId(v)
+		m.SetChippingLocationID(v)
 		return nil
 	case animal.FieldDeathDateTime:
 		v, ok := value.(time.Time)
@@ -1093,11 +1080,11 @@ func (m *AnimalMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *AnimalMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(animal.FieldChipperId) {
-		fields = append(fields, animal.FieldChipperId)
+	if m.FieldCleared(animal.FieldChipperID) {
+		fields = append(fields, animal.FieldChipperID)
 	}
-	if m.FieldCleared(animal.FieldChippingLocationId) {
-		fields = append(fields, animal.FieldChippingLocationId)
+	if m.FieldCleared(animal.FieldChippingLocationID) {
+		fields = append(fields, animal.FieldChippingLocationID)
 	}
 	if m.FieldCleared(animal.FieldDeathDateTime) {
 		fields = append(fields, animal.FieldDeathDateTime)
@@ -1116,11 +1103,11 @@ func (m *AnimalMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *AnimalMutation) ClearField(name string) error {
 	switch name {
-	case animal.FieldChipperId:
-		m.ClearChipperId()
+	case animal.FieldChipperID:
+		m.ClearChipperID()
 		return nil
-	case animal.FieldChippingLocationId:
-		m.ClearChippingLocationId()
+	case animal.FieldChippingLocationID:
+		m.ClearChippingLocationID()
 		return nil
 	case animal.FieldDeathDateTime:
 		m.ClearDeathDateTime()
@@ -1145,17 +1132,17 @@ func (m *AnimalMutation) ResetField(name string) error {
 	case animal.FieldGender:
 		m.ResetGender()
 		return nil
-	case animal.FieldLifestatus:
-		m.ResetLifestatus()
+	case animal.FieldLifeStatus:
+		m.ResetLifeStatus()
 		return nil
 	case animal.FieldChippingDateTime:
 		m.ResetChippingDateTime()
 		return nil
-	case animal.FieldChipperId:
-		m.ResetChipperId()
+	case animal.FieldChipperID:
+		m.ResetChipperID()
 		return nil
-	case animal.FieldChippingLocationId:
-		m.ResetChippingLocationId()
+	case animal.FieldChippingLocationID:
+		m.ResetChippingLocationID()
 		return nil
 	case animal.FieldDeathDateTime:
 		m.ResetDeathDateTime()
@@ -1767,7 +1754,7 @@ type AnimalsLocationsMutation struct {
 	op                                Op
 	typ                               string
 	id                                *uint64
-	dateTimeOfVisitLocationPoint      *time.Time
+	date_time_of_visit_location_point *time.Time
 	clearedFields                     map[string]struct{}
 	animals_locations_animal          *uint64
 	clearedanimals_locations_animal   bool
@@ -1882,13 +1869,13 @@ func (m *AnimalsLocationsMutation) IDs(ctx context.Context) ([]uint64, error) {
 	}
 }
 
-// SetAnimalId sets the "animalId" field.
-func (m *AnimalsLocationsMutation) SetAnimalId(u uint64) {
+// SetAnimalID sets the "animal_id" field.
+func (m *AnimalsLocationsMutation) SetAnimalID(u uint64) {
 	m.animals_locations_animal = &u
 }
 
-// AnimalId returns the value of the "animalId" field in the mutation.
-func (m *AnimalsLocationsMutation) AnimalId() (r uint64, exists bool) {
+// AnimalID returns the value of the "animal_id" field in the mutation.
+func (m *AnimalsLocationsMutation) AnimalID() (r uint64, exists bool) {
 	v := m.animals_locations_animal
 	if v == nil {
 		return
@@ -1896,35 +1883,35 @@ func (m *AnimalsLocationsMutation) AnimalId() (r uint64, exists bool) {
 	return *v, true
 }
 
-// OldAnimalId returns the old "animalId" field's value of the AnimalsLocations entity.
+// OldAnimalID returns the old "animal_id" field's value of the AnimalsLocations entity.
 // If the AnimalsLocations object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AnimalsLocationsMutation) OldAnimalId(ctx context.Context) (v uint64, err error) {
+func (m *AnimalsLocationsMutation) OldAnimalID(ctx context.Context) (v uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAnimalId is only allowed on UpdateOne operations")
+		return v, errors.New("OldAnimalID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAnimalId requires an ID field in the mutation")
+		return v, errors.New("OldAnimalID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAnimalId: %w", err)
+		return v, fmt.Errorf("querying old value for OldAnimalID: %w", err)
 	}
-	return oldValue.AnimalId, nil
+	return oldValue.AnimalID, nil
 }
 
-// ResetAnimalId resets all changes to the "animalId" field.
-func (m *AnimalsLocationsMutation) ResetAnimalId() {
+// ResetAnimalID resets all changes to the "animal_id" field.
+func (m *AnimalsLocationsMutation) ResetAnimalID() {
 	m.animals_locations_animal = nil
 }
 
-// SetLocationId sets the "locationId" field.
-func (m *AnimalsLocationsMutation) SetLocationId(u uint64) {
+// SetLocationID sets the "location_id" field.
+func (m *AnimalsLocationsMutation) SetLocationID(u uint64) {
 	m.animals_locations_location = &u
 }
 
-// LocationId returns the value of the "locationId" field in the mutation.
-func (m *AnimalsLocationsMutation) LocationId() (r uint64, exists bool) {
+// LocationID returns the value of the "location_id" field in the mutation.
+func (m *AnimalsLocationsMutation) LocationID() (r uint64, exists bool) {
 	v := m.animals_locations_location
 	if v == nil {
 		return
@@ -1932,43 +1919,43 @@ func (m *AnimalsLocationsMutation) LocationId() (r uint64, exists bool) {
 	return *v, true
 }
 
-// OldLocationId returns the old "locationId" field's value of the AnimalsLocations entity.
+// OldLocationID returns the old "location_id" field's value of the AnimalsLocations entity.
 // If the AnimalsLocations object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AnimalsLocationsMutation) OldLocationId(ctx context.Context) (v uint64, err error) {
+func (m *AnimalsLocationsMutation) OldLocationID(ctx context.Context) (v uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLocationId is only allowed on UpdateOne operations")
+		return v, errors.New("OldLocationID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLocationId requires an ID field in the mutation")
+		return v, errors.New("OldLocationID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLocationId: %w", err)
+		return v, fmt.Errorf("querying old value for OldLocationID: %w", err)
 	}
-	return oldValue.LocationId, nil
+	return oldValue.LocationID, nil
 }
 
-// ResetLocationId resets all changes to the "locationId" field.
-func (m *AnimalsLocationsMutation) ResetLocationId() {
+// ResetLocationID resets all changes to the "location_id" field.
+func (m *AnimalsLocationsMutation) ResetLocationID() {
 	m.animals_locations_location = nil
 }
 
-// SetDateTimeOfVisitLocationPoint sets the "dateTimeOfVisitLocationPoint" field.
+// SetDateTimeOfVisitLocationPoint sets the "date_time_of_visit_location_point" field.
 func (m *AnimalsLocationsMutation) SetDateTimeOfVisitLocationPoint(t time.Time) {
-	m.dateTimeOfVisitLocationPoint = &t
+	m.date_time_of_visit_location_point = &t
 }
 
-// DateTimeOfVisitLocationPoint returns the value of the "dateTimeOfVisitLocationPoint" field in the mutation.
+// DateTimeOfVisitLocationPoint returns the value of the "date_time_of_visit_location_point" field in the mutation.
 func (m *AnimalsLocationsMutation) DateTimeOfVisitLocationPoint() (r time.Time, exists bool) {
-	v := m.dateTimeOfVisitLocationPoint
+	v := m.date_time_of_visit_location_point
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldDateTimeOfVisitLocationPoint returns the old "dateTimeOfVisitLocationPoint" field's value of the AnimalsLocations entity.
+// OldDateTimeOfVisitLocationPoint returns the old "date_time_of_visit_location_point" field's value of the AnimalsLocations entity.
 // If the AnimalsLocations object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
 func (m *AnimalsLocationsMutation) OldDateTimeOfVisitLocationPoint(ctx context.Context) (v time.Time, err error) {
@@ -1985,9 +1972,9 @@ func (m *AnimalsLocationsMutation) OldDateTimeOfVisitLocationPoint(ctx context.C
 	return oldValue.DateTimeOfVisitLocationPoint, nil
 }
 
-// ResetDateTimeOfVisitLocationPoint resets all changes to the "dateTimeOfVisitLocationPoint" field.
+// ResetDateTimeOfVisitLocationPoint resets all changes to the "date_time_of_visit_location_point" field.
 func (m *AnimalsLocationsMutation) ResetDateTimeOfVisitLocationPoint() {
-	m.dateTimeOfVisitLocationPoint = nil
+	m.date_time_of_visit_location_point = nil
 }
 
 // SetAnimalsLocationsAnimalID sets the "animals_locations_animal" edge to the Animal entity by id.
@@ -2104,12 +2091,12 @@ func (m *AnimalsLocationsMutation) Type() string {
 func (m *AnimalsLocationsMutation) Fields() []string {
 	fields := make([]string, 0, 3)
 	if m.animals_locations_animal != nil {
-		fields = append(fields, animalslocations.FieldAnimalId)
+		fields = append(fields, animalslocations.FieldAnimalID)
 	}
 	if m.animals_locations_location != nil {
-		fields = append(fields, animalslocations.FieldLocationId)
+		fields = append(fields, animalslocations.FieldLocationID)
 	}
-	if m.dateTimeOfVisitLocationPoint != nil {
+	if m.date_time_of_visit_location_point != nil {
 		fields = append(fields, animalslocations.FieldDateTimeOfVisitLocationPoint)
 	}
 	return fields
@@ -2120,10 +2107,10 @@ func (m *AnimalsLocationsMutation) Fields() []string {
 // schema.
 func (m *AnimalsLocationsMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case animalslocations.FieldAnimalId:
-		return m.AnimalId()
-	case animalslocations.FieldLocationId:
-		return m.LocationId()
+	case animalslocations.FieldAnimalID:
+		return m.AnimalID()
+	case animalslocations.FieldLocationID:
+		return m.LocationID()
 	case animalslocations.FieldDateTimeOfVisitLocationPoint:
 		return m.DateTimeOfVisitLocationPoint()
 	}
@@ -2135,10 +2122,10 @@ func (m *AnimalsLocationsMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *AnimalsLocationsMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case animalslocations.FieldAnimalId:
-		return m.OldAnimalId(ctx)
-	case animalslocations.FieldLocationId:
-		return m.OldLocationId(ctx)
+	case animalslocations.FieldAnimalID:
+		return m.OldAnimalID(ctx)
+	case animalslocations.FieldLocationID:
+		return m.OldLocationID(ctx)
 	case animalslocations.FieldDateTimeOfVisitLocationPoint:
 		return m.OldDateTimeOfVisitLocationPoint(ctx)
 	}
@@ -2150,19 +2137,19 @@ func (m *AnimalsLocationsMutation) OldField(ctx context.Context, name string) (e
 // type.
 func (m *AnimalsLocationsMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case animalslocations.FieldAnimalId:
+	case animalslocations.FieldAnimalID:
 		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetAnimalId(v)
+		m.SetAnimalID(v)
 		return nil
-	case animalslocations.FieldLocationId:
+	case animalslocations.FieldLocationID:
 		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLocationId(v)
+		m.SetLocationID(v)
 		return nil
 	case animalslocations.FieldDateTimeOfVisitLocationPoint:
 		v, ok := value.(time.Time)
@@ -2223,11 +2210,11 @@ func (m *AnimalsLocationsMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *AnimalsLocationsMutation) ResetField(name string) error {
 	switch name {
-	case animalslocations.FieldAnimalId:
-		m.ResetAnimalId()
+	case animalslocations.FieldAnimalID:
+		m.ResetAnimalID()
 		return nil
-	case animalslocations.FieldLocationId:
-		m.ResetLocationId()
+	case animalslocations.FieldLocationID:
+		m.ResetLocationID()
 		return nil
 	case animalslocations.FieldDateTimeOfVisitLocationPoint:
 		m.ResetDateTimeOfVisitLocationPoint()

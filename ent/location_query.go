@@ -527,10 +527,10 @@ func (lq *LocationQuery) loadLocations(ctx context.Context, query *AnimalsLocati
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.LocationId
+		fk := n.LocationID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "locationId" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "location_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

@@ -4,7 +4,6 @@ import (
 	"animals/ent"
 	"context"
 	"fmt"
-	"log"
 
 	_ "github.com/lib/pq"
 )
@@ -18,7 +17,6 @@ var Database DB
 
 func init() {
 	dsn := fmt.Sprintf("host=%s port=%d user=%s dbname=%s password=%s sslmode=disable", DB_HOST, DB_PORT, DB_USER, DB_NAME, DB_PASSWORD)
-	log.Println(dsn)
 	client, err := ent.Open("postgres", dsn)
 
 	if err != nil {

@@ -21,11 +21,11 @@ func (Animal) Fields() []ent.Field {
 		field.Float32("length").Positive(),
 		field.Float32("height").Positive(),
 		field.Enum("gender").Values("MALE", "FEMALE", "OTHER"),
-		field.Enum("lifestatus").Values("ALIVE", "DEAD").Default("ALIVE"),
-		field.Time("chippingDateTime").Default(time.Now),
-		field.Uint32("chipperId").Optional(),
-		field.Uint64("chippingLocationId").Optional(),
-		field.Time("deathDateTime").Optional().Nillable(),
+		field.Enum("life_status").Values("ALIVE", "DEAD").Default("ALIVE"),
+		field.Time("chipping_date_time").Default(time.Now),
+		field.Uint32("chipper_id").Optional(),
+		field.Uint64("chipping_location_id").Optional(),
+		field.Time("death_date_time").Optional().Nillable(),
 	}
 }
 
@@ -33,11 +33,11 @@ func (Animal) Fields() []ent.Field {
 func (Animal) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("chipper_animal", User.Type).
-			Field("chipperId").
+			Field("chipper_id").
 			Unique(),
 		edge.To("animal_type_animal", AnimalType.Type),
 		edge.To("chipping_location", Location.Type).
-			Field("chippingLocationId").
+			Field("chipping_location_id").
 			Unique(),
 		edge.To("visited_locations", Location.Type).
 			Through("animals", AnimalsLocations.Type),

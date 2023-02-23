@@ -11,11 +11,11 @@ const (
 	Label = "animals_locations"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldAnimalId holds the string denoting the animalid field in the database.
-	FieldAnimalId = "animal_id"
-	// FieldLocationId holds the string denoting the locationid field in the database.
-	FieldLocationId = "location_id"
-	// FieldDateTimeOfVisitLocationPoint holds the string denoting the datetimeofvisitlocationpoint field in the database.
+	// FieldAnimalID holds the string denoting the animal_id field in the database.
+	FieldAnimalID = "animal_id"
+	// FieldLocationID holds the string denoting the location_id field in the database.
+	FieldLocationID = "location_id"
+	// FieldDateTimeOfVisitLocationPoint holds the string denoting the date_time_of_visit_location_point field in the database.
 	FieldDateTimeOfVisitLocationPoint = "date_time_of_visit_location_point"
 	// EdgeAnimalsLocationsAnimal holds the string denoting the animals_locations_animal edge name in mutations.
 	EdgeAnimalsLocationsAnimal = "animals_locations_animal"
@@ -42,8 +42,8 @@ const (
 // Columns holds all SQL columns for animalslocations fields.
 var Columns = []string{
 	FieldID,
-	FieldAnimalId,
-	FieldLocationId,
+	FieldAnimalID,
+	FieldLocationID,
 	FieldDateTimeOfVisitLocationPoint,
 }
 
@@ -58,7 +58,7 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// DefaultDateTimeOfVisitLocationPoint holds the default value on creation for the "dateTimeOfVisitLocationPoint" field.
+	// DefaultDateTimeOfVisitLocationPoint holds the default value on creation for the "date_time_of_visit_location_point" field.
 	DefaultDateTimeOfVisitLocationPoint func() time.Time
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint64) error

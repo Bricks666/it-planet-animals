@@ -77,27 +77,27 @@ func (au *AnimalUpdate) SetGender(a animal.Gender) *AnimalUpdate {
 	return au
 }
 
-// SetLifestatus sets the "lifestatus" field.
-func (au *AnimalUpdate) SetLifestatus(a animal.Lifestatus) *AnimalUpdate {
-	au.mutation.SetLifestatus(a)
+// SetLifeStatus sets the "life_status" field.
+func (au *AnimalUpdate) SetLifeStatus(as animal.LifeStatus) *AnimalUpdate {
+	au.mutation.SetLifeStatus(as)
 	return au
 }
 
-// SetNillableLifestatus sets the "lifestatus" field if the given value is not nil.
-func (au *AnimalUpdate) SetNillableLifestatus(a *animal.Lifestatus) *AnimalUpdate {
-	if a != nil {
-		au.SetLifestatus(*a)
+// SetNillableLifeStatus sets the "life_status" field if the given value is not nil.
+func (au *AnimalUpdate) SetNillableLifeStatus(as *animal.LifeStatus) *AnimalUpdate {
+	if as != nil {
+		au.SetLifeStatus(*as)
 	}
 	return au
 }
 
-// SetChippingDateTime sets the "chippingDateTime" field.
+// SetChippingDateTime sets the "chipping_date_time" field.
 func (au *AnimalUpdate) SetChippingDateTime(t time.Time) *AnimalUpdate {
 	au.mutation.SetChippingDateTime(t)
 	return au
 }
 
-// SetNillableChippingDateTime sets the "chippingDateTime" field if the given value is not nil.
+// SetNillableChippingDateTime sets the "chipping_date_time" field if the given value is not nil.
 func (au *AnimalUpdate) SetNillableChippingDateTime(t *time.Time) *AnimalUpdate {
 	if t != nil {
 		au.SetChippingDateTime(*t)
@@ -105,53 +105,53 @@ func (au *AnimalUpdate) SetNillableChippingDateTime(t *time.Time) *AnimalUpdate 
 	return au
 }
 
-// SetChipperId sets the "chipperId" field.
-func (au *AnimalUpdate) SetChipperId(u uint32) *AnimalUpdate {
-	au.mutation.SetChipperId(u)
+// SetChipperID sets the "chipper_id" field.
+func (au *AnimalUpdate) SetChipperID(u uint32) *AnimalUpdate {
+	au.mutation.SetChipperID(u)
 	return au
 }
 
-// SetNillableChipperId sets the "chipperId" field if the given value is not nil.
-func (au *AnimalUpdate) SetNillableChipperId(u *uint32) *AnimalUpdate {
+// SetNillableChipperID sets the "chipper_id" field if the given value is not nil.
+func (au *AnimalUpdate) SetNillableChipperID(u *uint32) *AnimalUpdate {
 	if u != nil {
-		au.SetChipperId(*u)
+		au.SetChipperID(*u)
 	}
 	return au
 }
 
-// ClearChipperId clears the value of the "chipperId" field.
-func (au *AnimalUpdate) ClearChipperId() *AnimalUpdate {
-	au.mutation.ClearChipperId()
+// ClearChipperID clears the value of the "chipper_id" field.
+func (au *AnimalUpdate) ClearChipperID() *AnimalUpdate {
+	au.mutation.ClearChipperID()
 	return au
 }
 
-// SetChippingLocationId sets the "chippingLocationId" field.
-func (au *AnimalUpdate) SetChippingLocationId(u uint64) *AnimalUpdate {
-	au.mutation.SetChippingLocationId(u)
+// SetChippingLocationID sets the "chipping_location_id" field.
+func (au *AnimalUpdate) SetChippingLocationID(u uint64) *AnimalUpdate {
+	au.mutation.SetChippingLocationID(u)
 	return au
 }
 
-// SetNillableChippingLocationId sets the "chippingLocationId" field if the given value is not nil.
-func (au *AnimalUpdate) SetNillableChippingLocationId(u *uint64) *AnimalUpdate {
+// SetNillableChippingLocationID sets the "chipping_location_id" field if the given value is not nil.
+func (au *AnimalUpdate) SetNillableChippingLocationID(u *uint64) *AnimalUpdate {
 	if u != nil {
-		au.SetChippingLocationId(*u)
+		au.SetChippingLocationID(*u)
 	}
 	return au
 }
 
-// ClearChippingLocationId clears the value of the "chippingLocationId" field.
-func (au *AnimalUpdate) ClearChippingLocationId() *AnimalUpdate {
-	au.mutation.ClearChippingLocationId()
+// ClearChippingLocationID clears the value of the "chipping_location_id" field.
+func (au *AnimalUpdate) ClearChippingLocationID() *AnimalUpdate {
+	au.mutation.ClearChippingLocationID()
 	return au
 }
 
-// SetDeathDateTime sets the "deathDateTime" field.
+// SetDeathDateTime sets the "death_date_time" field.
 func (au *AnimalUpdate) SetDeathDateTime(t time.Time) *AnimalUpdate {
 	au.mutation.SetDeathDateTime(t)
 	return au
 }
 
-// SetNillableDeathDateTime sets the "deathDateTime" field if the given value is not nil.
+// SetNillableDeathDateTime sets the "death_date_time" field if the given value is not nil.
 func (au *AnimalUpdate) SetNillableDeathDateTime(t *time.Time) *AnimalUpdate {
 	if t != nil {
 		au.SetDeathDateTime(*t)
@@ -159,7 +159,7 @@ func (au *AnimalUpdate) SetNillableDeathDateTime(t *time.Time) *AnimalUpdate {
 	return au
 }
 
-// ClearDeathDateTime clears the value of the "deathDateTime" field.
+// ClearDeathDateTime clears the value of the "death_date_time" field.
 func (au *AnimalUpdate) ClearDeathDateTime() *AnimalUpdate {
 	au.mutation.ClearDeathDateTime()
 	return au
@@ -197,20 +197,6 @@ func (au *AnimalUpdate) AddAnimalTypeAnimal(a ...*AnimalType) *AnimalUpdate {
 		ids[i] = a[i].ID
 	}
 	return au.AddAnimalTypeAnimalIDs(ids...)
-}
-
-// SetChippingLocationID sets the "chipping_location" edge to the Location entity by ID.
-func (au *AnimalUpdate) SetChippingLocationID(id uint64) *AnimalUpdate {
-	au.mutation.SetChippingLocationID(id)
-	return au
-}
-
-// SetNillableChippingLocationID sets the "chipping_location" edge to the Location entity by ID if the given value is not nil.
-func (au *AnimalUpdate) SetNillableChippingLocationID(id *uint64) *AnimalUpdate {
-	if id != nil {
-		au = au.SetChippingLocationID(*id)
-	}
-	return au
 }
 
 // SetChippingLocation sets the "chipping_location" edge to the Location entity.
@@ -377,9 +363,9 @@ func (au *AnimalUpdate) check() error {
 			return &ValidationError{Name: "gender", err: fmt.Errorf(`ent: validator failed for field "Animal.gender": %w`, err)}
 		}
 	}
-	if v, ok := au.mutation.Lifestatus(); ok {
-		if err := animal.LifestatusValidator(v); err != nil {
-			return &ValidationError{Name: "lifestatus", err: fmt.Errorf(`ent: validator failed for field "Animal.lifestatus": %w`, err)}
+	if v, ok := au.mutation.LifeStatus(); ok {
+		if err := animal.LifeStatusValidator(v); err != nil {
+			return &ValidationError{Name: "life_status", err: fmt.Errorf(`ent: validator failed for field "Animal.life_status": %w`, err)}
 		}
 	}
 	return nil
@@ -418,8 +404,8 @@ func (au *AnimalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := au.mutation.Gender(); ok {
 		_spec.SetField(animal.FieldGender, field.TypeEnum, value)
 	}
-	if value, ok := au.mutation.Lifestatus(); ok {
-		_spec.SetField(animal.FieldLifestatus, field.TypeEnum, value)
+	if value, ok := au.mutation.LifeStatus(); ok {
+		_spec.SetField(animal.FieldLifeStatus, field.TypeEnum, value)
 	}
 	if value, ok := au.mutation.ChippingDateTime(); ok {
 		_spec.SetField(animal.FieldChippingDateTime, field.TypeTime, value)
@@ -739,27 +725,27 @@ func (auo *AnimalUpdateOne) SetGender(a animal.Gender) *AnimalUpdateOne {
 	return auo
 }
 
-// SetLifestatus sets the "lifestatus" field.
-func (auo *AnimalUpdateOne) SetLifestatus(a animal.Lifestatus) *AnimalUpdateOne {
-	auo.mutation.SetLifestatus(a)
+// SetLifeStatus sets the "life_status" field.
+func (auo *AnimalUpdateOne) SetLifeStatus(as animal.LifeStatus) *AnimalUpdateOne {
+	auo.mutation.SetLifeStatus(as)
 	return auo
 }
 
-// SetNillableLifestatus sets the "lifestatus" field if the given value is not nil.
-func (auo *AnimalUpdateOne) SetNillableLifestatus(a *animal.Lifestatus) *AnimalUpdateOne {
-	if a != nil {
-		auo.SetLifestatus(*a)
+// SetNillableLifeStatus sets the "life_status" field if the given value is not nil.
+func (auo *AnimalUpdateOne) SetNillableLifeStatus(as *animal.LifeStatus) *AnimalUpdateOne {
+	if as != nil {
+		auo.SetLifeStatus(*as)
 	}
 	return auo
 }
 
-// SetChippingDateTime sets the "chippingDateTime" field.
+// SetChippingDateTime sets the "chipping_date_time" field.
 func (auo *AnimalUpdateOne) SetChippingDateTime(t time.Time) *AnimalUpdateOne {
 	auo.mutation.SetChippingDateTime(t)
 	return auo
 }
 
-// SetNillableChippingDateTime sets the "chippingDateTime" field if the given value is not nil.
+// SetNillableChippingDateTime sets the "chipping_date_time" field if the given value is not nil.
 func (auo *AnimalUpdateOne) SetNillableChippingDateTime(t *time.Time) *AnimalUpdateOne {
 	if t != nil {
 		auo.SetChippingDateTime(*t)
@@ -767,53 +753,53 @@ func (auo *AnimalUpdateOne) SetNillableChippingDateTime(t *time.Time) *AnimalUpd
 	return auo
 }
 
-// SetChipperId sets the "chipperId" field.
-func (auo *AnimalUpdateOne) SetChipperId(u uint32) *AnimalUpdateOne {
-	auo.mutation.SetChipperId(u)
+// SetChipperID sets the "chipper_id" field.
+func (auo *AnimalUpdateOne) SetChipperID(u uint32) *AnimalUpdateOne {
+	auo.mutation.SetChipperID(u)
 	return auo
 }
 
-// SetNillableChipperId sets the "chipperId" field if the given value is not nil.
-func (auo *AnimalUpdateOne) SetNillableChipperId(u *uint32) *AnimalUpdateOne {
+// SetNillableChipperID sets the "chipper_id" field if the given value is not nil.
+func (auo *AnimalUpdateOne) SetNillableChipperID(u *uint32) *AnimalUpdateOne {
 	if u != nil {
-		auo.SetChipperId(*u)
+		auo.SetChipperID(*u)
 	}
 	return auo
 }
 
-// ClearChipperId clears the value of the "chipperId" field.
-func (auo *AnimalUpdateOne) ClearChipperId() *AnimalUpdateOne {
-	auo.mutation.ClearChipperId()
+// ClearChipperID clears the value of the "chipper_id" field.
+func (auo *AnimalUpdateOne) ClearChipperID() *AnimalUpdateOne {
+	auo.mutation.ClearChipperID()
 	return auo
 }
 
-// SetChippingLocationId sets the "chippingLocationId" field.
-func (auo *AnimalUpdateOne) SetChippingLocationId(u uint64) *AnimalUpdateOne {
-	auo.mutation.SetChippingLocationId(u)
+// SetChippingLocationID sets the "chipping_location_id" field.
+func (auo *AnimalUpdateOne) SetChippingLocationID(u uint64) *AnimalUpdateOne {
+	auo.mutation.SetChippingLocationID(u)
 	return auo
 }
 
-// SetNillableChippingLocationId sets the "chippingLocationId" field if the given value is not nil.
-func (auo *AnimalUpdateOne) SetNillableChippingLocationId(u *uint64) *AnimalUpdateOne {
+// SetNillableChippingLocationID sets the "chipping_location_id" field if the given value is not nil.
+func (auo *AnimalUpdateOne) SetNillableChippingLocationID(u *uint64) *AnimalUpdateOne {
 	if u != nil {
-		auo.SetChippingLocationId(*u)
+		auo.SetChippingLocationID(*u)
 	}
 	return auo
 }
 
-// ClearChippingLocationId clears the value of the "chippingLocationId" field.
-func (auo *AnimalUpdateOne) ClearChippingLocationId() *AnimalUpdateOne {
-	auo.mutation.ClearChippingLocationId()
+// ClearChippingLocationID clears the value of the "chipping_location_id" field.
+func (auo *AnimalUpdateOne) ClearChippingLocationID() *AnimalUpdateOne {
+	auo.mutation.ClearChippingLocationID()
 	return auo
 }
 
-// SetDeathDateTime sets the "deathDateTime" field.
+// SetDeathDateTime sets the "death_date_time" field.
 func (auo *AnimalUpdateOne) SetDeathDateTime(t time.Time) *AnimalUpdateOne {
 	auo.mutation.SetDeathDateTime(t)
 	return auo
 }
 
-// SetNillableDeathDateTime sets the "deathDateTime" field if the given value is not nil.
+// SetNillableDeathDateTime sets the "death_date_time" field if the given value is not nil.
 func (auo *AnimalUpdateOne) SetNillableDeathDateTime(t *time.Time) *AnimalUpdateOne {
 	if t != nil {
 		auo.SetDeathDateTime(*t)
@@ -821,7 +807,7 @@ func (auo *AnimalUpdateOne) SetNillableDeathDateTime(t *time.Time) *AnimalUpdate
 	return auo
 }
 
-// ClearDeathDateTime clears the value of the "deathDateTime" field.
+// ClearDeathDateTime clears the value of the "death_date_time" field.
 func (auo *AnimalUpdateOne) ClearDeathDateTime() *AnimalUpdateOne {
 	auo.mutation.ClearDeathDateTime()
 	return auo
@@ -859,20 +845,6 @@ func (auo *AnimalUpdateOne) AddAnimalTypeAnimal(a ...*AnimalType) *AnimalUpdateO
 		ids[i] = a[i].ID
 	}
 	return auo.AddAnimalTypeAnimalIDs(ids...)
-}
-
-// SetChippingLocationID sets the "chipping_location" edge to the Location entity by ID.
-func (auo *AnimalUpdateOne) SetChippingLocationID(id uint64) *AnimalUpdateOne {
-	auo.mutation.SetChippingLocationID(id)
-	return auo
-}
-
-// SetNillableChippingLocationID sets the "chipping_location" edge to the Location entity by ID if the given value is not nil.
-func (auo *AnimalUpdateOne) SetNillableChippingLocationID(id *uint64) *AnimalUpdateOne {
-	if id != nil {
-		auo = auo.SetChippingLocationID(*id)
-	}
-	return auo
 }
 
 // SetChippingLocation sets the "chipping_location" edge to the Location entity.
@@ -1052,9 +1024,9 @@ func (auo *AnimalUpdateOne) check() error {
 			return &ValidationError{Name: "gender", err: fmt.Errorf(`ent: validator failed for field "Animal.gender": %w`, err)}
 		}
 	}
-	if v, ok := auo.mutation.Lifestatus(); ok {
-		if err := animal.LifestatusValidator(v); err != nil {
-			return &ValidationError{Name: "lifestatus", err: fmt.Errorf(`ent: validator failed for field "Animal.lifestatus": %w`, err)}
+	if v, ok := auo.mutation.LifeStatus(); ok {
+		if err := animal.LifeStatusValidator(v); err != nil {
+			return &ValidationError{Name: "life_status", err: fmt.Errorf(`ent: validator failed for field "Animal.life_status": %w`, err)}
 		}
 	}
 	return nil
@@ -1110,8 +1082,8 @@ func (auo *AnimalUpdateOne) sqlSave(ctx context.Context) (_node *Animal, err err
 	if value, ok := auo.mutation.Gender(); ok {
 		_spec.SetField(animal.FieldGender, field.TypeEnum, value)
 	}
-	if value, ok := auo.mutation.Lifestatus(); ok {
-		_spec.SetField(animal.FieldLifestatus, field.TypeEnum, value)
+	if value, ok := auo.mutation.LifeStatus(); ok {
+		_spec.SetField(animal.FieldLifeStatus, field.TypeEnum, value)
 	}
 	if value, ok := auo.mutation.ChippingDateTime(); ok {
 		_spec.SetField(animal.FieldChippingDateTime, field.TypeTime, value)

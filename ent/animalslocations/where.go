@@ -55,97 +55,97 @@ func IDLTE(id uint64) predicate.AnimalsLocations {
 	return predicate.AnimalsLocations(sql.FieldLTE(FieldID, id))
 }
 
-// AnimalId applies equality check predicate on the "animalId" field. It's identical to AnimalIdEQ.
-func AnimalId(v uint64) predicate.AnimalsLocations {
-	return predicate.AnimalsLocations(sql.FieldEQ(FieldAnimalId, v))
+// AnimalID applies equality check predicate on the "animal_id" field. It's identical to AnimalIDEQ.
+func AnimalID(v uint64) predicate.AnimalsLocations {
+	return predicate.AnimalsLocations(sql.FieldEQ(FieldAnimalID, v))
 }
 
-// LocationId applies equality check predicate on the "locationId" field. It's identical to LocationIdEQ.
-func LocationId(v uint64) predicate.AnimalsLocations {
-	return predicate.AnimalsLocations(sql.FieldEQ(FieldLocationId, v))
+// LocationID applies equality check predicate on the "location_id" field. It's identical to LocationIDEQ.
+func LocationID(v uint64) predicate.AnimalsLocations {
+	return predicate.AnimalsLocations(sql.FieldEQ(FieldLocationID, v))
 }
 
-// DateTimeOfVisitLocationPoint applies equality check predicate on the "dateTimeOfVisitLocationPoint" field. It's identical to DateTimeOfVisitLocationPointEQ.
+// DateTimeOfVisitLocationPoint applies equality check predicate on the "date_time_of_visit_location_point" field. It's identical to DateTimeOfVisitLocationPointEQ.
 func DateTimeOfVisitLocationPoint(v time.Time) predicate.AnimalsLocations {
 	return predicate.AnimalsLocations(sql.FieldEQ(FieldDateTimeOfVisitLocationPoint, v))
 }
 
-// AnimalIdEQ applies the EQ predicate on the "animalId" field.
-func AnimalIdEQ(v uint64) predicate.AnimalsLocations {
-	return predicate.AnimalsLocations(sql.FieldEQ(FieldAnimalId, v))
+// AnimalIDEQ applies the EQ predicate on the "animal_id" field.
+func AnimalIDEQ(v uint64) predicate.AnimalsLocations {
+	return predicate.AnimalsLocations(sql.FieldEQ(FieldAnimalID, v))
 }
 
-// AnimalIdNEQ applies the NEQ predicate on the "animalId" field.
-func AnimalIdNEQ(v uint64) predicate.AnimalsLocations {
-	return predicate.AnimalsLocations(sql.FieldNEQ(FieldAnimalId, v))
+// AnimalIDNEQ applies the NEQ predicate on the "animal_id" field.
+func AnimalIDNEQ(v uint64) predicate.AnimalsLocations {
+	return predicate.AnimalsLocations(sql.FieldNEQ(FieldAnimalID, v))
 }
 
-// AnimalIdIn applies the In predicate on the "animalId" field.
-func AnimalIdIn(vs ...uint64) predicate.AnimalsLocations {
-	return predicate.AnimalsLocations(sql.FieldIn(FieldAnimalId, vs...))
+// AnimalIDIn applies the In predicate on the "animal_id" field.
+func AnimalIDIn(vs ...uint64) predicate.AnimalsLocations {
+	return predicate.AnimalsLocations(sql.FieldIn(FieldAnimalID, vs...))
 }
 
-// AnimalIdNotIn applies the NotIn predicate on the "animalId" field.
-func AnimalIdNotIn(vs ...uint64) predicate.AnimalsLocations {
-	return predicate.AnimalsLocations(sql.FieldNotIn(FieldAnimalId, vs...))
+// AnimalIDNotIn applies the NotIn predicate on the "animal_id" field.
+func AnimalIDNotIn(vs ...uint64) predicate.AnimalsLocations {
+	return predicate.AnimalsLocations(sql.FieldNotIn(FieldAnimalID, vs...))
 }
 
-// LocationIdEQ applies the EQ predicate on the "locationId" field.
-func LocationIdEQ(v uint64) predicate.AnimalsLocations {
-	return predicate.AnimalsLocations(sql.FieldEQ(FieldLocationId, v))
+// LocationIDEQ applies the EQ predicate on the "location_id" field.
+func LocationIDEQ(v uint64) predicate.AnimalsLocations {
+	return predicate.AnimalsLocations(sql.FieldEQ(FieldLocationID, v))
 }
 
-// LocationIdNEQ applies the NEQ predicate on the "locationId" field.
-func LocationIdNEQ(v uint64) predicate.AnimalsLocations {
-	return predicate.AnimalsLocations(sql.FieldNEQ(FieldLocationId, v))
+// LocationIDNEQ applies the NEQ predicate on the "location_id" field.
+func LocationIDNEQ(v uint64) predicate.AnimalsLocations {
+	return predicate.AnimalsLocations(sql.FieldNEQ(FieldLocationID, v))
 }
 
-// LocationIdIn applies the In predicate on the "locationId" field.
-func LocationIdIn(vs ...uint64) predicate.AnimalsLocations {
-	return predicate.AnimalsLocations(sql.FieldIn(FieldLocationId, vs...))
+// LocationIDIn applies the In predicate on the "location_id" field.
+func LocationIDIn(vs ...uint64) predicate.AnimalsLocations {
+	return predicate.AnimalsLocations(sql.FieldIn(FieldLocationID, vs...))
 }
 
-// LocationIdNotIn applies the NotIn predicate on the "locationId" field.
-func LocationIdNotIn(vs ...uint64) predicate.AnimalsLocations {
-	return predicate.AnimalsLocations(sql.FieldNotIn(FieldLocationId, vs...))
+// LocationIDNotIn applies the NotIn predicate on the "location_id" field.
+func LocationIDNotIn(vs ...uint64) predicate.AnimalsLocations {
+	return predicate.AnimalsLocations(sql.FieldNotIn(FieldLocationID, vs...))
 }
 
-// DateTimeOfVisitLocationPointEQ applies the EQ predicate on the "dateTimeOfVisitLocationPoint" field.
+// DateTimeOfVisitLocationPointEQ applies the EQ predicate on the "date_time_of_visit_location_point" field.
 func DateTimeOfVisitLocationPointEQ(v time.Time) predicate.AnimalsLocations {
 	return predicate.AnimalsLocations(sql.FieldEQ(FieldDateTimeOfVisitLocationPoint, v))
 }
 
-// DateTimeOfVisitLocationPointNEQ applies the NEQ predicate on the "dateTimeOfVisitLocationPoint" field.
+// DateTimeOfVisitLocationPointNEQ applies the NEQ predicate on the "date_time_of_visit_location_point" field.
 func DateTimeOfVisitLocationPointNEQ(v time.Time) predicate.AnimalsLocations {
 	return predicate.AnimalsLocations(sql.FieldNEQ(FieldDateTimeOfVisitLocationPoint, v))
 }
 
-// DateTimeOfVisitLocationPointIn applies the In predicate on the "dateTimeOfVisitLocationPoint" field.
+// DateTimeOfVisitLocationPointIn applies the In predicate on the "date_time_of_visit_location_point" field.
 func DateTimeOfVisitLocationPointIn(vs ...time.Time) predicate.AnimalsLocations {
 	return predicate.AnimalsLocations(sql.FieldIn(FieldDateTimeOfVisitLocationPoint, vs...))
 }
 
-// DateTimeOfVisitLocationPointNotIn applies the NotIn predicate on the "dateTimeOfVisitLocationPoint" field.
+// DateTimeOfVisitLocationPointNotIn applies the NotIn predicate on the "date_time_of_visit_location_point" field.
 func DateTimeOfVisitLocationPointNotIn(vs ...time.Time) predicate.AnimalsLocations {
 	return predicate.AnimalsLocations(sql.FieldNotIn(FieldDateTimeOfVisitLocationPoint, vs...))
 }
 
-// DateTimeOfVisitLocationPointGT applies the GT predicate on the "dateTimeOfVisitLocationPoint" field.
+// DateTimeOfVisitLocationPointGT applies the GT predicate on the "date_time_of_visit_location_point" field.
 func DateTimeOfVisitLocationPointGT(v time.Time) predicate.AnimalsLocations {
 	return predicate.AnimalsLocations(sql.FieldGT(FieldDateTimeOfVisitLocationPoint, v))
 }
 
-// DateTimeOfVisitLocationPointGTE applies the GTE predicate on the "dateTimeOfVisitLocationPoint" field.
+// DateTimeOfVisitLocationPointGTE applies the GTE predicate on the "date_time_of_visit_location_point" field.
 func DateTimeOfVisitLocationPointGTE(v time.Time) predicate.AnimalsLocations {
 	return predicate.AnimalsLocations(sql.FieldGTE(FieldDateTimeOfVisitLocationPoint, v))
 }
 
-// DateTimeOfVisitLocationPointLT applies the LT predicate on the "dateTimeOfVisitLocationPoint" field.
+// DateTimeOfVisitLocationPointLT applies the LT predicate on the "date_time_of_visit_location_point" field.
 func DateTimeOfVisitLocationPointLT(v time.Time) predicate.AnimalsLocations {
 	return predicate.AnimalsLocations(sql.FieldLT(FieldDateTimeOfVisitLocationPoint, v))
 }
 
-// DateTimeOfVisitLocationPointLTE applies the LTE predicate on the "dateTimeOfVisitLocationPoint" field.
+// DateTimeOfVisitLocationPointLTE applies the LTE predicate on the "date_time_of_visit_location_point" field.
 func DateTimeOfVisitLocationPointLTE(v time.Time) predicate.AnimalsLocations {
 	return predicate.AnimalsLocations(sql.FieldLTE(FieldDateTimeOfVisitLocationPoint, v))
 }

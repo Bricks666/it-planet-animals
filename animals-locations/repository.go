@@ -21,7 +21,7 @@ func init() {
 
 func (this *AnimalsLocationsRepository) GetAll(animalId uint64, dto *AnimalsLocationSearchQueryDto) ([]*ent.AnimalsLocations, error) {
 	query := this.db.Client.AnimalsLocations.Query().
-		Where(animalslocations.AnimalId(animalId))
+		Where(animalslocations.AnimalID(animalId))
 
 	var conditions []predicate.AnimalsLocations
 
@@ -44,12 +44,20 @@ func (this *AnimalsLocationsRepository) GetAll(animalId uint64, dto *AnimalsLoca
 		All(this.db.Context)
 }
 
-func (this *AnimalsLocationsRepository) Create() (*ent.AnimalsLocations, error) {
-	return nil, nil
+func (this *AnimalsLocationsRepository) Create(animalId uint64, locationId uint64) (*ent.AnimalsLocations, error) {
+	return this.db.Client.AnimalsLocations.
+		Create().
+		SetAnimalID(animalId).
+		SetLocationID(locationId).
+		Save(this.db.Context)
 }
 
-func (this *AnimalsLocationsRepository) Update() (*ent.AnimalsLocations, error) {
-	return nil, nil
+func (this *AnimalsLocationsRepository) Update(animalId uint64, dto *UpdateAnimalsLocationDto) (*ent.AnimalsLocations, error) {
+	return this.db.Client.AnimalsLocations.
+		UpdateOneID(dto.VisitedAnimalLocationId).
+		Where(animalslocations.ID(animalId)).
+		SetLocationID(dto.NewLocationId).
+		Save(this.db.Context)
 }
 
 func (this *AnimalsLocationsRepository) Remove() error {

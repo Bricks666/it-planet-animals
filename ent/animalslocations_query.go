@@ -333,12 +333,12 @@ func (alq *AnimalsLocationsQuery) WithAnimalsLocationsLocation(opts ...func(*Loc
 // Example:
 //
 //	var v []struct {
-//		AnimalId uint64 `json:"animalId,omitempty"`
+//		AnimalID uint64 `json:"animal_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.AnimalsLocations.Query().
-//		GroupBy(animalslocations.FieldAnimalId).
+//		GroupBy(animalslocations.FieldAnimalID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (alq *AnimalsLocationsQuery) GroupBy(field string, fields ...string) *AnimalsLocationsGroupBy {
@@ -356,11 +356,11 @@ func (alq *AnimalsLocationsQuery) GroupBy(field string, fields ...string) *Anima
 // Example:
 //
 //	var v []struct {
-//		AnimalId uint64 `json:"animalId,omitempty"`
+//		AnimalID uint64 `json:"animal_id,omitempty"`
 //	}
 //
 //	client.AnimalsLocations.Query().
-//		Select(animalslocations.FieldAnimalId).
+//		Select(animalslocations.FieldAnimalID).
 //		Scan(ctx, &v)
 func (alq *AnimalsLocationsQuery) Select(fields ...string) *AnimalsLocationsSelect {
 	alq.ctx.Fields = append(alq.ctx.Fields, fields...)
@@ -447,7 +447,7 @@ func (alq *AnimalsLocationsQuery) loadAnimalsLocationsAnimal(ctx context.Context
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AnimalsLocations)
 	for i := range nodes {
-		fk := nodes[i].AnimalId
+		fk := nodes[i].AnimalID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -464,7 +464,7 @@ func (alq *AnimalsLocationsQuery) loadAnimalsLocationsAnimal(ctx context.Context
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "animalId" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "animal_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -476,7 +476,7 @@ func (alq *AnimalsLocationsQuery) loadAnimalsLocationsLocation(ctx context.Conte
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AnimalsLocations)
 	for i := range nodes {
-		fk := nodes[i].LocationId
+		fk := nodes[i].LocationID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -493,7 +493,7 @@ func (alq *AnimalsLocationsQuery) loadAnimalsLocationsLocation(ctx context.Conte
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "locationId" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "location_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

@@ -20,15 +20,15 @@ const (
 	FieldHeight = "height"
 	// FieldGender holds the string denoting the gender field in the database.
 	FieldGender = "gender"
-	// FieldLifestatus holds the string denoting the lifestatus field in the database.
-	FieldLifestatus = "lifestatus"
-	// FieldChippingDateTime holds the string denoting the chippingdatetime field in the database.
+	// FieldLifeStatus holds the string denoting the life_status field in the database.
+	FieldLifeStatus = "life_status"
+	// FieldChippingDateTime holds the string denoting the chipping_date_time field in the database.
 	FieldChippingDateTime = "chipping_date_time"
-	// FieldChipperId holds the string denoting the chipperid field in the database.
-	FieldChipperId = "chipper_id"
-	// FieldChippingLocationId holds the string denoting the chippinglocationid field in the database.
-	FieldChippingLocationId = "chipping_location_id"
-	// FieldDeathDateTime holds the string denoting the deathdatetime field in the database.
+	// FieldChipperID holds the string denoting the chipper_id field in the database.
+	FieldChipperID = "chipper_id"
+	// FieldChippingLocationID holds the string denoting the chipping_location_id field in the database.
+	FieldChippingLocationID = "chipping_location_id"
+	// FieldDeathDateTime holds the string denoting the death_date_time field in the database.
 	FieldDeathDateTime = "death_date_time"
 	// EdgeChipperAnimal holds the string denoting the chipper_animal edge name in mutations.
 	EdgeChipperAnimal = "chipper_animal"
@@ -82,10 +82,10 @@ var Columns = []string{
 	FieldLength,
 	FieldHeight,
 	FieldGender,
-	FieldLifestatus,
+	FieldLifeStatus,
 	FieldChippingDateTime,
-	FieldChipperId,
-	FieldChippingLocationId,
+	FieldChipperID,
+	FieldChippingLocationID,
 	FieldDeathDateTime,
 }
 
@@ -95,7 +95,7 @@ var (
 	AnimalTypeAnimalPrimaryKey = []string{"animal_id", "animal_type_id"}
 	// VisitedLocationsPrimaryKey and VisitedLocationsColumn2 are the table columns denoting the
 	// primary key for the visited_locations relation (M2M).
-	VisitedLocationsPrimaryKey = []string{"animalId", "locationId"}
+	VisitedLocationsPrimaryKey = []string{"animal_id", "location_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -115,7 +115,7 @@ var (
 	LengthValidator func(float32) error
 	// HeightValidator is a validator for the "height" field. It is called by the builders before save.
 	HeightValidator func(float32) error
-	// DefaultChippingDateTime holds the default value on creation for the "chippingDateTime" field.
+	// DefaultChippingDateTime holds the default value on creation for the "chipping_date_time" field.
 	DefaultChippingDateTime func() time.Time
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint64) error
@@ -145,28 +145,28 @@ func GenderValidator(ge Gender) error {
 	}
 }
 
-// Lifestatus defines the type for the "lifestatus" enum field.
-type Lifestatus string
+// LifeStatus defines the type for the "life_status" enum field.
+type LifeStatus string
 
-// LifestatusALIVE is the default value of the Lifestatus enum.
-const DefaultLifestatus = LifestatusALIVE
+// LifeStatusALIVE is the default value of the LifeStatus enum.
+const DefaultLifeStatus = LifeStatusALIVE
 
-// Lifestatus values.
+// LifeStatus values.
 const (
-	LifestatusALIVE Lifestatus = "ALIVE"
-	LifestatusDEAD  Lifestatus = "DEAD"
+	LifeStatusALIVE LifeStatus = "ALIVE"
+	LifeStatusDEAD  LifeStatus = "DEAD"
 )
 
-func (l Lifestatus) String() string {
-	return string(l)
+func (ls LifeStatus) String() string {
+	return string(ls)
 }
 
-// LifestatusValidator is a validator for the "lifestatus" field enum values. It is called by the builders before save.
-func LifestatusValidator(l Lifestatus) error {
-	switch l {
-	case LifestatusALIVE, LifestatusDEAD:
+// LifeStatusValidator is a validator for the "life_status" field enum values. It is called by the builders before save.
+func LifeStatusValidator(ls LifeStatus) error {
+	switch ls {
+	case LifeStatusALIVE, LifeStatusDEAD:
 		return nil
 	default:
-		return fmt.Errorf("animal: invalid enum value for lifestatus field: %q", l)
+		return fmt.Errorf("animal: invalid enum value for life_status field: %q", ls)
 	}
 }

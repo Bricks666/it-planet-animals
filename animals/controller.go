@@ -1,6 +1,7 @@
 package animals
 
 import (
+	"animals/ent"
 	"animals/shared"
 
 	"github.com/gofiber/fiber/v2"
@@ -74,11 +75,74 @@ func (this *AnimalsController) GetOne(ct *fiber.Ctx) error {
 }
 
 func (this *AnimalsController) Create(ct *fiber.Ctx) error {
-	return nil
+	var dto CreateAnimalDto
+	var validationErrors []*shared.ErrorResponse
+	var err error
+
+	err = ct.BodyParser(&dto)
+	if err != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	validationErrors = shared.ValidateStruct(&dto)
+	if validationErrors != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
+	}
+
+	onlyUnique := shared.HasOnlyUnique(dto.AnimalTypes)
+	if !onlyUnique {
+		return ct.Status(fiber.StatusConflict).JSON(onlyUnique)
+	}
+
+	var animal *AnimalDto
+	animal, err = this.animalsService.Create(&dto)
+
+	if err != nil {
+
+		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
+	}
+
+	return ct.Status(fiber.StatusCreated).JSON(animal)
 }
 
 func (this *AnimalsController) Update(ct *fiber.Ctx) error {
-	return nil
+	var params AnimalParamsDto
+	var dto UpdateAnimalDto
+	var validationErrors []*shared.ErrorResponse
+	var err error
+
+	err = ct.ParamsParser(&params)
+	if err != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	validationErrors = shared.ValidateStruct(&params)
+	if validationErrors != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
+	}
+
+	err = ct.BodyParser(&dto)
+	if err != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	validationErrors = shared.ValidateStruct(&dto)
+	if validationErrors != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
+	}
+
+	var animal *AnimalDto
+	animal, err = this.animalsService.Update(params.Id, &dto)
+
+	if ent.IsConstraintError(err) {
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	if ent.IsNotFound(err) {
+		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
+	}
+
+	return ct.Status(fiber.StatusOK).JSON(animal)
 }
 
 func (this *AnimalsController) Remove(ct *fiber.Ctx) error {

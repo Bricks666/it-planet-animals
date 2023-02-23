@@ -2,6 +2,7 @@ package animals
 
 import (
 	"animals/ent"
+	Animal "animals/ent/animal"
 )
 
 var Service AnimalsService
@@ -43,9 +44,41 @@ func (this *AnimalsService) GetOne(id uint64) (*AnimalDto, error) {
 	return prepareAnimal(animal), nil
 }
 
-func (this *AnimalsService) Create() {}
+func (this *AnimalsService) Create(dto *CreateAnimalDto) (*AnimalDto, error) {
+	animal, err := this.animalsRepository.Create(dto)
 
-func (this *AnimalsService) Update() {}
+	if err != nil {
+		return nil, err
+	}
+
+	return prepareAnimal(animal), nil
+}
+
+func (this *AnimalsService) Update(id uint64, dto *UpdateAnimalDto) (*AnimalDto, error) {
+	animal, err := this.animalsRepository.GetOne(id)
+
+	if err != nil {
+		return nil, &ent.NotFoundError{}
+	}
+
+	if animal.LifeStatus == Animal.LifeStatusDEAD &&
+		dto.LifeStatus == Animal.LifeStatusALIVE.String() {
+		return nil, ent.ConstraintError{}
+	}
+
+	count := len(animal.Edges.VisitedLocations)
+	if count > 0 && animal.Edges.VisitedLocations[count-1].ID == dto.ChippingLocationId {
+		return nil, ent.ConstraintError{}
+	}
+
+	animal, err = this.animalsRepository.Update(id, dto)
+
+	if err != nil {
+		return nil, &ent.NotFoundError{}
+	}
+
+	return prepareAnimal(animal), nil
+}
 
 func (this *AnimalsService) Remove() {}
 
@@ -80,10 +113,10 @@ func prepareAnimal(animal *ent.Animal) *AnimalDto {
 		Length:             animal.Length,
 		Height:             animal.Height,
 		Gender:             string(animal.Gender),
-		Lifestatus:         string(animal.Lifestatus),
+		Lifestatus:         string(animal.LifeStatus),
 		ChippingDateTime:   animal.ChippingDateTime,
-		ChipperId:          animal.ChipperId,
-		ChippingLocationId: animal.ChippingLocationId,
+		ChipperId:          animal.ChipperID,
+		ChippingLocationId: animal.ChippingLocationID,
 		DeathDateTime:      animal.DeathDateTime,
 		VisitedLocations:   locationIds,
 	}

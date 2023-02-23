@@ -41,7 +41,7 @@ var Columns = []string{
 var (
 	// VisitedLocationsAnimalsPrimaryKey and VisitedLocationsAnimalsColumn2 are the table columns denoting the
 	// primary key for the visited_locations_animals relation (M2M).
-	VisitedLocationsAnimalsPrimaryKey = []string{"animalId", "locationId"}
+	VisitedLocationsAnimalsPrimaryKey = []string{"animal_id", "location_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).

@@ -22,9 +22,9 @@ func (AnimalsLocations) Annotations() []schema.Annotation {
 func (AnimalsLocations) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint64("id").Positive(),
-		field.Uint64("animalId"),
-		field.Uint64("locationId"),
-		field.Time("dateTimeOfVisitLocationPoint").Default(time.Now),
+		field.Uint64("animal_id"),
+		field.Uint64("location_id"),
+		field.Time("date_time_of_visit_location_point").Default(time.Now),
 	}
 }
 
@@ -34,10 +34,10 @@ func (AnimalsLocations) Edges() []ent.Edge {
 		edge.To("animals_locations_animal", Animal.Type).
 			Unique().
 			Required().
-			Field("animalId"),
+			Field("animal_id"),
 		edge.To("animals_locations_location", Location.Type).
 			Unique().
 			Required().
-			Field("locationId"),
+			Field("location_id"),
 	}
 }

@@ -15,7 +15,7 @@ var (
 		{Name: "length", Type: field.TypeFloat32},
 		{Name: "height", Type: field.TypeFloat32},
 		{Name: "gender", Type: field.TypeEnum, Enums: []string{"MALE", "FEMALE", "OTHER"}},
-		{Name: "lifestatus", Type: field.TypeEnum, Enums: []string{"ALIVE", "DEAD"}, Default: "ALIVE"},
+		{Name: "life_status", Type: field.TypeEnum, Enums: []string{"ALIVE", "DEAD"}, Default: "ALIVE"},
 		{Name: "chipping_date_time", Type: field.TypeTime},
 		{Name: "death_date_time", Type: field.TypeTime, Nullable: true},
 		{Name: "chipper_id", Type: field.TypeUint32, Nullable: true},
@@ -81,7 +81,7 @@ var (
 		Indexes: []*schema.Index{
 			{
 				Name:    "animalslocations_animal_id_location_id",
-				Unique:  false,
+				Unique:  true,
 				Columns: []*schema.Column{AnimalsLocationsColumns[2], AnimalsLocationsColumns[3]},
 			},
 		},

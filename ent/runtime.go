@@ -30,9 +30,9 @@ func init() {
 	animalDescHeight := animalFields[3].Descriptor()
 	// animal.HeightValidator is a validator for the "height" field. It is called by the builders before save.
 	animal.HeightValidator = animalDescHeight.Validators[0].(func(float32) error)
-	// animalDescChippingDateTime is the schema descriptor for chippingDateTime field.
+	// animalDescChippingDateTime is the schema descriptor for chipping_date_time field.
 	animalDescChippingDateTime := animalFields[6].Descriptor()
-	// animal.DefaultChippingDateTime holds the default value on creation for the chippingDateTime field.
+	// animal.DefaultChippingDateTime holds the default value on creation for the chipping_date_time field.
 	animal.DefaultChippingDateTime = animalDescChippingDateTime.Default.(func() time.Time)
 	// animalDescID is the schema descriptor for id field.
 	animalDescID := animalFields[0].Descriptor()
@@ -50,9 +50,9 @@ func init() {
 	animaltype.IDValidator = animaltypeDescID.Validators[0].(func(uint64) error)
 	animalslocationsFields := schema.AnimalsLocations{}.Fields()
 	_ = animalslocationsFields
-	// animalslocationsDescDateTimeOfVisitLocationPoint is the schema descriptor for dateTimeOfVisitLocationPoint field.
+	// animalslocationsDescDateTimeOfVisitLocationPoint is the schema descriptor for date_time_of_visit_location_point field.
 	animalslocationsDescDateTimeOfVisitLocationPoint := animalslocationsFields[3].Descriptor()
-	// animalslocations.DefaultDateTimeOfVisitLocationPoint holds the default value on creation for the dateTimeOfVisitLocationPoint field.
+	// animalslocations.DefaultDateTimeOfVisitLocationPoint holds the default value on creation for the date_time_of_visit_location_point field.
 	animalslocations.DefaultDateTimeOfVisitLocationPoint = animalslocationsDescDateTimeOfVisitLocationPoint.Default.(func() time.Time)
 	// animalslocationsDescID is the schema descriptor for id field.
 	animalslocationsDescID := animalslocationsFields[0].Descriptor()

@@ -114,7 +114,11 @@ func (this *UsersController) Update(ct *fiber.Ctx) error {
 	validationErrors = shared.ValidateStruct(&params)
 	if validationErrors != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
+	}
 
+	err = AuthHasSameId(ct, params.Id)
+	if err != nil {
+		return ct.Status(fiber.StatusForbidden).JSON("invalid id")
 	}
 
 	err = ct.BodyParser(&dto)
@@ -125,7 +129,6 @@ func (this *UsersController) Update(ct *fiber.Ctx) error {
 	validationErrors = shared.ValidateStruct(&dto)
 	if validationErrors != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
-
 	}
 
 	var user *SecurityUserDto
@@ -154,6 +157,11 @@ func (this *UsersController) Remove(ct *fiber.Ctx) error {
 	validationErrors = shared.ValidateStruct(&params)
 	if validationErrors != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
+	}
+
+	err = AuthHasSameId(ct, params.Id)
+	if err != nil {
+		return ct.Status(fiber.StatusForbidden).JSON("invalid id")
 	}
 
 	err = this.usersService.Remove(params.Id)

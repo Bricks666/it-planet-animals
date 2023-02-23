@@ -2,7 +2,6 @@ package users
 
 import (
 	"encoding/base64"
-	"log"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -14,7 +13,7 @@ func DisableAuthCheck(ct *fiber.Ctx) error {
 	return ct.Next()
 }
 
-func AuthMiddleware(ct *fiber.Ctx) error {
+func CheckAuth(ct *fiber.Ctx) error {
 	var disableCheck = false
 	d := ct.Locals(disableAuthCheck)
 	if d != nil {
@@ -41,7 +40,6 @@ func AuthMiddleware(ct *fiber.Ctx) error {
 	}
 
 	userAndPassword := strings.Split(string(credentials), ":")
-	log.Println(userAndPassword, disableCheck, ct.Path())
 	if len(userAndPassword) != 2 {
 		return ct.Status(fiber.StatusUnauthorized).JSON("Invalid credentials")
 	}
@@ -54,5 +52,15 @@ func AuthMiddleware(ct *fiber.Ctx) error {
 
 	ct.Locals(USER_LOCALS, user)
 
+	return ct.Next()
+}
+
+func CheckUnauthorized(ct *fiber.Ctx) error {
+	headers := ct.GetReqHeaders()
+	authHeader := headers[fiber.HeaderAuthorization]
+
+	if authHeader != "" {
+		return ct.Status(fiber.StatusForbidden).JSON("Header is empty")
+	}
 	return ct.Next()
 }

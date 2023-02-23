@@ -30,25 +30,25 @@ func (alu *AnimalsLocationsUpdate) Where(ps ...predicate.AnimalsLocations) *Anim
 	return alu
 }
 
-// SetAnimalId sets the "animalId" field.
-func (alu *AnimalsLocationsUpdate) SetAnimalId(u uint64) *AnimalsLocationsUpdate {
-	alu.mutation.SetAnimalId(u)
+// SetAnimalID sets the "animal_id" field.
+func (alu *AnimalsLocationsUpdate) SetAnimalID(u uint64) *AnimalsLocationsUpdate {
+	alu.mutation.SetAnimalID(u)
 	return alu
 }
 
-// SetLocationId sets the "locationId" field.
-func (alu *AnimalsLocationsUpdate) SetLocationId(u uint64) *AnimalsLocationsUpdate {
-	alu.mutation.SetLocationId(u)
+// SetLocationID sets the "location_id" field.
+func (alu *AnimalsLocationsUpdate) SetLocationID(u uint64) *AnimalsLocationsUpdate {
+	alu.mutation.SetLocationID(u)
 	return alu
 }
 
-// SetDateTimeOfVisitLocationPoint sets the "dateTimeOfVisitLocationPoint" field.
+// SetDateTimeOfVisitLocationPoint sets the "date_time_of_visit_location_point" field.
 func (alu *AnimalsLocationsUpdate) SetDateTimeOfVisitLocationPoint(t time.Time) *AnimalsLocationsUpdate {
 	alu.mutation.SetDateTimeOfVisitLocationPoint(t)
 	return alu
 }
 
-// SetNillableDateTimeOfVisitLocationPoint sets the "dateTimeOfVisitLocationPoint" field if the given value is not nil.
+// SetNillableDateTimeOfVisitLocationPoint sets the "date_time_of_visit_location_point" field if the given value is not nil.
 func (alu *AnimalsLocationsUpdate) SetNillableDateTimeOfVisitLocationPoint(t *time.Time) *AnimalsLocationsUpdate {
 	if t != nil {
 		alu.SetDateTimeOfVisitLocationPoint(*t)
@@ -238,25 +238,25 @@ type AnimalsLocationsUpdateOne struct {
 	mutation *AnimalsLocationsMutation
 }
 
-// SetAnimalId sets the "animalId" field.
-func (aluo *AnimalsLocationsUpdateOne) SetAnimalId(u uint64) *AnimalsLocationsUpdateOne {
-	aluo.mutation.SetAnimalId(u)
+// SetAnimalID sets the "animal_id" field.
+func (aluo *AnimalsLocationsUpdateOne) SetAnimalID(u uint64) *AnimalsLocationsUpdateOne {
+	aluo.mutation.SetAnimalID(u)
 	return aluo
 }
 
-// SetLocationId sets the "locationId" field.
-func (aluo *AnimalsLocationsUpdateOne) SetLocationId(u uint64) *AnimalsLocationsUpdateOne {
-	aluo.mutation.SetLocationId(u)
+// SetLocationID sets the "location_id" field.
+func (aluo *AnimalsLocationsUpdateOne) SetLocationID(u uint64) *AnimalsLocationsUpdateOne {
+	aluo.mutation.SetLocationID(u)
 	return aluo
 }
 
-// SetDateTimeOfVisitLocationPoint sets the "dateTimeOfVisitLocationPoint" field.
+// SetDateTimeOfVisitLocationPoint sets the "date_time_of_visit_location_point" field.
 func (aluo *AnimalsLocationsUpdateOne) SetDateTimeOfVisitLocationPoint(t time.Time) *AnimalsLocationsUpdateOne {
 	aluo.mutation.SetDateTimeOfVisitLocationPoint(t)
 	return aluo
 }
 
-// SetNillableDateTimeOfVisitLocationPoint sets the "dateTimeOfVisitLocationPoint" field if the given value is not nil.
+// SetNillableDateTimeOfVisitLocationPoint sets the "date_time_of_visit_location_point" field if the given value is not nil.
 func (aluo *AnimalsLocationsUpdateOne) SetNillableDateTimeOfVisitLocationPoint(t *time.Time) *AnimalsLocationsUpdateOne {
 	if t != nil {
 		aluo.SetDateTimeOfVisitLocationPoint(*t)

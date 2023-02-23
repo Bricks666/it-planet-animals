@@ -48,27 +48,27 @@ func (ac *AnimalCreate) SetGender(a animal.Gender) *AnimalCreate {
 	return ac
 }
 
-// SetLifestatus sets the "lifestatus" field.
-func (ac *AnimalCreate) SetLifestatus(a animal.Lifestatus) *AnimalCreate {
-	ac.mutation.SetLifestatus(a)
+// SetLifeStatus sets the "life_status" field.
+func (ac *AnimalCreate) SetLifeStatus(as animal.LifeStatus) *AnimalCreate {
+	ac.mutation.SetLifeStatus(as)
 	return ac
 }
 
-// SetNillableLifestatus sets the "lifestatus" field if the given value is not nil.
-func (ac *AnimalCreate) SetNillableLifestatus(a *animal.Lifestatus) *AnimalCreate {
-	if a != nil {
-		ac.SetLifestatus(*a)
+// SetNillableLifeStatus sets the "life_status" field if the given value is not nil.
+func (ac *AnimalCreate) SetNillableLifeStatus(as *animal.LifeStatus) *AnimalCreate {
+	if as != nil {
+		ac.SetLifeStatus(*as)
 	}
 	return ac
 }
 
-// SetChippingDateTime sets the "chippingDateTime" field.
+// SetChippingDateTime sets the "chipping_date_time" field.
 func (ac *AnimalCreate) SetChippingDateTime(t time.Time) *AnimalCreate {
 	ac.mutation.SetChippingDateTime(t)
 	return ac
 }
 
-// SetNillableChippingDateTime sets the "chippingDateTime" field if the given value is not nil.
+// SetNillableChippingDateTime sets the "chipping_date_time" field if the given value is not nil.
 func (ac *AnimalCreate) SetNillableChippingDateTime(t *time.Time) *AnimalCreate {
 	if t != nil {
 		ac.SetChippingDateTime(*t)
@@ -76,41 +76,41 @@ func (ac *AnimalCreate) SetNillableChippingDateTime(t *time.Time) *AnimalCreate 
 	return ac
 }
 
-// SetChipperId sets the "chipperId" field.
-func (ac *AnimalCreate) SetChipperId(u uint32) *AnimalCreate {
-	ac.mutation.SetChipperId(u)
+// SetChipperID sets the "chipper_id" field.
+func (ac *AnimalCreate) SetChipperID(u uint32) *AnimalCreate {
+	ac.mutation.SetChipperID(u)
 	return ac
 }
 
-// SetNillableChipperId sets the "chipperId" field if the given value is not nil.
-func (ac *AnimalCreate) SetNillableChipperId(u *uint32) *AnimalCreate {
+// SetNillableChipperID sets the "chipper_id" field if the given value is not nil.
+func (ac *AnimalCreate) SetNillableChipperID(u *uint32) *AnimalCreate {
 	if u != nil {
-		ac.SetChipperId(*u)
+		ac.SetChipperID(*u)
 	}
 	return ac
 }
 
-// SetChippingLocationId sets the "chippingLocationId" field.
-func (ac *AnimalCreate) SetChippingLocationId(u uint64) *AnimalCreate {
-	ac.mutation.SetChippingLocationId(u)
+// SetChippingLocationID sets the "chipping_location_id" field.
+func (ac *AnimalCreate) SetChippingLocationID(u uint64) *AnimalCreate {
+	ac.mutation.SetChippingLocationID(u)
 	return ac
 }
 
-// SetNillableChippingLocationId sets the "chippingLocationId" field if the given value is not nil.
-func (ac *AnimalCreate) SetNillableChippingLocationId(u *uint64) *AnimalCreate {
+// SetNillableChippingLocationID sets the "chipping_location_id" field if the given value is not nil.
+func (ac *AnimalCreate) SetNillableChippingLocationID(u *uint64) *AnimalCreate {
 	if u != nil {
-		ac.SetChippingLocationId(*u)
+		ac.SetChippingLocationID(*u)
 	}
 	return ac
 }
 
-// SetDeathDateTime sets the "deathDateTime" field.
+// SetDeathDateTime sets the "death_date_time" field.
 func (ac *AnimalCreate) SetDeathDateTime(t time.Time) *AnimalCreate {
 	ac.mutation.SetDeathDateTime(t)
 	return ac
 }
 
-// SetNillableDeathDateTime sets the "deathDateTime" field if the given value is not nil.
+// SetNillableDeathDateTime sets the "death_date_time" field if the given value is not nil.
 func (ac *AnimalCreate) SetNillableDeathDateTime(t *time.Time) *AnimalCreate {
 	if t != nil {
 		ac.SetDeathDateTime(*t)
@@ -156,20 +156,6 @@ func (ac *AnimalCreate) AddAnimalTypeAnimal(a ...*AnimalType) *AnimalCreate {
 		ids[i] = a[i].ID
 	}
 	return ac.AddAnimalTypeAnimalIDs(ids...)
-}
-
-// SetChippingLocationID sets the "chipping_location" edge to the Location entity by ID.
-func (ac *AnimalCreate) SetChippingLocationID(id uint64) *AnimalCreate {
-	ac.mutation.SetChippingLocationID(id)
-	return ac
-}
-
-// SetNillableChippingLocationID sets the "chipping_location" edge to the Location entity by ID if the given value is not nil.
-func (ac *AnimalCreate) SetNillableChippingLocationID(id *uint64) *AnimalCreate {
-	if id != nil {
-		ac = ac.SetChippingLocationID(*id)
-	}
-	return ac
 }
 
 // SetChippingLocation sets the "chipping_location" edge to the Location entity.
@@ -242,9 +228,9 @@ func (ac *AnimalCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ac *AnimalCreate) defaults() {
-	if _, ok := ac.mutation.Lifestatus(); !ok {
-		v := animal.DefaultLifestatus
-		ac.mutation.SetLifestatus(v)
+	if _, ok := ac.mutation.LifeStatus(); !ok {
+		v := animal.DefaultLifeStatus
+		ac.mutation.SetLifeStatus(v)
 	}
 	if _, ok := ac.mutation.ChippingDateTime(); !ok {
 		v := animal.DefaultChippingDateTime()
@@ -286,16 +272,16 @@ func (ac *AnimalCreate) check() error {
 			return &ValidationError{Name: "gender", err: fmt.Errorf(`ent: validator failed for field "Animal.gender": %w`, err)}
 		}
 	}
-	if _, ok := ac.mutation.Lifestatus(); !ok {
-		return &ValidationError{Name: "lifestatus", err: errors.New(`ent: missing required field "Animal.lifestatus"`)}
+	if _, ok := ac.mutation.LifeStatus(); !ok {
+		return &ValidationError{Name: "life_status", err: errors.New(`ent: missing required field "Animal.life_status"`)}
 	}
-	if v, ok := ac.mutation.Lifestatus(); ok {
-		if err := animal.LifestatusValidator(v); err != nil {
-			return &ValidationError{Name: "lifestatus", err: fmt.Errorf(`ent: validator failed for field "Animal.lifestatus": %w`, err)}
+	if v, ok := ac.mutation.LifeStatus(); ok {
+		if err := animal.LifeStatusValidator(v); err != nil {
+			return &ValidationError{Name: "life_status", err: fmt.Errorf(`ent: validator failed for field "Animal.life_status": %w`, err)}
 		}
 	}
 	if _, ok := ac.mutation.ChippingDateTime(); !ok {
-		return &ValidationError{Name: "chippingDateTime", err: errors.New(`ent: missing required field "Animal.chippingDateTime"`)}
+		return &ValidationError{Name: "chipping_date_time", err: errors.New(`ent: missing required field "Animal.chipping_date_time"`)}
 	}
 	if v, ok := ac.mutation.ID(); ok {
 		if err := animal.IDValidator(v); err != nil {
@@ -350,9 +336,9 @@ func (ac *AnimalCreate) createSpec() (*Animal, *sqlgraph.CreateSpec) {
 		_spec.SetField(animal.FieldGender, field.TypeEnum, value)
 		_node.Gender = value
 	}
-	if value, ok := ac.mutation.Lifestatus(); ok {
-		_spec.SetField(animal.FieldLifestatus, field.TypeEnum, value)
-		_node.Lifestatus = value
+	if value, ok := ac.mutation.LifeStatus(); ok {
+		_spec.SetField(animal.FieldLifeStatus, field.TypeEnum, value)
+		_node.LifeStatus = value
 	}
 	if value, ok := ac.mutation.ChippingDateTime(); ok {
 		_spec.SetField(animal.FieldChippingDateTime, field.TypeTime, value)
@@ -379,7 +365,7 @@ func (ac *AnimalCreate) createSpec() (*Animal, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ChipperId = nodes[0]
+		_node.ChipperID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ac.mutation.AnimalTypeAnimalIDs(); len(nodes) > 0 {
@@ -418,7 +404,7 @@ func (ac *AnimalCreate) createSpec() (*Animal, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ChippingLocationId = nodes[0]
+		_node.ChippingLocationID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ac.mutation.VisitedLocationsIDs(); len(nodes) > 0 {

@@ -579,7 +579,7 @@ func (aq *AnimalQuery) loadChipperAnimal(ctx context.Context, query *UserQuery, 
 	ids := make([]uint32, 0, len(nodes))
 	nodeids := make(map[uint32][]*Animal)
 	for i := range nodes {
-		fk := nodes[i].ChipperId
+		fk := nodes[i].ChipperID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -596,7 +596,7 @@ func (aq *AnimalQuery) loadChipperAnimal(ctx context.Context, query *UserQuery, 
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "chipperId" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "chipper_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -669,7 +669,7 @@ func (aq *AnimalQuery) loadChippingLocation(ctx context.Context, query *Location
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Animal)
 	for i := range nodes {
-		fk := nodes[i].ChippingLocationId
+		fk := nodes[i].ChippingLocationID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -686,7 +686,7 @@ func (aq *AnimalQuery) loadChippingLocation(ctx context.Context, query *Location
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "chippingLocationId" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "chipping_location_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -773,10 +773,10 @@ func (aq *AnimalQuery) loadAnimals(ctx context.Context, query *AnimalsLocationsQ
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.AnimalId
+		fk := n.AnimalID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "animalId" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "animal_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

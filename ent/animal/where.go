@@ -70,22 +70,22 @@ func Height(v float32) predicate.Animal {
 	return predicate.Animal(sql.FieldEQ(FieldHeight, v))
 }
 
-// ChippingDateTime applies equality check predicate on the "chippingDateTime" field. It's identical to ChippingDateTimeEQ.
+// ChippingDateTime applies equality check predicate on the "chipping_date_time" field. It's identical to ChippingDateTimeEQ.
 func ChippingDateTime(v time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldEQ(FieldChippingDateTime, v))
 }
 
-// ChipperId applies equality check predicate on the "chipperId" field. It's identical to ChipperIdEQ.
-func ChipperId(v uint32) predicate.Animal {
-	return predicate.Animal(sql.FieldEQ(FieldChipperId, v))
+// ChipperID applies equality check predicate on the "chipper_id" field. It's identical to ChipperIDEQ.
+func ChipperID(v uint32) predicate.Animal {
+	return predicate.Animal(sql.FieldEQ(FieldChipperID, v))
 }
 
-// ChippingLocationId applies equality check predicate on the "chippingLocationId" field. It's identical to ChippingLocationIdEQ.
-func ChippingLocationId(v uint64) predicate.Animal {
-	return predicate.Animal(sql.FieldEQ(FieldChippingLocationId, v))
+// ChippingLocationID applies equality check predicate on the "chipping_location_id" field. It's identical to ChippingLocationIDEQ.
+func ChippingLocationID(v uint64) predicate.Animal {
+	return predicate.Animal(sql.FieldEQ(FieldChippingLocationID, v))
 }
 
-// DeathDateTime applies equality check predicate on the "deathDateTime" field. It's identical to DeathDateTimeEQ.
+// DeathDateTime applies equality check predicate on the "death_date_time" field. It's identical to DeathDateTimeEQ.
 func DeathDateTime(v time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldEQ(FieldDeathDateTime, v))
 }
@@ -230,172 +230,172 @@ func GenderNotIn(vs ...Gender) predicate.Animal {
 	return predicate.Animal(sql.FieldNotIn(FieldGender, vs...))
 }
 
-// LifestatusEQ applies the EQ predicate on the "lifestatus" field.
-func LifestatusEQ(v Lifestatus) predicate.Animal {
-	return predicate.Animal(sql.FieldEQ(FieldLifestatus, v))
+// LifeStatusEQ applies the EQ predicate on the "life_status" field.
+func LifeStatusEQ(v LifeStatus) predicate.Animal {
+	return predicate.Animal(sql.FieldEQ(FieldLifeStatus, v))
 }
 
-// LifestatusNEQ applies the NEQ predicate on the "lifestatus" field.
-func LifestatusNEQ(v Lifestatus) predicate.Animal {
-	return predicate.Animal(sql.FieldNEQ(FieldLifestatus, v))
+// LifeStatusNEQ applies the NEQ predicate on the "life_status" field.
+func LifeStatusNEQ(v LifeStatus) predicate.Animal {
+	return predicate.Animal(sql.FieldNEQ(FieldLifeStatus, v))
 }
 
-// LifestatusIn applies the In predicate on the "lifestatus" field.
-func LifestatusIn(vs ...Lifestatus) predicate.Animal {
-	return predicate.Animal(sql.FieldIn(FieldLifestatus, vs...))
+// LifeStatusIn applies the In predicate on the "life_status" field.
+func LifeStatusIn(vs ...LifeStatus) predicate.Animal {
+	return predicate.Animal(sql.FieldIn(FieldLifeStatus, vs...))
 }
 
-// LifestatusNotIn applies the NotIn predicate on the "lifestatus" field.
-func LifestatusNotIn(vs ...Lifestatus) predicate.Animal {
-	return predicate.Animal(sql.FieldNotIn(FieldLifestatus, vs...))
+// LifeStatusNotIn applies the NotIn predicate on the "life_status" field.
+func LifeStatusNotIn(vs ...LifeStatus) predicate.Animal {
+	return predicate.Animal(sql.FieldNotIn(FieldLifeStatus, vs...))
 }
 
-// ChippingDateTimeEQ applies the EQ predicate on the "chippingDateTime" field.
+// ChippingDateTimeEQ applies the EQ predicate on the "chipping_date_time" field.
 func ChippingDateTimeEQ(v time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldEQ(FieldChippingDateTime, v))
 }
 
-// ChippingDateTimeNEQ applies the NEQ predicate on the "chippingDateTime" field.
+// ChippingDateTimeNEQ applies the NEQ predicate on the "chipping_date_time" field.
 func ChippingDateTimeNEQ(v time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldNEQ(FieldChippingDateTime, v))
 }
 
-// ChippingDateTimeIn applies the In predicate on the "chippingDateTime" field.
+// ChippingDateTimeIn applies the In predicate on the "chipping_date_time" field.
 func ChippingDateTimeIn(vs ...time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldIn(FieldChippingDateTime, vs...))
 }
 
-// ChippingDateTimeNotIn applies the NotIn predicate on the "chippingDateTime" field.
+// ChippingDateTimeNotIn applies the NotIn predicate on the "chipping_date_time" field.
 func ChippingDateTimeNotIn(vs ...time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldNotIn(FieldChippingDateTime, vs...))
 }
 
-// ChippingDateTimeGT applies the GT predicate on the "chippingDateTime" field.
+// ChippingDateTimeGT applies the GT predicate on the "chipping_date_time" field.
 func ChippingDateTimeGT(v time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldGT(FieldChippingDateTime, v))
 }
 
-// ChippingDateTimeGTE applies the GTE predicate on the "chippingDateTime" field.
+// ChippingDateTimeGTE applies the GTE predicate on the "chipping_date_time" field.
 func ChippingDateTimeGTE(v time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldGTE(FieldChippingDateTime, v))
 }
 
-// ChippingDateTimeLT applies the LT predicate on the "chippingDateTime" field.
+// ChippingDateTimeLT applies the LT predicate on the "chipping_date_time" field.
 func ChippingDateTimeLT(v time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldLT(FieldChippingDateTime, v))
 }
 
-// ChippingDateTimeLTE applies the LTE predicate on the "chippingDateTime" field.
+// ChippingDateTimeLTE applies the LTE predicate on the "chipping_date_time" field.
 func ChippingDateTimeLTE(v time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldLTE(FieldChippingDateTime, v))
 }
 
-// ChipperIdEQ applies the EQ predicate on the "chipperId" field.
-func ChipperIdEQ(v uint32) predicate.Animal {
-	return predicate.Animal(sql.FieldEQ(FieldChipperId, v))
+// ChipperIDEQ applies the EQ predicate on the "chipper_id" field.
+func ChipperIDEQ(v uint32) predicate.Animal {
+	return predicate.Animal(sql.FieldEQ(FieldChipperID, v))
 }
 
-// ChipperIdNEQ applies the NEQ predicate on the "chipperId" field.
-func ChipperIdNEQ(v uint32) predicate.Animal {
-	return predicate.Animal(sql.FieldNEQ(FieldChipperId, v))
+// ChipperIDNEQ applies the NEQ predicate on the "chipper_id" field.
+func ChipperIDNEQ(v uint32) predicate.Animal {
+	return predicate.Animal(sql.FieldNEQ(FieldChipperID, v))
 }
 
-// ChipperIdIn applies the In predicate on the "chipperId" field.
-func ChipperIdIn(vs ...uint32) predicate.Animal {
-	return predicate.Animal(sql.FieldIn(FieldChipperId, vs...))
+// ChipperIDIn applies the In predicate on the "chipper_id" field.
+func ChipperIDIn(vs ...uint32) predicate.Animal {
+	return predicate.Animal(sql.FieldIn(FieldChipperID, vs...))
 }
 
-// ChipperIdNotIn applies the NotIn predicate on the "chipperId" field.
-func ChipperIdNotIn(vs ...uint32) predicate.Animal {
-	return predicate.Animal(sql.FieldNotIn(FieldChipperId, vs...))
+// ChipperIDNotIn applies the NotIn predicate on the "chipper_id" field.
+func ChipperIDNotIn(vs ...uint32) predicate.Animal {
+	return predicate.Animal(sql.FieldNotIn(FieldChipperID, vs...))
 }
 
-// ChipperIdIsNil applies the IsNil predicate on the "chipperId" field.
-func ChipperIdIsNil() predicate.Animal {
-	return predicate.Animal(sql.FieldIsNull(FieldChipperId))
+// ChipperIDIsNil applies the IsNil predicate on the "chipper_id" field.
+func ChipperIDIsNil() predicate.Animal {
+	return predicate.Animal(sql.FieldIsNull(FieldChipperID))
 }
 
-// ChipperIdNotNil applies the NotNil predicate on the "chipperId" field.
-func ChipperIdNotNil() predicate.Animal {
-	return predicate.Animal(sql.FieldNotNull(FieldChipperId))
+// ChipperIDNotNil applies the NotNil predicate on the "chipper_id" field.
+func ChipperIDNotNil() predicate.Animal {
+	return predicate.Animal(sql.FieldNotNull(FieldChipperID))
 }
 
-// ChippingLocationIdEQ applies the EQ predicate on the "chippingLocationId" field.
-func ChippingLocationIdEQ(v uint64) predicate.Animal {
-	return predicate.Animal(sql.FieldEQ(FieldChippingLocationId, v))
+// ChippingLocationIDEQ applies the EQ predicate on the "chipping_location_id" field.
+func ChippingLocationIDEQ(v uint64) predicate.Animal {
+	return predicate.Animal(sql.FieldEQ(FieldChippingLocationID, v))
 }
 
-// ChippingLocationIdNEQ applies the NEQ predicate on the "chippingLocationId" field.
-func ChippingLocationIdNEQ(v uint64) predicate.Animal {
-	return predicate.Animal(sql.FieldNEQ(FieldChippingLocationId, v))
+// ChippingLocationIDNEQ applies the NEQ predicate on the "chipping_location_id" field.
+func ChippingLocationIDNEQ(v uint64) predicate.Animal {
+	return predicate.Animal(sql.FieldNEQ(FieldChippingLocationID, v))
 }
 
-// ChippingLocationIdIn applies the In predicate on the "chippingLocationId" field.
-func ChippingLocationIdIn(vs ...uint64) predicate.Animal {
-	return predicate.Animal(sql.FieldIn(FieldChippingLocationId, vs...))
+// ChippingLocationIDIn applies the In predicate on the "chipping_location_id" field.
+func ChippingLocationIDIn(vs ...uint64) predicate.Animal {
+	return predicate.Animal(sql.FieldIn(FieldChippingLocationID, vs...))
 }
 
-// ChippingLocationIdNotIn applies the NotIn predicate on the "chippingLocationId" field.
-func ChippingLocationIdNotIn(vs ...uint64) predicate.Animal {
-	return predicate.Animal(sql.FieldNotIn(FieldChippingLocationId, vs...))
+// ChippingLocationIDNotIn applies the NotIn predicate on the "chipping_location_id" field.
+func ChippingLocationIDNotIn(vs ...uint64) predicate.Animal {
+	return predicate.Animal(sql.FieldNotIn(FieldChippingLocationID, vs...))
 }
 
-// ChippingLocationIdIsNil applies the IsNil predicate on the "chippingLocationId" field.
-func ChippingLocationIdIsNil() predicate.Animal {
-	return predicate.Animal(sql.FieldIsNull(FieldChippingLocationId))
+// ChippingLocationIDIsNil applies the IsNil predicate on the "chipping_location_id" field.
+func ChippingLocationIDIsNil() predicate.Animal {
+	return predicate.Animal(sql.FieldIsNull(FieldChippingLocationID))
 }
 
-// ChippingLocationIdNotNil applies the NotNil predicate on the "chippingLocationId" field.
-func ChippingLocationIdNotNil() predicate.Animal {
-	return predicate.Animal(sql.FieldNotNull(FieldChippingLocationId))
+// ChippingLocationIDNotNil applies the NotNil predicate on the "chipping_location_id" field.
+func ChippingLocationIDNotNil() predicate.Animal {
+	return predicate.Animal(sql.FieldNotNull(FieldChippingLocationID))
 }
 
-// DeathDateTimeEQ applies the EQ predicate on the "deathDateTime" field.
+// DeathDateTimeEQ applies the EQ predicate on the "death_date_time" field.
 func DeathDateTimeEQ(v time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldEQ(FieldDeathDateTime, v))
 }
 
-// DeathDateTimeNEQ applies the NEQ predicate on the "deathDateTime" field.
+// DeathDateTimeNEQ applies the NEQ predicate on the "death_date_time" field.
 func DeathDateTimeNEQ(v time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldNEQ(FieldDeathDateTime, v))
 }
 
-// DeathDateTimeIn applies the In predicate on the "deathDateTime" field.
+// DeathDateTimeIn applies the In predicate on the "death_date_time" field.
 func DeathDateTimeIn(vs ...time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldIn(FieldDeathDateTime, vs...))
 }
 
-// DeathDateTimeNotIn applies the NotIn predicate on the "deathDateTime" field.
+// DeathDateTimeNotIn applies the NotIn predicate on the "death_date_time" field.
 func DeathDateTimeNotIn(vs ...time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldNotIn(FieldDeathDateTime, vs...))
 }
 
-// DeathDateTimeGT applies the GT predicate on the "deathDateTime" field.
+// DeathDateTimeGT applies the GT predicate on the "death_date_time" field.
 func DeathDateTimeGT(v time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldGT(FieldDeathDateTime, v))
 }
 
-// DeathDateTimeGTE applies the GTE predicate on the "deathDateTime" field.
+// DeathDateTimeGTE applies the GTE predicate on the "death_date_time" field.
 func DeathDateTimeGTE(v time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldGTE(FieldDeathDateTime, v))
 }
 
-// DeathDateTimeLT applies the LT predicate on the "deathDateTime" field.
+// DeathDateTimeLT applies the LT predicate on the "death_date_time" field.
 func DeathDateTimeLT(v time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldLT(FieldDeathDateTime, v))
 }
 
-// DeathDateTimeLTE applies the LTE predicate on the "deathDateTime" field.
+// DeathDateTimeLTE applies the LTE predicate on the "death_date_time" field.
 func DeathDateTimeLTE(v time.Time) predicate.Animal {
 	return predicate.Animal(sql.FieldLTE(FieldDeathDateTime, v))
 }
 
-// DeathDateTimeIsNil applies the IsNil predicate on the "deathDateTime" field.
+// DeathDateTimeIsNil applies the IsNil predicate on the "death_date_time" field.
 func DeathDateTimeIsNil() predicate.Animal {
 	return predicate.Animal(sql.FieldIsNull(FieldDeathDateTime))
 }
 
-// DeathDateTimeNotNil applies the NotNil predicate on the "deathDateTime" field.
+// DeathDateTimeNotNil applies the NotNil predicate on the "death_date_time" field.
 func DeathDateTimeNotNil() predicate.Animal {
 	return predicate.Animal(sql.FieldNotNull(FieldDeathDateTime))
 }

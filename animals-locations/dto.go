@@ -20,12 +20,12 @@ type AnimalsLocationSearchQueryDto struct {
 	shared.TimeSearchQueryDto
 }
 
-type AddAnimalsLocationParamsDto struct {
+type CreateAnimalsLocationParamsDto struct {
 	AnimalsLocationParamsDto
 	LocationId uint64 `param:"locationId" validate:"required,number,gt=0"`
 }
 
 type UpdateAnimalsLocationDto struct {
-	VisitedLocationId uint64 `json:"visitedLocationPointId" validate:"required,number,gt=0"`
-	NewLocationId     uint64 `json:"locationPointId" validate:"required,number,gt=0"`
+	VisitedAnimalLocationId uint64 `json:"visitedLocationPointId" validate:"required,number,gt=0"`
+	NewLocationId           uint64 `json:"locationPointId" validate:"required,number,gt=0"`
 }

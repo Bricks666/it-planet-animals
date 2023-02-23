@@ -22,25 +22,25 @@ type AnimalsLocationsCreate struct {
 	hooks    []Hook
 }
 
-// SetAnimalId sets the "animalId" field.
-func (alc *AnimalsLocationsCreate) SetAnimalId(u uint64) *AnimalsLocationsCreate {
-	alc.mutation.SetAnimalId(u)
+// SetAnimalID sets the "animal_id" field.
+func (alc *AnimalsLocationsCreate) SetAnimalID(u uint64) *AnimalsLocationsCreate {
+	alc.mutation.SetAnimalID(u)
 	return alc
 }
 
-// SetLocationId sets the "locationId" field.
-func (alc *AnimalsLocationsCreate) SetLocationId(u uint64) *AnimalsLocationsCreate {
-	alc.mutation.SetLocationId(u)
+// SetLocationID sets the "location_id" field.
+func (alc *AnimalsLocationsCreate) SetLocationID(u uint64) *AnimalsLocationsCreate {
+	alc.mutation.SetLocationID(u)
 	return alc
 }
 
-// SetDateTimeOfVisitLocationPoint sets the "dateTimeOfVisitLocationPoint" field.
+// SetDateTimeOfVisitLocationPoint sets the "date_time_of_visit_location_point" field.
 func (alc *AnimalsLocationsCreate) SetDateTimeOfVisitLocationPoint(t time.Time) *AnimalsLocationsCreate {
 	alc.mutation.SetDateTimeOfVisitLocationPoint(t)
 	return alc
 }
 
-// SetNillableDateTimeOfVisitLocationPoint sets the "dateTimeOfVisitLocationPoint" field if the given value is not nil.
+// SetNillableDateTimeOfVisitLocationPoint sets the "date_time_of_visit_location_point" field if the given value is not nil.
 func (alc *AnimalsLocationsCreate) SetNillableDateTimeOfVisitLocationPoint(t *time.Time) *AnimalsLocationsCreate {
 	if t != nil {
 		alc.SetDateTimeOfVisitLocationPoint(*t)
@@ -119,14 +119,14 @@ func (alc *AnimalsLocationsCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (alc *AnimalsLocationsCreate) check() error {
-	if _, ok := alc.mutation.AnimalId(); !ok {
-		return &ValidationError{Name: "animalId", err: errors.New(`ent: missing required field "AnimalsLocations.animalId"`)}
+	if _, ok := alc.mutation.AnimalID(); !ok {
+		return &ValidationError{Name: "animal_id", err: errors.New(`ent: missing required field "AnimalsLocations.animal_id"`)}
 	}
-	if _, ok := alc.mutation.LocationId(); !ok {
-		return &ValidationError{Name: "locationId", err: errors.New(`ent: missing required field "AnimalsLocations.locationId"`)}
+	if _, ok := alc.mutation.LocationID(); !ok {
+		return &ValidationError{Name: "location_id", err: errors.New(`ent: missing required field "AnimalsLocations.location_id"`)}
 	}
 	if _, ok := alc.mutation.DateTimeOfVisitLocationPoint(); !ok {
-		return &ValidationError{Name: "dateTimeOfVisitLocationPoint", err: errors.New(`ent: missing required field "AnimalsLocations.dateTimeOfVisitLocationPoint"`)}
+		return &ValidationError{Name: "date_time_of_visit_location_point", err: errors.New(`ent: missing required field "AnimalsLocations.date_time_of_visit_location_point"`)}
 	}
 	if v, ok := alc.mutation.ID(); ok {
 		if err := animalslocations.IDValidator(v); err != nil {
@@ -192,7 +192,7 @@ func (alc *AnimalsLocationsCreate) createSpec() (*AnimalsLocations, *sqlgraph.Cr
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.AnimalId = nodes[0]
+		_node.AnimalID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := alc.mutation.AnimalsLocationsLocationIDs(); len(nodes) > 0 {
@@ -212,7 +212,7 @@ func (alc *AnimalsLocationsCreate) createSpec() (*AnimalsLocations, *sqlgraph.Cr
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.LocationId = nodes[0]
+		_node.LocationID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

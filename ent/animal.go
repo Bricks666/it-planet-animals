@@ -26,16 +26,16 @@ type Animal struct {
 	Height float32 `json:"height,omitempty"`
 	// Gender holds the value of the "gender" field.
 	Gender animal.Gender `json:"gender,omitempty"`
-	// Lifestatus holds the value of the "lifestatus" field.
-	Lifestatus animal.Lifestatus `json:"lifestatus,omitempty"`
-	// ChippingDateTime holds the value of the "chippingDateTime" field.
-	ChippingDateTime time.Time `json:"chippingDateTime,omitempty"`
-	// ChipperId holds the value of the "chipperId" field.
-	ChipperId uint32 `json:"chipperId,omitempty"`
-	// ChippingLocationId holds the value of the "chippingLocationId" field.
-	ChippingLocationId uint64 `json:"chippingLocationId,omitempty"`
-	// DeathDateTime holds the value of the "deathDateTime" field.
-	DeathDateTime *time.Time `json:"deathDateTime,omitempty"`
+	// LifeStatus holds the value of the "life_status" field.
+	LifeStatus animal.LifeStatus `json:"life_status,omitempty"`
+	// ChippingDateTime holds the value of the "chipping_date_time" field.
+	ChippingDateTime time.Time `json:"chipping_date_time,omitempty"`
+	// ChipperID holds the value of the "chipper_id" field.
+	ChipperID uint32 `json:"chipper_id,omitempty"`
+	// ChippingLocationID holds the value of the "chipping_location_id" field.
+	ChippingLocationID uint64 `json:"chipping_location_id,omitempty"`
+	// DeathDateTime holds the value of the "death_date_time" field.
+	DeathDateTime *time.Time `json:"death_date_time,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AnimalQuery when eager-loading is set.
 	Edges AnimalEdges `json:"edges"`
@@ -118,9 +118,9 @@ func (*Animal) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case animal.FieldWeight, animal.FieldLength, animal.FieldHeight:
 			values[i] = new(sql.NullFloat64)
-		case animal.FieldID, animal.FieldChipperId, animal.FieldChippingLocationId:
+		case animal.FieldID, animal.FieldChipperID, animal.FieldChippingLocationID:
 			values[i] = new(sql.NullInt64)
-		case animal.FieldGender, animal.FieldLifestatus:
+		case animal.FieldGender, animal.FieldLifeStatus:
 			values[i] = new(sql.NullString)
 		case animal.FieldChippingDateTime, animal.FieldDeathDateTime:
 			values[i] = new(sql.NullTime)
@@ -169,33 +169,33 @@ func (a *Animal) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.Gender = animal.Gender(value.String)
 			}
-		case animal.FieldLifestatus:
+		case animal.FieldLifeStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field lifestatus", values[i])
+				return fmt.Errorf("unexpected type %T for field life_status", values[i])
 			} else if value.Valid {
-				a.Lifestatus = animal.Lifestatus(value.String)
+				a.LifeStatus = animal.LifeStatus(value.String)
 			}
 		case animal.FieldChippingDateTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field chippingDateTime", values[i])
+				return fmt.Errorf("unexpected type %T for field chipping_date_time", values[i])
 			} else if value.Valid {
 				a.ChippingDateTime = value.Time
 			}
-		case animal.FieldChipperId:
+		case animal.FieldChipperID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field chipperId", values[i])
+				return fmt.Errorf("unexpected type %T for field chipper_id", values[i])
 			} else if value.Valid {
-				a.ChipperId = uint32(value.Int64)
+				a.ChipperID = uint32(value.Int64)
 			}
-		case animal.FieldChippingLocationId:
+		case animal.FieldChippingLocationID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field chippingLocationId", values[i])
+				return fmt.Errorf("unexpected type %T for field chipping_location_id", values[i])
 			} else if value.Valid {
-				a.ChippingLocationId = uint64(value.Int64)
+				a.ChippingLocationID = uint64(value.Int64)
 			}
 		case animal.FieldDeathDateTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deathDateTime", values[i])
+				return fmt.Errorf("unexpected type %T for field death_date_time", values[i])
 			} else if value.Valid {
 				a.DeathDateTime = new(time.Time)
 				*a.DeathDateTime = value.Time
@@ -265,20 +265,20 @@ func (a *Animal) String() string {
 	builder.WriteString("gender=")
 	builder.WriteString(fmt.Sprintf("%v", a.Gender))
 	builder.WriteString(", ")
-	builder.WriteString("lifestatus=")
-	builder.WriteString(fmt.Sprintf("%v", a.Lifestatus))
+	builder.WriteString("life_status=")
+	builder.WriteString(fmt.Sprintf("%v", a.LifeStatus))
 	builder.WriteString(", ")
-	builder.WriteString("chippingDateTime=")
+	builder.WriteString("chipping_date_time=")
 	builder.WriteString(a.ChippingDateTime.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("chipperId=")
-	builder.WriteString(fmt.Sprintf("%v", a.ChipperId))
+	builder.WriteString("chipper_id=")
+	builder.WriteString(fmt.Sprintf("%v", a.ChipperID))
 	builder.WriteString(", ")
-	builder.WriteString("chippingLocationId=")
-	builder.WriteString(fmt.Sprintf("%v", a.ChippingLocationId))
+	builder.WriteString("chipping_location_id=")
+	builder.WriteString(fmt.Sprintf("%v", a.ChippingLocationID))
 	builder.WriteString(", ")
 	if v := a.DeathDateTime; v != nil {
-		builder.WriteString("deathDateTime=")
+		builder.WriteString("death_date_time=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteByte(')')

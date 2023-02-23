@@ -29,26 +29,27 @@ type AnimalsSearchQueryDto struct {
 	shared.TimeSearchQueryDto
 	ChipperId          uint32 `query:"chipperid" validate:"omitempty,number,gt=0"`
 	ChippingLocationId uint64 `query:"chippinglocationid" validate:"omitempty,number,gt=0"`
-	LifeStatus         string `query:"lifestatus" validate:"omitempty,oneof=alive dead"`
-	Gender             string `query:"gender" validate:"omitempty,oneof=male female other"`
+	LifeStatus         string `query:"lifestatus" validate:"omitempty,oneof=ALIVE DEAD"`
+	Gender             string `query:"gender" validate:"omitempty,oneof=MALE FEMALE OTHER"`
 }
 
 type CreateAnimalDto struct {
-	AnimalTypes        uint64  `json:"animaltypes" validate:"required,gt=0,dive,number,gt=0"`
-	Weight             float32 `json:"weight" validate:"required,gt=0"`
-	Length             float32 `json:"length" validate:"required,gt=0"`
-	Height             float32 `json:"height" validate:"required,gt=0"`
-	Gender             string  `json:"gender" validate:"required,oneof=male female other"`
-	ChipperId          uint32  `json:"chipperid" validate:"required,number,gt=0"`
-	ChippingLocationId uint64  `json:"chippinglocationid" validate:"required,number,gt=0"`
+	AnimalTypes        []uint64 `json:"animaltypes" validate:"required,gt=0,dive,number,gt=0"`
+	Weight             float32  `json:"weight" validate:"required,gt=0"`
+	Length             float32  `json:"length" validate:"required,gt=0"`
+	Height             float32  `json:"height" validate:"required,gt=0"`
+	Gender             string   `json:"gender" validate:"required,oneof=MALE FEMALE OTHER"`
+	ChipperId          uint32   `json:"chipperid" validate:"required,number,gt=0"`
+	ChippingLocationId uint64   `json:"chippinglocationid" validate:"required,number,gt=0"`
 }
 
 type UpdateAnimalDto struct {
 	Weight             float32 `json:"weight" validate:"required,gt=0"`
 	Length             float32 `json:"length" validate:"required,gt=0"`
 	Height             float32 `json:"height" validate:"required,gt=0"`
-	Gender             string  `json:"gender" validate:"required,oneof=male female other"`
+	Gender             string  `json:"gender" validate:"required,oneof=MALE FEMALE OTHER"`
 	ChipperId          uint32  `json:"chipperid" validate:"required,number,gt=0"`
+	LifeStatus         string  `json:"lifestatus" validate:"omitempty,oneof=ALIVE DEAD"`
 	ChippingLocationId uint64  `json:"chippinglocationid" validate:"required,number,gt=0"`
 }
 
