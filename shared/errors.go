@@ -52,12 +52,10 @@ func NotBlank(fl validator.FieldLevel) bool {
 	}
 }
 
-var ISO8601Layout = "2022-09-27 18:00:00.000"
-
 func ISO8601(fl validator.FieldLevel) bool {
 	field := fl.Field()
 	if field.Kind() == reflect.String {
-		_, err := time.Parse(ISO8601Layout, field.String())
+		_, err := time.Parse(ISO8601_PATTER, field.String())
 
 		return err == nil
 	}

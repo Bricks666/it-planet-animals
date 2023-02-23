@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -33,10 +34,16 @@ func (AnimalsLocations) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("animals_locations_animal", Animal.Type).
 			Unique().
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.NoAction,
+			}).
 			Required().
 			Field("animal_id"),
 		edge.To("animals_locations_location", Location.Type).
 			Unique().
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.NoAction,
+			}).
 			Required().
 			Field("location_id"),
 	}

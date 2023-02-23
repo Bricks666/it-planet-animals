@@ -137,12 +137,12 @@ func (this *AnimalTypesController) Remove(ct *fiber.Ctx) error {
 
 	err = this.animalTypesService.Remove(params.Id)
 
-	if err != nil {
-		if ent.IsNotFound(err) {
-			return ct.Status(fiber.StatusNotFound).JSON(err.Error())
-		}
+	if ent.IsNotFound(err) {
+		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
+	}
 
-		return ct.Status(fiber.StatusInternalServerError).JSON(err.Error())
+	if ent.IsConstraintError(err) {
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
 	return ct.Status(fiber.StatusOK).JSON("")

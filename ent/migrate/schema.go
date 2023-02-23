@@ -31,13 +31,13 @@ var (
 				Symbol:     "animals_users_chipper_animal",
 				Columns:    []*schema.Column{AnimalsColumns[8]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "animals_locations_chipping_location",
 				Columns:    []*schema.Column{AnimalsColumns[9]},
 				RefColumns: []*schema.Column{LocationsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}

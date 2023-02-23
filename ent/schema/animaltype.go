@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -23,6 +24,9 @@ func (AnimalType) Fields() []ent.Field {
 func (AnimalType) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("animal_type_type", Animal.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.NoAction,
+			}).
 			Ref("animal_type_animal"),
 	}
 }

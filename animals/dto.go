@@ -2,7 +2,6 @@ package animals
 
 import (
 	"animals/shared"
-	"time"
 )
 
 type AnimalParamsDto struct {
@@ -10,18 +9,18 @@ type AnimalParamsDto struct {
 }
 
 type AnimalDto struct {
-	ID                 uint64     `json:"id"`
-	AnimalTypes        []uint64   `json:"animalTypes"`
-	Weight             float32    `json:"weight"`
-	Length             float32    `json:"length"`
-	Height             float32    `json:"height"`
-	Gender             string     `json:"gender"`
-	Lifestatus         string     `json:"lifeStatus"`
-	ChippingDateTime   time.Time  `json:"chippingDateTime"`
-	ChipperId          uint32     `json:"chipperId"`
-	ChippingLocationId uint64     `json:"chippingLocationId"`
-	VisitedLocations   []uint64   `json:"visitedLocations"`
-	DeathDateTime      *time.Time `json:"deathDateTime"`
+	ID                 uint64   `json:"id"`
+	AnimalTypes        []uint64 `json:"animalTypes"`
+	Weight             float32  `json:"weight"`
+	Length             float32  `json:"length"`
+	Height             float32  `json:"height"`
+	Gender             string   `json:"gender"`
+	LifeStatus         string   `json:"lifeStatus"`
+	ChippingDateTime   string   `json:"chippingDateTime"`
+	ChipperId          uint32   `json:"chipperId"`
+	ChippingLocationId uint64   `json:"chippingLocationId"`
+	VisitedLocations   []uint64 `json:"visitedLocations"`
+	DeathDateTime      *string  `json:"deathDateTime"`
 }
 
 type AnimalsSearchQueryDto struct {

@@ -165,8 +165,12 @@ func (this *UsersController) Remove(ct *fiber.Ctx) error {
 	}
 
 	err = this.usersService.Remove(params.Id)
-	if err != nil {
+	if ent.IsNotFound(err) {
 		return ct.Status(fiber.StatusForbidden).JSON(err.Error())
+	}
+
+	if ent.IsConstraintError(err) {
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
 	return ct.Status(fiber.StatusOK).JSON("")

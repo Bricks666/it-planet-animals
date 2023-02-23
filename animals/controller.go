@@ -146,17 +146,96 @@ func (this *AnimalsController) Update(ct *fiber.Ctx) error {
 }
 
 func (this *AnimalsController) Remove(ct *fiber.Ctx) error {
-	return nil
+	var params AnimalParamsDto
+	var err error
+
+	err = shared.GetParams(ct, &params)
+	if err != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	err = this.animalsService.Remove(params.Id)
+	if ent.IsNotFound(err) {
+		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
+	}
+	if ent.IsConstraintError(err) {
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	return ct.Status(fiber.StatusOK).JSON("deleted")
 }
 
 func (this *AnimalsController) AddType(ct *fiber.Ctx) error {
-	return nil
+	var params AnimalTypeParamsDto
+	var err error
+
+	err = shared.GetParams(ct, &params)
+	if err != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	var animal *AnimalDto
+	animal, err = this.animalsService.AddType(params.Id, params.TypeId)
+
+	if ent.IsNotFound(err) {
+		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
+	}
+
+	if ent.IsConstraintError(err) {
+		return ct.Status(fiber.StatusConflict).JSON(err.Error())
+	}
+
+	return ct.Status(fiber.StatusCreated).JSON(animal)
 }
 
 func (this *AnimalsController) ReplaceType(ct *fiber.Ctx) error {
-	return nil
+	var params AnimalParamsDto
+	var dto ReplaceAnimalTypeDto
+	var err error
+
+	err = shared.GetParams(ct, &params)
+	if err != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	err = shared.GetBody(ct, &dto)
+	if err != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	var animal *AnimalDto
+	animal, err = this.animalsService.ReplaceType(params.Id, &dto)
+
+	if ent.IsNotFound(err) {
+		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
+	}
+
+	if ent.IsConstraintError(err) {
+		return ct.Status(fiber.StatusConflict).JSON(err.Error())
+	}
+
+	return ct.Status(fiber.StatusOK).JSON(animal)
 }
 
 func (this *AnimalsController) RemoveType(ct *fiber.Ctx) error {
-	return nil
+	var params AnimalTypeParamsDto
+	var err error
+
+	err = shared.GetParams(ct, &params)
+	if err != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	var animal *AnimalDto
+	animal, err = this.animalsService.RemoveType(params.Id, params.TypeId)
+
+	if ent.IsNotFound(err) {
+		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
+	}
+
+	if ent.IsConstraintError(err) {
+		return ct.Status(fiber.StatusConflict).JSON(err.Error())
+	}
+
+	return ct.Status(fiber.StatusCreated).JSON(animal)
 }

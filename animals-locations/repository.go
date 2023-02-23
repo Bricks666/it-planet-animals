@@ -60,6 +60,9 @@ func (this *AnimalsLocationsRepository) Update(animalId uint64, dto *UpdateAnima
 		Save(this.db.Context)
 }
 
-func (this *AnimalsLocationsRepository) Remove() error {
-	return nil
+func (this *AnimalsLocationsRepository) Remove(animalId uint64, visitedPointId uint64) error {
+	return this.db.Client.AnimalsLocations.
+		DeleteOneID(visitedPointId).
+		Where(animalslocations.AnimalID(animalId)).
+		Exec(this.db.Context)
 }

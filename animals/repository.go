@@ -5,6 +5,7 @@ import (
 	"animals/ent/animal"
 	"animals/ent/predicate"
 	"animals/shared"
+	"time"
 )
 
 var Repository AnimalsRepository
@@ -87,8 +88,13 @@ func (this *AnimalsRepository) Create(dto *CreateAnimalDto) (*ent.Animal, error)
 }
 
 func (this *AnimalsRepository) Update(id uint64, dto *UpdateAnimalDto) (*ent.Animal, error) {
-	return this.db.Client.Animal.
-		UpdateOneID(id).
+	var query = this.db.Client.Animal.UpdateOneID(id)
+
+	if dto.LifeStatus == animal.LifeStatusDEAD.String() {
+		query = query.SetDeathDateTime(time.Now())
+	}
+
+	return query.
 		SetChipperAnimalID(dto.ChipperId).
 		SetChippingLocationID(dto.ChippingLocationId).
 		SetWeight(dto.Weight).
@@ -99,14 +105,22 @@ func (this *AnimalsRepository) Update(id uint64, dto *UpdateAnimalDto) (*ent.Ani
 		Save(this.db.Context)
 }
 
-func (this *AnimalsRepository) Remove() error {
-	return nil
+func (this *AnimalsRepository) Remove(id uint64) error {
+	return this.db.Client.Animal.
+		DeleteOneID(id).
+		Exec(this.db.Context)
 }
 
-func (this *AnimalsRepository) AddType() (*ent.Animal, error) {
-	return nil, nil
+func (this *AnimalsRepository) AddType(id uint64, typeId uint64) (*ent.Animal, error) {
+	return this.db.Client.Animal.
+		UpdateOneID(id).
+		AddAnimalTypeAnimalIDs(typeId).
+		Save(this.db.Context)
 }
 
-func (this *AnimalsRepository) RemoveType() (*ent.Animal, error) {
-	return nil, nil
+func (this *AnimalsRepository) RemoveType(id uint64, typeId uint64) (*ent.Animal, error) {
+	return this.db.Client.Animal.
+		UpdateOneID(id).
+		RemoveAnimalTypeAnimalIDs(typeId).
+		Save(this.db.Context)
 }

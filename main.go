@@ -13,12 +13,6 @@ import (
 func main() {
 	router := setupRouter()
 
-	router.Get("/ping", func(ct *fiber.Ctx) error {
-		ct.Status(200).SendString("pong!")
-
-		return nil
-	})
-
 	router.Listen(":5000")
 }
 

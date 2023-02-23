@@ -4,6 +4,7 @@ import (
 	"animals/animals"
 	"animals/ent"
 	Animal "animals/ent/animal"
+	"animals/shared"
 
 	"golang.org/x/exp/slices"
 )
@@ -67,7 +68,7 @@ func (this *AnimalsLocationsService) Create(animalId uint64, locationId uint64) 
 		return nil, &ent.NotFoundError{}
 	}
 
-	return prepareAnimalsLocation(animalLocation), err
+	return prepareAnimalsLocation(animalLocation), nil
 }
 
 func (this *AnimalsLocationsService) Update(animalId uint64, dto *UpdateAnimalsLocationDto) (*AnimalsLocationsDto, error) {
@@ -77,19 +78,19 @@ func (this *AnimalsLocationsService) Update(animalId uint64, dto *UpdateAnimalsL
 		return nil, &ent.NotFoundError{}
 	}
 
-	animalsLocations := animal.Edges.Animals
-	animalsLocationsCount := len(animalsLocations)
+	visitedLocations := animal.Edges.Animals
+	visitedLocationsCount := len(visitedLocations)
 
-	if animalsLocationsCount == 0 {
+	if visitedLocationsCount == 0 {
 		return nil, &ent.NotFoundError{}
 	}
 
-	if animalsLocations[0].ID == dto.VisitedAnimalLocationId &&
+	if visitedLocations[0].ID == dto.VisitedAnimalLocationId &&
 		dto.NewLocationId == animal.ChippingLocationID {
 		return nil, &ent.ConstraintError{}
 	}
 
-	var pointIndex = slices.IndexFunc(animalsLocations, func(element *ent.AnimalsLocations) bool {
+	var pointIndex = slices.IndexFunc(visitedLocations, func(element *ent.AnimalsLocations) bool {
 		return element.ID == dto.VisitedAnimalLocationId
 	})
 
@@ -97,7 +98,7 @@ func (this *AnimalsLocationsService) Update(animalId uint64, dto *UpdateAnimalsL
 		return nil, &ent.NotFoundError{}
 	}
 
-	var element = animalsLocations[pointIndex]
+	var element = visitedLocations[pointIndex]
 
 	if element.LocationID == dto.NewLocationId {
 		return nil, &ent.ConstraintError{}
@@ -106,10 +107,10 @@ func (this *AnimalsLocationsService) Update(animalId uint64, dto *UpdateAnimalsL
 	var prev, next *ent.AnimalsLocations
 
 	if pointIndex > 0 {
-		prev = animalsLocations[pointIndex-1]
+		prev = visitedLocations[pointIndex-1]
 	}
-	if pointIndex < animalsLocationsCount-1 {
-		next = animalsLocations[pointIndex+1]
+	if pointIndex < visitedLocationsCount-1 {
+		next = visitedLocations[pointIndex+1]
 	}
 
 	if (prev != nil && prev.LocationID == dto.NewLocationId) ||
@@ -127,7 +128,30 @@ func (this *AnimalsLocationsService) Update(animalId uint64, dto *UpdateAnimalsL
 	return prepareAnimalsLocation(point), nil
 }
 
-func (this *AnimalsLocationsService) Remove() error {
+func (this *AnimalsLocationsService) Remove(animalId uint64, visitedId uint64) error {
+	var err = this.animalsLocationRepository.Remove(animalId, visitedId)
+
+	if err != nil {
+		return err
+	}
+
+	var animal *ent.Animal
+	animal, err = this.animalsRepository.GetOne(animalId)
+
+	if err != nil {
+		return err
+	}
+
+	visitedLocations := animal.Edges.Animals
+
+	if len(visitedLocations) == 0 {
+		return nil
+	}
+
+	if visitedLocations[0].LocationID == animal.ChippingLocationID {
+		return this.Remove(animalId, visitedLocations[0].ID)
+	}
+
 	return nil
 }
 
@@ -135,6 +159,6 @@ func prepareAnimalsLocation(animalLocation *ent.AnimalsLocations) *AnimalsLocati
 	return &AnimalsLocationsDto{
 		Id:                           animalLocation.ID,
 		LocationId:                   animalLocation.LocationID,
-		DateTimeOfVisitLocationPoint: animalLocation.DateTimeOfVisitLocationPoint,
+		DateTimeOfVisitLocationPoint: animalLocation.DateTimeOfVisitLocationPoint.Format(shared.ISO8601_PATTER),
 	}
 }
