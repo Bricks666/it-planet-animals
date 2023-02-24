@@ -234,8 +234,8 @@ func (this *AnimalsController) RemoveType(ct *fiber.Ctx) error {
 	}
 
 	if ent.IsConstraintError(err) {
-		return ct.Status(fiber.StatusConflict).JSON(err.Error())
+		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	return ct.Status(fiber.StatusCreated).JSON(animal)
+	return ct.Status(fiber.StatusOK).JSON(animal)
 }

@@ -54,13 +54,21 @@ func NotBlank(fl validator.FieldLevel) bool {
 
 func ISO8601(fl validator.FieldLevel) bool {
 	field := fl.Field()
-	if field.Kind() == reflect.String {
-		_, err := time.Parse(ISO8601_PATTER, field.String())
 
+	switch field.Kind() {
+	case reflect.String:
+		_, err := time.Parse(ISO8601_PATTER, field.String())
 		return err == nil
+	case reflect.Struct:
+		if field.Type() == reflect.ValueOf(time.Time{}).Type() {
+			return true
+		}
+
+		return false
+	default:
+		return false
 	}
 
-	return false
 }
 
 func AnyNumber(fl validator.FieldLevel) bool {

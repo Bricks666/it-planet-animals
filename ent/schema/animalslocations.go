@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"time"
-
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
@@ -25,7 +23,8 @@ func (AnimalsLocations) Fields() []ent.Field {
 		field.Uint64("id").Positive(),
 		field.Uint64("animal_id"),
 		field.Uint64("location_id"),
-		field.Time("date_time_of_visit_location_point").Default(time.Now),
+		field.Time("date_time_of_visit_location_point").
+			Optional(),
 	}
 }
 

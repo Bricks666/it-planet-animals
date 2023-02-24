@@ -212,10 +212,6 @@ func (lu *LocationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
-		createE := &AnimalsLocationsCreate{config: lu.config, mutation: newAnimalsLocationsMutation(lu.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := lu.mutation.RemovedVisitedLocationsAnimalsIDs(); len(nodes) > 0 && !lu.mutation.VisitedLocationsAnimalsCleared() {
@@ -235,10 +231,6 @@ func (lu *LocationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &AnimalsLocationsCreate{config: lu.config, mutation: newAnimalsLocationsMutation(lu.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := lu.mutation.VisitedLocationsAnimalsIDs(); len(nodes) > 0 {
@@ -258,10 +250,6 @@ func (lu *LocationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &AnimalsLocationsCreate{config: lu.config, mutation: newAnimalsLocationsMutation(lu.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if lu.mutation.LocationsCleared() {
@@ -551,10 +539,6 @@ func (luo *LocationUpdateOne) sqlSave(ctx context.Context) (_node *Location, err
 				},
 			},
 		}
-		createE := &AnimalsLocationsCreate{config: luo.config, mutation: newAnimalsLocationsMutation(luo.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := luo.mutation.RemovedVisitedLocationsAnimalsIDs(); len(nodes) > 0 && !luo.mutation.VisitedLocationsAnimalsCleared() {
@@ -574,10 +558,6 @@ func (luo *LocationUpdateOne) sqlSave(ctx context.Context) (_node *Location, err
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &AnimalsLocationsCreate{config: luo.config, mutation: newAnimalsLocationsMutation(luo.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := luo.mutation.VisitedLocationsAnimalsIDs(); len(nodes) > 0 {
@@ -597,10 +577,6 @@ func (luo *LocationUpdateOne) sqlSave(ctx context.Context) (_node *Location, err
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &AnimalsLocationsCreate{config: luo.config, mutation: newAnimalsLocationsMutation(luo.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if luo.mutation.LocationsCleared() {

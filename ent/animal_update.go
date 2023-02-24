@@ -554,10 +554,6 @@ func (au *AnimalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
-		createE := &AnimalsLocationsCreate{config: au.config, mutation: newAnimalsLocationsMutation(au.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := au.mutation.RemovedVisitedLocationsIDs(); len(nodes) > 0 && !au.mutation.VisitedLocationsCleared() {
@@ -577,10 +573,6 @@ func (au *AnimalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &AnimalsLocationsCreate{config: au.config, mutation: newAnimalsLocationsMutation(au.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := au.mutation.VisitedLocationsIDs(); len(nodes) > 0 {
@@ -600,10 +592,6 @@ func (au *AnimalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &AnimalsLocationsCreate{config: au.config, mutation: newAnimalsLocationsMutation(au.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if au.mutation.AnimalsCleared() {
@@ -1232,10 +1220,6 @@ func (auo *AnimalUpdateOne) sqlSave(ctx context.Context) (_node *Animal, err err
 				},
 			},
 		}
-		createE := &AnimalsLocationsCreate{config: auo.config, mutation: newAnimalsLocationsMutation(auo.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := auo.mutation.RemovedVisitedLocationsIDs(); len(nodes) > 0 && !auo.mutation.VisitedLocationsCleared() {
@@ -1255,10 +1239,6 @@ func (auo *AnimalUpdateOne) sqlSave(ctx context.Context) (_node *Animal, err err
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &AnimalsLocationsCreate{config: auo.config, mutation: newAnimalsLocationsMutation(auo.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := auo.mutation.VisitedLocationsIDs(); len(nodes) > 0 {
@@ -1278,10 +1258,6 @@ func (auo *AnimalUpdateOne) sqlSave(ctx context.Context) (_node *Animal, err err
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &AnimalsLocationsCreate{config: auo.config, mutation: newAnimalsLocationsMutation(auo.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if auo.mutation.AnimalsCleared() {

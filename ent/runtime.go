@@ -50,10 +50,6 @@ func init() {
 	animaltype.IDValidator = animaltypeDescID.Validators[0].(func(uint64) error)
 	animalslocationsFields := schema.AnimalsLocations{}.Fields()
 	_ = animalslocationsFields
-	// animalslocationsDescDateTimeOfVisitLocationPoint is the schema descriptor for date_time_of_visit_location_point field.
-	animalslocationsDescDateTimeOfVisitLocationPoint := animalslocationsFields[3].Descriptor()
-	// animalslocations.DefaultDateTimeOfVisitLocationPoint holds the default value on creation for the date_time_of_visit_location_point field.
-	animalslocations.DefaultDateTimeOfVisitLocationPoint = animalslocationsDescDateTimeOfVisitLocationPoint.Default.(func() time.Time)
 	// animalslocationsDescID is the schema descriptor for id field.
 	animalslocationsDescID := animalslocationsFields[0].Descriptor()
 	// animalslocations.IDValidator is a validator for the "id" field. It is called by the builders before save.

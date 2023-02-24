@@ -22,10 +22,11 @@ func (this *UserRepository) GetAll(dto *UsersSearchQueryDto) ([]*ent.User, error
 	return this.db.Client.User.
 		Query().
 		Where(
-			user.FirstNameContains(dto.FirstName),
-			user.LastNameContains(dto.LastName),
-			user.EmailContains(dto.Email),
+			user.FirstNameContainsFold(dto.FirstName),
+			user.LastNameContainsFold(dto.LastName),
+			user.EmailContainsFold(dto.Email),
 		).
+		Order(ent.Asc(user.FieldID)).
 		Offset(int(dto.From)).
 		Limit(int(dto.Size)).
 		All(this.db.Context)

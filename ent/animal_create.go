@@ -424,10 +424,6 @@ func (ac *AnimalCreate) createSpec() (*Animal, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &AnimalsLocationsCreate{config: ac.config, mutation: newAnimalsLocationsMutation(ac.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ac.mutation.AnimalsIDs(); len(nodes) > 0 {

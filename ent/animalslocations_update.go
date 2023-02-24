@@ -56,6 +56,12 @@ func (alu *AnimalsLocationsUpdate) SetNillableDateTimeOfVisitLocationPoint(t *ti
 	return alu
 }
 
+// ClearDateTimeOfVisitLocationPoint clears the value of the "date_time_of_visit_location_point" field.
+func (alu *AnimalsLocationsUpdate) ClearDateTimeOfVisitLocationPoint() *AnimalsLocationsUpdate {
+	alu.mutation.ClearDateTimeOfVisitLocationPoint()
+	return alu
+}
+
 // SetAnimalsLocationsAnimalID sets the "animals_locations_animal" edge to the Animal entity by ID.
 func (alu *AnimalsLocationsUpdate) SetAnimalsLocationsAnimalID(id uint64) *AnimalsLocationsUpdate {
 	alu.mutation.SetAnimalsLocationsAnimalID(id)
@@ -147,6 +153,9 @@ func (alu *AnimalsLocationsUpdate) sqlSave(ctx context.Context) (n int, err erro
 	}
 	if value, ok := alu.mutation.DateTimeOfVisitLocationPoint(); ok {
 		_spec.SetField(animalslocations.FieldDateTimeOfVisitLocationPoint, field.TypeTime, value)
+	}
+	if alu.mutation.DateTimeOfVisitLocationPointCleared() {
+		_spec.ClearField(animalslocations.FieldDateTimeOfVisitLocationPoint, field.TypeTime)
 	}
 	if alu.mutation.AnimalsLocationsAnimalCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -261,6 +270,12 @@ func (aluo *AnimalsLocationsUpdateOne) SetNillableDateTimeOfVisitLocationPoint(t
 	if t != nil {
 		aluo.SetDateTimeOfVisitLocationPoint(*t)
 	}
+	return aluo
+}
+
+// ClearDateTimeOfVisitLocationPoint clears the value of the "date_time_of_visit_location_point" field.
+func (aluo *AnimalsLocationsUpdateOne) ClearDateTimeOfVisitLocationPoint() *AnimalsLocationsUpdateOne {
+	aluo.mutation.ClearDateTimeOfVisitLocationPoint()
 	return aluo
 }
 
@@ -385,6 +400,9 @@ func (aluo *AnimalsLocationsUpdateOne) sqlSave(ctx context.Context) (_node *Anim
 	}
 	if value, ok := aluo.mutation.DateTimeOfVisitLocationPoint(); ok {
 		_spec.SetField(animalslocations.FieldDateTimeOfVisitLocationPoint, field.TypeTime, value)
+	}
+	if aluo.mutation.DateTimeOfVisitLocationPointCleared() {
+		_spec.ClearField(animalslocations.FieldDateTimeOfVisitLocationPoint, field.TypeTime)
 	}
 	if aluo.mutation.AnimalsLocationsAnimalCleared() {
 		edge := &sqlgraph.EdgeSpec{

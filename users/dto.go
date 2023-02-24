@@ -3,15 +3,15 @@ package users
 import "animals/shared"
 
 type CreateUserDto struct {
-	FirstName string `json:"firstname" validate:"required,notblank,min=1"`
-	LastName  string `json:"lastname" validate:"required,notblank,min=1"`
+	FirstName string `json:"firstName" validate:"required,notblank,min=1"`
+	LastName  string `json:"lastName" validate:"required,notblank,min=1"`
 	Email     string `json:"email" validate:"required,email,notblank,min=1"`
 	Password  string `json:"password" validate:"required,notblank,min=1"`
 }
 
 type UpdateUserDto struct {
-	FirstName string `json:"firstname" validate:"required,notblank,min=1"`
-	LastName  string `json:"lastname" validate:"required,notblank,min=1"`
+	FirstName string `json:"firstName" validate:"required,notblank,min=1"`
+	LastName  string `json:"lastName" validate:"required,notblank,min=1"`
 	Email     string `json:"email" validate:"required,email,notblank,min=1"`
 	Password  string `json:"password" validate:"required,notblank,min=1"`
 }
@@ -29,7 +29,7 @@ type UserParamsDto struct {
 
 type UsersSearchQueryDto struct {
 	shared.PaginationDto
-	FirstName string `query:"firstname" validate:"omitempty,notblank"`
-	LastName  string `query:"lastname" validate:"omitempty,notblank"`
+	FirstName string `query:"firstName" validate:"omitempty,notblank"`
+	LastName  string `query:"lastName" validate:"omitempty,notblank"`
 	Email     string `query:"email" validate:"omitempty,notblank"`
 }

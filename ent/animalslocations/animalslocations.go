@@ -2,10 +2,6 @@
 
 package animalslocations
 
-import (
-	"time"
-)
-
 const (
 	// Label holds the string label denoting the animalslocations type in the database.
 	Label = "animals_locations"
@@ -58,8 +54,6 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// DefaultDateTimeOfVisitLocationPoint holds the default value on creation for the "date_time_of_visit_location_point" field.
-	DefaultDateTimeOfVisitLocationPoint func() time.Time
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint64) error
 )

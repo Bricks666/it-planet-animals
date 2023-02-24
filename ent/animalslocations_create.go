@@ -83,7 +83,6 @@ func (alc *AnimalsLocationsCreate) Mutation() *AnimalsLocationsMutation {
 
 // Save creates the AnimalsLocations in the database.
 func (alc *AnimalsLocationsCreate) Save(ctx context.Context) (*AnimalsLocations, error) {
-	alc.defaults()
 	return withHooks[*AnimalsLocations, AnimalsLocationsMutation](ctx, alc.sqlSave, alc.mutation, alc.hooks)
 }
 
@@ -109,14 +108,6 @@ func (alc *AnimalsLocationsCreate) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (alc *AnimalsLocationsCreate) defaults() {
-	if _, ok := alc.mutation.DateTimeOfVisitLocationPoint(); !ok {
-		v := animalslocations.DefaultDateTimeOfVisitLocationPoint()
-		alc.mutation.SetDateTimeOfVisitLocationPoint(v)
-	}
-}
-
 // check runs all checks and user-defined validators on the builder.
 func (alc *AnimalsLocationsCreate) check() error {
 	if _, ok := alc.mutation.AnimalID(); !ok {
@@ -124,9 +115,6 @@ func (alc *AnimalsLocationsCreate) check() error {
 	}
 	if _, ok := alc.mutation.LocationID(); !ok {
 		return &ValidationError{Name: "location_id", err: errors.New(`ent: missing required field "AnimalsLocations.location_id"`)}
-	}
-	if _, ok := alc.mutation.DateTimeOfVisitLocationPoint(); !ok {
-		return &ValidationError{Name: "date_time_of_visit_location_point", err: errors.New(`ent: missing required field "AnimalsLocations.date_time_of_visit_location_point"`)}
 	}
 	if v, ok := alc.mutation.ID(); ok {
 		if err := animalslocations.IDValidator(v); err != nil {
@@ -232,7 +220,6 @@ func (alcb *AnimalsLocationsCreateBulk) Save(ctx context.Context) ([]*AnimalsLoc
 	for i := range alcb.builders {
 		func(i int, root context.Context) {
 			builder := alcb.builders[i]
-			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*AnimalsLocationsMutation)
 				if !ok {

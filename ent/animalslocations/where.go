@@ -150,6 +150,16 @@ func DateTimeOfVisitLocationPointLTE(v time.Time) predicate.AnimalsLocations {
 	return predicate.AnimalsLocations(sql.FieldLTE(FieldDateTimeOfVisitLocationPoint, v))
 }
 
+// DateTimeOfVisitLocationPointIsNil applies the IsNil predicate on the "date_time_of_visit_location_point" field.
+func DateTimeOfVisitLocationPointIsNil() predicate.AnimalsLocations {
+	return predicate.AnimalsLocations(sql.FieldIsNull(FieldDateTimeOfVisitLocationPoint))
+}
+
+// DateTimeOfVisitLocationPointNotNil applies the NotNil predicate on the "date_time_of_visit_location_point" field.
+func DateTimeOfVisitLocationPointNotNil() predicate.AnimalsLocations {
+	return predicate.AnimalsLocations(sql.FieldNotNull(FieldDateTimeOfVisitLocationPoint))
+}
+
 // HasAnimalsLocationsAnimal applies the HasEdge predicate on the "animals_locations_animal" edge.
 func HasAnimalsLocationsAnimal() predicate.AnimalsLocations {
 	return predicate.AnimalsLocations(func(s *sql.Selector) {

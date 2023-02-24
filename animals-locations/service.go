@@ -58,7 +58,7 @@ func (this *AnimalsLocationsService) Create(animalId uint64, locationId uint64) 
 		return nil, &ent.ConstraintError{}
 	}
 	if visitedLocationsCount > 0 &&
-		visitedLocations[visitedLocationsCount-1].ID == locationId {
+		visitedLocations[0].ID == locationId {
 		return nil, &ent.ConstraintError{}
 	}
 

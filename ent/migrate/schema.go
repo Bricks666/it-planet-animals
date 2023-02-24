@@ -55,7 +55,7 @@ var (
 	// AnimalsLocationsColumns holds the columns for the "animals_locations" table.
 	AnimalsLocationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "date_time_of_visit_location_point", Type: field.TypeTime},
+		{Name: "date_time_of_visit_location_point", Type: field.TypeTime, Nullable: true},
 		{Name: "animal_id", Type: field.TypeUint64},
 		{Name: "location_id", Type: field.TypeUint64},
 	}
@@ -81,7 +81,7 @@ var (
 		Indexes: []*schema.Index{
 			{
 				Name:    "animalslocations_animal_id_location_id",
-				Unique:  true,
+				Unique:  false,
 				Columns: []*schema.Column{AnimalsLocationsColumns[2], AnimalsLocationsColumns[3]},
 			},
 		},

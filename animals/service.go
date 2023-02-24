@@ -54,7 +54,7 @@ func (this *AnimalsService) Create(dto *CreateAnimalDto) (*AnimalDto, error) {
 		return nil, err
 	}
 
-	return prepareAnimal(animal), nil
+	return this.GetOne(animal.ID)
 }
 
 func (this *AnimalsService) Update(id uint64, dto *UpdateAnimalDto) (*AnimalDto, error) {
@@ -66,12 +66,12 @@ func (this *AnimalsService) Update(id uint64, dto *UpdateAnimalDto) (*AnimalDto,
 
 	if animal.LifeStatus == Animal.LifeStatusDEAD &&
 		dto.LifeStatus == Animal.LifeStatusALIVE.String() {
-		return nil, ent.ConstraintError{}
+		return nil, &ent.ConstraintError{}
 	}
 
 	count := len(animal.Edges.VisitedLocations)
 	if count > 0 && animal.Edges.VisitedLocations[count-1].ID == dto.ChippingLocationId {
-		return nil, ent.ConstraintError{}
+		return nil, &ent.ConstraintError{}
 	}
 
 	animal, err = this.animalsRepository.Update(id, dto)
@@ -80,7 +80,7 @@ func (this *AnimalsService) Update(id uint64, dto *UpdateAnimalDto) (*AnimalDto,
 		return nil, &ent.NotFoundError{}
 	}
 
-	return prepareAnimal(animal), nil
+	return this.GetOne(animal.ID)
 }
 
 func (this *AnimalsService) Remove(id uint64) error {
@@ -92,7 +92,7 @@ func (this *AnimalsService) Remove(id uint64) error {
 
 	if len(animal.VisitedLocations) > 0 &&
 		animal.ChippingLocationId == animal.VisitedLocations[0] {
-		return ent.ConstraintError{}
+		return &ent.ConstraintError{}
 	}
 
 	return this.animalsRepository.Remove(id)
@@ -115,7 +115,7 @@ func (this *AnimalsService) AddType(id uint64, typeId uint64) (*AnimalDto, error
 		return nil, &ent.NotFoundError{}
 	}
 
-	return prepareAnimal(animal), nil
+	return this.GetOne(animal.ID)
 }
 
 func (this *AnimalsService) ReplaceType(id uint64, dto *ReplaceAnimalTypeDto) (*AnimalDto, error) {
@@ -145,7 +145,7 @@ func (this *AnimalsService) ReplaceType(id uint64, dto *ReplaceAnimalTypeDto) (*
 		return nil, &ent.NotFoundError{}
 	}
 
-	return prepareAnimal(animal), nil
+	return this.GetOne(animal.ID)
 }
 
 func (this *AnimalsService) RemoveType(id uint64, typeId uint64) (*AnimalDto, error) {
@@ -155,7 +155,10 @@ func (this *AnimalsService) RemoveType(id uint64, typeId uint64) (*AnimalDto, er
 	}
 
 	var isContain = slices.Contains(a.AnimalTypes, typeId)
-	if !isContain || isContain && len(a.AnimalTypes) == 1 {
+	if !isContain {
+		return nil, &ent.NotFoundError{}
+	}
+	if isContain && len(a.AnimalTypes) == 1 {
 		return nil, &ent.ConstraintError{}
 	}
 
@@ -165,7 +168,7 @@ func (this *AnimalsService) RemoveType(id uint64, typeId uint64) (*AnimalDto, er
 		return nil, &ent.NotFoundError{}
 	}
 
-	return prepareAnimal(animal), nil
+	return this.GetOne(animal.ID)
 }
 
 func prepareAnimal(animal *ent.Animal) *AnimalDto {
@@ -176,7 +179,7 @@ func prepareAnimal(animal *ent.Animal) *AnimalDto {
 		typeIds = append(typeIds, t.ID)
 	}
 
-	for _, l := range animal.Edges.VisitedLocations {
+	for _, l := range animal.Edges.Animals {
 		locationIds = append(locationIds, l.ID)
 	}
 

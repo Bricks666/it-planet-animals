@@ -5,6 +5,7 @@ import (
 	"animals/ent/animalslocations"
 	"animals/ent/predicate"
 	"animals/shared"
+	"time"
 )
 
 type AnimalsLocationsRepository struct {
@@ -49,14 +50,16 @@ func (this *AnimalsLocationsRepository) Create(animalId uint64, locationId uint6
 		Create().
 		SetAnimalID(animalId).
 		SetLocationID(locationId).
+		SetDateTimeOfVisitLocationPoint(time.Now()).
 		Save(this.db.Context)
 }
 
 func (this *AnimalsLocationsRepository) Update(animalId uint64, dto *UpdateAnimalsLocationDto) (*ent.AnimalsLocations, error) {
 	return this.db.Client.AnimalsLocations.
 		UpdateOneID(dto.VisitedAnimalLocationId).
-		Where(animalslocations.ID(animalId)).
+		Where(animalslocations.AnimalID(animalId)).
 		SetLocationID(dto.NewLocationId).
+		SetDateTimeOfVisitLocationPoint(time.Now()).
 		Save(this.db.Context)
 }
 

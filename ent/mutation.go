@@ -1972,9 +1972,22 @@ func (m *AnimalsLocationsMutation) OldDateTimeOfVisitLocationPoint(ctx context.C
 	return oldValue.DateTimeOfVisitLocationPoint, nil
 }
 
+// ClearDateTimeOfVisitLocationPoint clears the value of the "date_time_of_visit_location_point" field.
+func (m *AnimalsLocationsMutation) ClearDateTimeOfVisitLocationPoint() {
+	m.date_time_of_visit_location_point = nil
+	m.clearedFields[animalslocations.FieldDateTimeOfVisitLocationPoint] = struct{}{}
+}
+
+// DateTimeOfVisitLocationPointCleared returns if the "date_time_of_visit_location_point" field was cleared in this mutation.
+func (m *AnimalsLocationsMutation) DateTimeOfVisitLocationPointCleared() bool {
+	_, ok := m.clearedFields[animalslocations.FieldDateTimeOfVisitLocationPoint]
+	return ok
+}
+
 // ResetDateTimeOfVisitLocationPoint resets all changes to the "date_time_of_visit_location_point" field.
 func (m *AnimalsLocationsMutation) ResetDateTimeOfVisitLocationPoint() {
 	m.date_time_of_visit_location_point = nil
+	delete(m.clearedFields, animalslocations.FieldDateTimeOfVisitLocationPoint)
 }
 
 // SetAnimalsLocationsAnimalID sets the "animals_locations_animal" edge to the Animal entity by id.
@@ -2190,7 +2203,11 @@ func (m *AnimalsLocationsMutation) AddField(name string, value ent.Value) error 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *AnimalsLocationsMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(animalslocations.FieldDateTimeOfVisitLocationPoint) {
+		fields = append(fields, animalslocations.FieldDateTimeOfVisitLocationPoint)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -2203,6 +2220,11 @@ func (m *AnimalsLocationsMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *AnimalsLocationsMutation) ClearField(name string) error {
+	switch name {
+	case animalslocations.FieldDateTimeOfVisitLocationPoint:
+		m.ClearDateTimeOfVisitLocationPoint()
+		return nil
+	}
 	return fmt.Errorf("unknown AnimalsLocations nullable field %s", name)
 }
 

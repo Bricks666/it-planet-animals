@@ -62,12 +62,6 @@ func (this *UsersService) Create(dto *CreateUserDto) (*SecurityUserDto, error) {
 }
 
 func (this *UsersService) Update(id uint32, dto *UpdateUserDto) (*SecurityUserDto, error) {
-	user, _ := this.usersRepository.GetByEmail(dto.Email)
-
-	if user == nil {
-		return nil, &ent.ConstraintError{}
-	}
-
 	hashed, _ := bcrypt.GenerateFromPassword([]byte(dto.Password), shared.ROUND_COUNT)
 
 	dto.Password = string(hashed)
