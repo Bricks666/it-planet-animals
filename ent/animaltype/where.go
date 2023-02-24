@@ -9,139 +9,101 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
-// ID filters vertices based on their ID field.
-func ID(id uint64) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldEQ(FieldID, id))
+// AnimalID applies equality check predicate on the "animal_id" field. It's identical to AnimalIDEQ.
+func AnimalID(v uint64) predicate.AnimalType {
+	return predicate.AnimalType(sql.FieldEQ(FieldAnimalID, v))
 }
 
-// IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint64) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldEQ(FieldID, id))
+// TypeID applies equality check predicate on the "type_id" field. It's identical to TypeIDEQ.
+func TypeID(v uint64) predicate.AnimalType {
+	return predicate.AnimalType(sql.FieldEQ(FieldTypeID, v))
 }
 
-// IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint64) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldNEQ(FieldID, id))
+// AnimalIDEQ applies the EQ predicate on the "animal_id" field.
+func AnimalIDEQ(v uint64) predicate.AnimalType {
+	return predicate.AnimalType(sql.FieldEQ(FieldAnimalID, v))
 }
 
-// IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint64) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldIn(FieldID, ids...))
+// AnimalIDNEQ applies the NEQ predicate on the "animal_id" field.
+func AnimalIDNEQ(v uint64) predicate.AnimalType {
+	return predicate.AnimalType(sql.FieldNEQ(FieldAnimalID, v))
 }
 
-// IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint64) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldNotIn(FieldID, ids...))
+// AnimalIDIn applies the In predicate on the "animal_id" field.
+func AnimalIDIn(vs ...uint64) predicate.AnimalType {
+	return predicate.AnimalType(sql.FieldIn(FieldAnimalID, vs...))
 }
 
-// IDGT applies the GT predicate on the ID field.
-func IDGT(id uint64) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldGT(FieldID, id))
+// AnimalIDNotIn applies the NotIn predicate on the "animal_id" field.
+func AnimalIDNotIn(vs ...uint64) predicate.AnimalType {
+	return predicate.AnimalType(sql.FieldNotIn(FieldAnimalID, vs...))
 }
 
-// IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint64) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldGTE(FieldID, id))
+// TypeIDEQ applies the EQ predicate on the "type_id" field.
+func TypeIDEQ(v uint64) predicate.AnimalType {
+	return predicate.AnimalType(sql.FieldEQ(FieldTypeID, v))
 }
 
-// IDLT applies the LT predicate on the ID field.
-func IDLT(id uint64) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldLT(FieldID, id))
+// TypeIDNEQ applies the NEQ predicate on the "type_id" field.
+func TypeIDNEQ(v uint64) predicate.AnimalType {
+	return predicate.AnimalType(sql.FieldNEQ(FieldTypeID, v))
 }
 
-// IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint64) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldLTE(FieldID, id))
+// TypeIDIn applies the In predicate on the "type_id" field.
+func TypeIDIn(vs ...uint64) predicate.AnimalType {
+	return predicate.AnimalType(sql.FieldIn(FieldTypeID, vs...))
 }
 
-// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
-func Type(v string) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldEQ(FieldType, v))
+// TypeIDNotIn applies the NotIn predicate on the "type_id" field.
+func TypeIDNotIn(vs ...uint64) predicate.AnimalType {
+	return predicate.AnimalType(sql.FieldNotIn(FieldTypeID, vs...))
 }
 
-// TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v string) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldEQ(FieldType, v))
-}
-
-// TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v string) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldNEQ(FieldType, v))
-}
-
-// TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...string) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldIn(FieldType, vs...))
-}
-
-// TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...string) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldNotIn(FieldType, vs...))
-}
-
-// TypeGT applies the GT predicate on the "type" field.
-func TypeGT(v string) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldGT(FieldType, v))
-}
-
-// TypeGTE applies the GTE predicate on the "type" field.
-func TypeGTE(v string) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldGTE(FieldType, v))
-}
-
-// TypeLT applies the LT predicate on the "type" field.
-func TypeLT(v string) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldLT(FieldType, v))
-}
-
-// TypeLTE applies the LTE predicate on the "type" field.
-func TypeLTE(v string) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldLTE(FieldType, v))
-}
-
-// TypeContains applies the Contains predicate on the "type" field.
-func TypeContains(v string) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldContains(FieldType, v))
-}
-
-// TypeHasPrefix applies the HasPrefix predicate on the "type" field.
-func TypeHasPrefix(v string) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldHasPrefix(FieldType, v))
-}
-
-// TypeHasSuffix applies the HasSuffix predicate on the "type" field.
-func TypeHasSuffix(v string) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldHasSuffix(FieldType, v))
-}
-
-// TypeEqualFold applies the EqualFold predicate on the "type" field.
-func TypeEqualFold(v string) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldEqualFold(FieldType, v))
-}
-
-// TypeContainsFold applies the ContainsFold predicate on the "type" field.
-func TypeContainsFold(v string) predicate.AnimalType {
-	return predicate.AnimalType(sql.FieldContainsFold(FieldType, v))
-}
-
-// HasAnimalTypeType applies the HasEdge predicate on the "animal_type_type" edge.
-func HasAnimalTypeType() predicate.AnimalType {
+// HasAnimals applies the HasEdge predicate on the "animals" edge.
+func HasAnimals() predicate.AnimalType {
 	return predicate.AnimalType(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, AnimalTypeTypeTable, AnimalTypeTypePrimaryKey...),
+			sqlgraph.From(Table, AnimalsColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, AnimalsTable, AnimalsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasAnimalTypeTypeWith applies the HasEdge predicate on the "animal_type_type" edge with a given conditions (other predicates).
-func HasAnimalTypeTypeWith(preds ...predicate.Animal) predicate.AnimalType {
+// HasAnimalsWith applies the HasEdge predicate on the "animals" edge with a given conditions (other predicates).
+func HasAnimalsWith(preds ...predicate.Animal) predicate.AnimalType {
 	return predicate.AnimalType(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AnimalTypeTypeInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, AnimalTypeTypeTable, AnimalTypeTypePrimaryKey...),
+			sqlgraph.From(Table, AnimalsColumn),
+			sqlgraph.To(AnimalsInverseTable, AnimalFieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, AnimalsTable, AnimalsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasTypes applies the HasEdge predicate on the "types" edge.
+func HasTypes() predicate.AnimalType {
+	return predicate.AnimalType(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, TypesColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, TypesTable, TypesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTypesWith applies the HasEdge predicate on the "types" edge with a given conditions (other predicates).
+func HasTypesWith(preds ...predicate.AnimalTag) predicate.AnimalType {
+	return predicate.AnimalType(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, TypesColumn),
+			sqlgraph.To(TypesInverseTable, AnimalTagFieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, TypesTable, TypesColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

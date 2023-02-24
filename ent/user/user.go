@@ -15,8 +15,17 @@ const (
 	FieldFirstName = "first_name"
 	// FieldLastName holds the string denoting the lastname field in the database.
 	FieldLastName = "last_name"
+	// EdgeAnimals holds the string denoting the animals edge name in mutations.
+	EdgeAnimals = "animals"
 	// Table holds the table name of the user in the database.
 	Table = "users"
+	// AnimalsTable is the table that holds the animals relation/edge.
+	AnimalsTable = "animals"
+	// AnimalsInverseTable is the table name for the Animal entity.
+	// It exists in this package in order to avoid circular dependency with the "animal" package.
+	AnimalsInverseTable = "animals"
+	// AnimalsColumn is the table column denoting the animals relation/edge.
+	AnimalsColumn = "chipper_id"
 )
 
 // Columns holds all SQL columns for user fields.

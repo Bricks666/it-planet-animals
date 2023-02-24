@@ -144,24 +144,24 @@ func LongitudeLTE(v float64) predicate.Location {
 	return predicate.Location(sql.FieldLTE(FieldLongitude, v))
 }
 
-// HasVisitedLocationsAnimals applies the HasEdge predicate on the "visited_locations_animals" edge.
-func HasVisitedLocationsAnimals() predicate.Location {
+// HasChippedAnimals applies the HasEdge predicate on the "chipped_animals" edge.
+func HasChippedAnimals() predicate.Location {
 	return predicate.Location(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, VisitedLocationsAnimalsTable, VisitedLocationsAnimalsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, ChippedAnimalsTable, ChippedAnimalsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasVisitedLocationsAnimalsWith applies the HasEdge predicate on the "visited_locations_animals" edge with a given conditions (other predicates).
-func HasVisitedLocationsAnimalsWith(preds ...predicate.Animal) predicate.Location {
+// HasChippedAnimalsWith applies the HasEdge predicate on the "chipped_animals" edge with a given conditions (other predicates).
+func HasChippedAnimalsWith(preds ...predicate.Animal) predicate.Location {
 	return predicate.Location(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(VisitedLocationsAnimalsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, VisitedLocationsAnimalsTable, VisitedLocationsAnimalsPrimaryKey...),
+			sqlgraph.To(ChippedAnimalsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ChippedAnimalsTable, ChippedAnimalsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -171,24 +171,51 @@ func HasVisitedLocationsAnimalsWith(preds ...predicate.Animal) predicate.Locatio
 	})
 }
 
-// HasLocations applies the HasEdge predicate on the "locations" edge.
-func HasLocations() predicate.Location {
+// HasAnimals applies the HasEdge predicate on the "animals" edge.
+func HasAnimals() predicate.Location {
 	return predicate.Location(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, LocationsTable, LocationsColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, AnimalsTable, AnimalsPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasLocationsWith applies the HasEdge predicate on the "locations" edge with a given conditions (other predicates).
-func HasLocationsWith(preds ...predicate.AnimalsLocations) predicate.Location {
+// HasAnimalsWith applies the HasEdge predicate on the "animals" edge with a given conditions (other predicates).
+func HasAnimalsWith(preds ...predicate.Animal) predicate.Location {
 	return predicate.Location(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(LocationsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, LocationsTable, LocationsColumn),
+			sqlgraph.To(AnimalsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, AnimalsTable, AnimalsPrimaryKey...),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasHavingAnimals applies the HasEdge predicate on the "having_animals" edge.
+func HasHavingAnimals() predicate.Location {
+	return predicate.Location(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, HavingAnimalsTable, HavingAnimalsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasHavingAnimalsWith applies the HasEdge predicate on the "having_animals" edge with a given conditions (other predicates).
+func HasHavingAnimalsWith(preds ...predicate.VisitedLocation) predicate.Location {
+	return predicate.Location(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(HavingAnimalsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, HavingAnimalsTable, HavingAnimalsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

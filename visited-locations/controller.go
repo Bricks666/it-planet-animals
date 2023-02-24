@@ -1,4 +1,4 @@
-package animalslocations
+package visitedlocation
 
 import (
 	"animals/ent"

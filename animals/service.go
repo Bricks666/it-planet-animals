@@ -175,11 +175,11 @@ func prepareAnimal(animal *ent.Animal) *AnimalDto {
 	var typeIds = []uint64{}
 	var locationIds = []uint64{}
 
-	for _, t := range animal.Edges.AnimalTypeAnimal {
+	for _, t := range animal.Edges.Types {
 		typeIds = append(typeIds, t.ID)
 	}
 
-	for _, l := range animal.Edges.Animals {
+	for _, l := range animal.Edges.VisitedLocations {
 		locationIds = append(locationIds, l.ID)
 	}
 

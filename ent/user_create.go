@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"animals/ent/animal"
 	"animals/ent/user"
 	"context"
 	"errors"
@@ -47,6 +48,21 @@ func (uc *UserCreate) SetLastName(s string) *UserCreate {
 func (uc *UserCreate) SetID(u uint32) *UserCreate {
 	uc.mutation.SetID(u)
 	return uc
+}
+
+// AddAnimalIDs adds the "animals" edge to the Animal entity by IDs.
+func (uc *UserCreate) AddAnimalIDs(ids ...uint64) *UserCreate {
+	uc.mutation.AddAnimalIDs(ids...)
+	return uc
+}
+
+// AddAnimals adds the "animals" edges to the Animal entity.
+func (uc *UserCreate) AddAnimals(a ...*Animal) *UserCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return uc.AddAnimalIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -167,6 +183,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.LastName(); ok {
 		_spec.SetField(user.FieldLastName, field.TypeString, value)
 		_node.LastName = value
+	}
+	if nodes := uc.mutation.AnimalsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AnimalsTable,
+			Columns: []string{user.AnimalsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

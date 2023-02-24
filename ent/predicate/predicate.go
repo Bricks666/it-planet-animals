@@ -9,14 +9,17 @@ import (
 // Animal is the predicate function for animal builders.
 type Animal func(*sql.Selector)
 
+// AnimalTag is the predicate function for animaltag builders.
+type AnimalTag func(*sql.Selector)
+
 // AnimalType is the predicate function for animaltype builders.
 type AnimalType func(*sql.Selector)
-
-// AnimalsLocations is the predicate function for animalslocations builders.
-type AnimalsLocations func(*sql.Selector)
 
 // Location is the predicate function for location builders.
 type Location func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
+
+// VisitedLocation is the predicate function for visitedlocation builders.
+type VisitedLocation func(*sql.Selector)

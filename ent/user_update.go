@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"animals/ent/animal"
 	"animals/ent/predicate"
 	"animals/ent/user"
 	"context"
@@ -51,9 +52,45 @@ func (uu *UserUpdate) SetLastName(s string) *UserUpdate {
 	return uu
 }
 
+// AddAnimalIDs adds the "animals" edge to the Animal entity by IDs.
+func (uu *UserUpdate) AddAnimalIDs(ids ...uint64) *UserUpdate {
+	uu.mutation.AddAnimalIDs(ids...)
+	return uu
+}
+
+// AddAnimals adds the "animals" edges to the Animal entity.
+func (uu *UserUpdate) AddAnimals(a ...*Animal) *UserUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return uu.AddAnimalIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
+}
+
+// ClearAnimals clears all "animals" edges to the Animal entity.
+func (uu *UserUpdate) ClearAnimals() *UserUpdate {
+	uu.mutation.ClearAnimals()
+	return uu
+}
+
+// RemoveAnimalIDs removes the "animals" edge to Animal entities by IDs.
+func (uu *UserUpdate) RemoveAnimalIDs(ids ...uint64) *UserUpdate {
+	uu.mutation.RemoveAnimalIDs(ids...)
+	return uu
+}
+
+// RemoveAnimals removes "animals" edges to Animal entities.
+func (uu *UserUpdate) RemoveAnimals(a ...*Animal) *UserUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return uu.RemoveAnimalIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -132,6 +169,60 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.LastName(); ok {
 		_spec.SetField(user.FieldLastName, field.TypeString, value)
 	}
+	if uu.mutation.AnimalsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AnimalsTable,
+			Columns: []string{user.AnimalsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedAnimalsIDs(); len(nodes) > 0 && !uu.mutation.AnimalsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AnimalsTable,
+			Columns: []string{user.AnimalsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.AnimalsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AnimalsTable,
+			Columns: []string{user.AnimalsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -176,9 +267,45 @@ func (uuo *UserUpdateOne) SetLastName(s string) *UserUpdateOne {
 	return uuo
 }
 
+// AddAnimalIDs adds the "animals" edge to the Animal entity by IDs.
+func (uuo *UserUpdateOne) AddAnimalIDs(ids ...uint64) *UserUpdateOne {
+	uuo.mutation.AddAnimalIDs(ids...)
+	return uuo
+}
+
+// AddAnimals adds the "animals" edges to the Animal entity.
+func (uuo *UserUpdateOne) AddAnimals(a ...*Animal) *UserUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return uuo.AddAnimalIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
+}
+
+// ClearAnimals clears all "animals" edges to the Animal entity.
+func (uuo *UserUpdateOne) ClearAnimals() *UserUpdateOne {
+	uuo.mutation.ClearAnimals()
+	return uuo
+}
+
+// RemoveAnimalIDs removes the "animals" edge to Animal entities by IDs.
+func (uuo *UserUpdateOne) RemoveAnimalIDs(ids ...uint64) *UserUpdateOne {
+	uuo.mutation.RemoveAnimalIDs(ids...)
+	return uuo
+}
+
+// RemoveAnimals removes "animals" edges to Animal entities.
+func (uuo *UserUpdateOne) RemoveAnimals(a ...*Animal) *UserUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return uuo.RemoveAnimalIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -286,6 +413,60 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.LastName(); ok {
 		_spec.SetField(user.FieldLastName, field.TypeString, value)
+	}
+	if uuo.mutation.AnimalsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AnimalsTable,
+			Columns: []string{user.AnimalsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedAnimalsIDs(); len(nodes) > 0 && !uuo.mutation.AnimalsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AnimalsTable,
+			Columns: []string{user.AnimalsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.AnimalsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AnimalsTable,
+			Columns: []string{user.AnimalsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &User{config: uuo.config}
 	_spec.Assign = _node.assignValues

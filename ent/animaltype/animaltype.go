@@ -5,32 +5,41 @@ package animaltype
 const (
 	// Label holds the string label denoting the animaltype type in the database.
 	Label = "animal_type"
-	// FieldID holds the string denoting the id field in the database.
-	FieldID = "id"
-	// FieldType holds the string denoting the type field in the database.
-	FieldType = "type"
-	// EdgeAnimalTypeType holds the string denoting the animal_type_type edge name in mutations.
-	EdgeAnimalTypeType = "animal_type_type"
+	// FieldAnimalID holds the string denoting the animal_id field in the database.
+	FieldAnimalID = "animal_id"
+	// FieldTypeID holds the string denoting the type_id field in the database.
+	FieldTypeID = "type_id"
+	// EdgeAnimals holds the string denoting the animals edge name in mutations.
+	EdgeAnimals = "animals"
+	// EdgeTypes holds the string denoting the types edge name in mutations.
+	EdgeTypes = "types"
+	// AnimalFieldID holds the string denoting the ID field of the Animal.
+	AnimalFieldID = "id"
+	// AnimalTagFieldID holds the string denoting the ID field of the AnimalTag.
+	AnimalTagFieldID = "id"
 	// Table holds the table name of the animaltype in the database.
 	Table = "animal_types"
-	// AnimalTypeTypeTable is the table that holds the animal_type_type relation/edge. The primary key declared below.
-	AnimalTypeTypeTable = "animal_animal_type_animal"
-	// AnimalTypeTypeInverseTable is the table name for the Animal entity.
+	// AnimalsTable is the table that holds the animals relation/edge.
+	AnimalsTable = "animal_types"
+	// AnimalsInverseTable is the table name for the Animal entity.
 	// It exists in this package in order to avoid circular dependency with the "animal" package.
-	AnimalTypeTypeInverseTable = "animals"
+	AnimalsInverseTable = "animals"
+	// AnimalsColumn is the table column denoting the animals relation/edge.
+	AnimalsColumn = "animal_id"
+	// TypesTable is the table that holds the types relation/edge.
+	TypesTable = "animal_types"
+	// TypesInverseTable is the table name for the AnimalTag entity.
+	// It exists in this package in order to avoid circular dependency with the "animaltag" package.
+	TypesInverseTable = "animal_tags"
+	// TypesColumn is the table column denoting the types relation/edge.
+	TypesColumn = "type_id"
 )
 
 // Columns holds all SQL columns for animaltype fields.
 var Columns = []string{
-	FieldID,
-	FieldType,
+	FieldAnimalID,
+	FieldTypeID,
 }
-
-var (
-	// AnimalTypeTypePrimaryKey and AnimalTypeTypeColumn2 are the table columns denoting the
-	// primary key for the animal_type_type relation (M2M).
-	AnimalTypeTypePrimaryKey = []string{"animal_id", "animal_type_id"}
-)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -41,10 +50,3 @@ func ValidColumn(column string) bool {
 	}
 	return false
 }
-
-var (
-	// TypeValidator is a validator for the "type" field. It is called by the builders before save.
-	TypeValidator func(string) error
-	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint64) error
-)

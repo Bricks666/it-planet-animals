@@ -26,31 +26,42 @@ type Location struct {
 
 // LocationEdges holds the relations/edges for other nodes in the graph.
 type LocationEdges struct {
-	// VisitedLocationsAnimals holds the value of the visited_locations_animals edge.
-	VisitedLocationsAnimals []*Animal `json:"visited_locations_animals,omitempty"`
-	// Locations holds the value of the locations edge.
-	Locations []*AnimalsLocations `json:"locations,omitempty"`
+	// ChippedAnimals holds the value of the chipped_animals edge.
+	ChippedAnimals []*Animal `json:"chipped_animals,omitempty"`
+	// Animals holds the value of the animals edge.
+	Animals []*Animal `json:"animals,omitempty"`
+	// HavingAnimals holds the value of the having_animals edge.
+	HavingAnimals []*VisitedLocation `json:"having_animals,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
-// VisitedLocationsAnimalsOrErr returns the VisitedLocationsAnimals value or an error if the edge
+// ChippedAnimalsOrErr returns the ChippedAnimals value or an error if the edge
 // was not loaded in eager-loading.
-func (e LocationEdges) VisitedLocationsAnimalsOrErr() ([]*Animal, error) {
+func (e LocationEdges) ChippedAnimalsOrErr() ([]*Animal, error) {
 	if e.loadedTypes[0] {
-		return e.VisitedLocationsAnimals, nil
+		return e.ChippedAnimals, nil
 	}
-	return nil, &NotLoadedError{edge: "visited_locations_animals"}
+	return nil, &NotLoadedError{edge: "chipped_animals"}
 }
 
-// LocationsOrErr returns the Locations value or an error if the edge
+// AnimalsOrErr returns the Animals value or an error if the edge
 // was not loaded in eager-loading.
-func (e LocationEdges) LocationsOrErr() ([]*AnimalsLocations, error) {
+func (e LocationEdges) AnimalsOrErr() ([]*Animal, error) {
 	if e.loadedTypes[1] {
-		return e.Locations, nil
+		return e.Animals, nil
 	}
-	return nil, &NotLoadedError{edge: "locations"}
+	return nil, &NotLoadedError{edge: "animals"}
+}
+
+// HavingAnimalsOrErr returns the HavingAnimals value or an error if the edge
+// was not loaded in eager-loading.
+func (e LocationEdges) HavingAnimalsOrErr() ([]*VisitedLocation, error) {
+	if e.loadedTypes[2] {
+		return e.HavingAnimals, nil
+	}
+	return nil, &NotLoadedError{edge: "having_animals"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -100,14 +111,19 @@ func (l *Location) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// QueryVisitedLocationsAnimals queries the "visited_locations_animals" edge of the Location entity.
-func (l *Location) QueryVisitedLocationsAnimals() *AnimalQuery {
-	return NewLocationClient(l.config).QueryVisitedLocationsAnimals(l)
+// QueryChippedAnimals queries the "chipped_animals" edge of the Location entity.
+func (l *Location) QueryChippedAnimals() *AnimalQuery {
+	return NewLocationClient(l.config).QueryChippedAnimals(l)
 }
 
-// QueryLocations queries the "locations" edge of the Location entity.
-func (l *Location) QueryLocations() *AnimalsLocationsQuery {
-	return NewLocationClient(l.config).QueryLocations(l)
+// QueryAnimals queries the "animals" edge of the Location entity.
+func (l *Location) QueryAnimals() *AnimalQuery {
+	return NewLocationClient(l.config).QueryAnimals(l)
+}
+
+// QueryHavingAnimals queries the "having_animals" edge of the Location entity.
+func (l *Location) QueryHavingAnimals() *VisitedLocationQuery {
+	return NewLocationClient(l.config).QueryHavingAnimals(l)
 }
 
 // Update returns a builder for updating this Location.

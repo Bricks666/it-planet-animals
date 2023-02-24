@@ -25,12 +25,16 @@ func (Location) Fields() []ent.Field {
 // Edges of the Location.
 func (Location) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("visited_locations_animals", Animal.Type).
-			Ref("visited_locations").
+		edge.To("chipped_animals", Animal.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.NoAction,
+			}),
+		edge.From("animals", Animal.Type).
+			Ref("locations").
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.NoAction,
 			}).
-			Through("locations", AnimalsLocations.Type),
+			Through("having_animals", VisitedLocation.Type),
 	}
 }
 

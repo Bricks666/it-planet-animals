@@ -43,41 +43,43 @@ type Animal struct {
 
 // AnimalEdges holds the relations/edges for other nodes in the graph.
 type AnimalEdges struct {
-	// ChipperAnimal holds the value of the chipper_animal edge.
-	ChipperAnimal *User `json:"chipper_animal,omitempty"`
-	// AnimalTypeAnimal holds the value of the animal_type_animal edge.
-	AnimalTypeAnimal []*AnimalType `json:"animal_type_animal,omitempty"`
+	// Chipper holds the value of the chipper edge.
+	Chipper *User `json:"chipper,omitempty"`
+	// Types holds the value of the types edge.
+	Types []*AnimalTag `json:"types,omitempty"`
 	// ChippingLocation holds the value of the chipping_location edge.
 	ChippingLocation *Location `json:"chipping_location,omitempty"`
+	// Locations holds the value of the locations edge.
+	Locations []*Location `json:"locations,omitempty"`
+	// AnimalTypes holds the value of the animal_types edge.
+	AnimalTypes []*AnimalType `json:"animal_types,omitempty"`
 	// VisitedLocations holds the value of the visited_locations edge.
-	VisitedLocations []*Location `json:"visited_locations,omitempty"`
-	// Animals holds the value of the animals edge.
-	Animals []*AnimalsLocations `json:"animals,omitempty"`
+	VisitedLocations []*VisitedLocation `json:"visited_locations,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
-// ChipperAnimalOrErr returns the ChipperAnimal value or an error if the edge
+// ChipperOrErr returns the Chipper value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AnimalEdges) ChipperAnimalOrErr() (*User, error) {
+func (e AnimalEdges) ChipperOrErr() (*User, error) {
 	if e.loadedTypes[0] {
-		if e.ChipperAnimal == nil {
+		if e.Chipper == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: user.Label}
 		}
-		return e.ChipperAnimal, nil
+		return e.Chipper, nil
 	}
-	return nil, &NotLoadedError{edge: "chipper_animal"}
+	return nil, &NotLoadedError{edge: "chipper"}
 }
 
-// AnimalTypeAnimalOrErr returns the AnimalTypeAnimal value or an error if the edge
+// TypesOrErr returns the Types value or an error if the edge
 // was not loaded in eager-loading.
-func (e AnimalEdges) AnimalTypeAnimalOrErr() ([]*AnimalType, error) {
+func (e AnimalEdges) TypesOrErr() ([]*AnimalTag, error) {
 	if e.loadedTypes[1] {
-		return e.AnimalTypeAnimal, nil
+		return e.Types, nil
 	}
-	return nil, &NotLoadedError{edge: "animal_type_animal"}
+	return nil, &NotLoadedError{edge: "types"}
 }
 
 // ChippingLocationOrErr returns the ChippingLocation value or an error if the edge
@@ -93,22 +95,31 @@ func (e AnimalEdges) ChippingLocationOrErr() (*Location, error) {
 	return nil, &NotLoadedError{edge: "chipping_location"}
 }
 
+// LocationsOrErr returns the Locations value or an error if the edge
+// was not loaded in eager-loading.
+func (e AnimalEdges) LocationsOrErr() ([]*Location, error) {
+	if e.loadedTypes[3] {
+		return e.Locations, nil
+	}
+	return nil, &NotLoadedError{edge: "locations"}
+}
+
+// AnimalTypesOrErr returns the AnimalTypes value or an error if the edge
+// was not loaded in eager-loading.
+func (e AnimalEdges) AnimalTypesOrErr() ([]*AnimalType, error) {
+	if e.loadedTypes[4] {
+		return e.AnimalTypes, nil
+	}
+	return nil, &NotLoadedError{edge: "animal_types"}
+}
+
 // VisitedLocationsOrErr returns the VisitedLocations value or an error if the edge
 // was not loaded in eager-loading.
-func (e AnimalEdges) VisitedLocationsOrErr() ([]*Location, error) {
-	if e.loadedTypes[3] {
+func (e AnimalEdges) VisitedLocationsOrErr() ([]*VisitedLocation, error) {
+	if e.loadedTypes[5] {
 		return e.VisitedLocations, nil
 	}
 	return nil, &NotLoadedError{edge: "visited_locations"}
-}
-
-// AnimalsOrErr returns the Animals value or an error if the edge
-// was not loaded in eager-loading.
-func (e AnimalEdges) AnimalsOrErr() ([]*AnimalsLocations, error) {
-	if e.loadedTypes[4] {
-		return e.Animals, nil
-	}
-	return nil, &NotLoadedError{edge: "animals"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -205,14 +216,14 @@ func (a *Animal) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// QueryChipperAnimal queries the "chipper_animal" edge of the Animal entity.
-func (a *Animal) QueryChipperAnimal() *UserQuery {
-	return NewAnimalClient(a.config).QueryChipperAnimal(a)
+// QueryChipper queries the "chipper" edge of the Animal entity.
+func (a *Animal) QueryChipper() *UserQuery {
+	return NewAnimalClient(a.config).QueryChipper(a)
 }
 
-// QueryAnimalTypeAnimal queries the "animal_type_animal" edge of the Animal entity.
-func (a *Animal) QueryAnimalTypeAnimal() *AnimalTypeQuery {
-	return NewAnimalClient(a.config).QueryAnimalTypeAnimal(a)
+// QueryTypes queries the "types" edge of the Animal entity.
+func (a *Animal) QueryTypes() *AnimalTagQuery {
+	return NewAnimalClient(a.config).QueryTypes(a)
 }
 
 // QueryChippingLocation queries the "chipping_location" edge of the Animal entity.
@@ -220,14 +231,19 @@ func (a *Animal) QueryChippingLocation() *LocationQuery {
 	return NewAnimalClient(a.config).QueryChippingLocation(a)
 }
 
-// QueryVisitedLocations queries the "visited_locations" edge of the Animal entity.
-func (a *Animal) QueryVisitedLocations() *LocationQuery {
-	return NewAnimalClient(a.config).QueryVisitedLocations(a)
+// QueryLocations queries the "locations" edge of the Animal entity.
+func (a *Animal) QueryLocations() *LocationQuery {
+	return NewAnimalClient(a.config).QueryLocations(a)
 }
 
-// QueryAnimals queries the "animals" edge of the Animal entity.
-func (a *Animal) QueryAnimals() *AnimalsLocationsQuery {
-	return NewAnimalClient(a.config).QueryAnimals(a)
+// QueryAnimalTypes queries the "animal_types" edge of the Animal entity.
+func (a *Animal) QueryAnimalTypes() *AnimalTypeQuery {
+	return NewAnimalClient(a.config).QueryAnimalTypes(a)
+}
+
+// QueryVisitedLocations queries the "visited_locations" edge of the Animal entity.
+func (a *Animal) QueryVisitedLocations() *VisitedLocationQuery {
+	return NewAnimalClient(a.config).QueryVisitedLocations(a)
 }
 
 // Update returns a builder for updating this Animal.

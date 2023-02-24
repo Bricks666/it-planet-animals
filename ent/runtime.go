@@ -4,11 +4,11 @@ package ent
 
 import (
 	"animals/ent/animal"
-	"animals/ent/animalslocations"
-	"animals/ent/animaltype"
+	"animals/ent/animaltag"
 	"animals/ent/location"
 	"animals/ent/schema"
 	"animals/ent/user"
+	"animals/ent/visitedlocation"
 	"time"
 )
 
@@ -38,22 +38,16 @@ func init() {
 	animalDescID := animalFields[0].Descriptor()
 	// animal.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	animal.IDValidator = animalDescID.Validators[0].(func(uint64) error)
-	animaltypeFields := schema.AnimalType{}.Fields()
-	_ = animaltypeFields
-	// animaltypeDescType is the schema descriptor for type field.
-	animaltypeDescType := animaltypeFields[1].Descriptor()
-	// animaltype.TypeValidator is a validator for the "type" field. It is called by the builders before save.
-	animaltype.TypeValidator = animaltypeDescType.Validators[0].(func(string) error)
-	// animaltypeDescID is the schema descriptor for id field.
-	animaltypeDescID := animaltypeFields[0].Descriptor()
-	// animaltype.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	animaltype.IDValidator = animaltypeDescID.Validators[0].(func(uint64) error)
-	animalslocationsFields := schema.AnimalsLocations{}.Fields()
-	_ = animalslocationsFields
-	// animalslocationsDescID is the schema descriptor for id field.
-	animalslocationsDescID := animalslocationsFields[0].Descriptor()
-	// animalslocations.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	animalslocations.IDValidator = animalslocationsDescID.Validators[0].(func(uint64) error)
+	animaltagFields := schema.AnimalTag{}.Fields()
+	_ = animaltagFields
+	// animaltagDescType is the schema descriptor for type field.
+	animaltagDescType := animaltagFields[1].Descriptor()
+	// animaltag.TypeValidator is a validator for the "type" field. It is called by the builders before save.
+	animaltag.TypeValidator = animaltagDescType.Validators[0].(func(string) error)
+	// animaltagDescID is the schema descriptor for id field.
+	animaltagDescID := animaltagFields[0].Descriptor()
+	// animaltag.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	animaltag.IDValidator = animaltagDescID.Validators[0].(func(uint64) error)
 	locationFields := schema.Location{}.Fields()
 	_ = locationFields
 	// locationDescLatitude is the schema descriptor for latitude field.
@@ -90,4 +84,10 @@ func init() {
 	userDescID := userFields[0].Descriptor()
 	// user.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	user.IDValidator = userDescID.Validators[0].(func(uint32) error)
+	visitedlocationFields := schema.VisitedLocation{}.Fields()
+	_ = visitedlocationFields
+	// visitedlocationDescID is the schema descriptor for id field.
+	visitedlocationDescID := visitedlocationFields[0].Descriptor()
+	// visitedlocation.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	visitedlocation.IDValidator = visitedlocationDescID.Validators[0].(func(uint64) error)
 }

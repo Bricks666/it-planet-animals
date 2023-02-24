@@ -1,4 +1,4 @@
-package animalslocations
+package visitedlocation
 
 import (
 	"animals/animals"
@@ -10,22 +10,22 @@ import (
 )
 
 type AnimalsLocationsService struct {
-	animalsLocationRepository *AnimalsLocationsRepository
-	animalsRepository         *animals.AnimalsRepository
+	visitedLocationsRepository *VisitedLocationsRepository
+	animalsRepository          *animals.AnimalsRepository
 }
 
 var Service AnimalsLocationsService
 
 func init() {
 	Service = AnimalsLocationsService{
-		animalsLocationRepository: &Repository,
-		animalsRepository:         &animals.Repository,
+		visitedLocationsRepository: &Repository,
+		animalsRepository:          &animals.Repository,
 	}
 }
 
 func (this *AnimalsLocationsService) GetAll(animalId uint64, dto *AnimalsLocationSearchQueryDto) ([]*AnimalsLocationsDto, error) {
 
-	locations, err := this.animalsLocationRepository.GetAll(animalId, dto)
+	locations, err := this.visitedLocationsRepository.GetAll(animalId, dto)
 
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (this *AnimalsLocationsService) Create(animalId uint64, locationId uint64) 
 		return nil, &ent.ConstraintError{}
 	}
 
-	animalLocation, err := this.animalsLocationRepository.Create(animalId, locationId)
+	animalLocation, err := this.visitedLocationsRepository.Create(animalId, locationId)
 
 	if err != nil {
 		return nil, &ent.NotFoundError{}
@@ -78,7 +78,7 @@ func (this *AnimalsLocationsService) Update(animalId uint64, dto *UpdateAnimalsL
 		return nil, &ent.NotFoundError{}
 	}
 
-	visitedLocations := animal.Edges.Animals
+	visitedLocations := animal.Edges.VisitedLocations
 	visitedLocationsCount := len(visitedLocations)
 
 	if visitedLocationsCount == 0 {
@@ -90,7 +90,7 @@ func (this *AnimalsLocationsService) Update(animalId uint64, dto *UpdateAnimalsL
 		return nil, &ent.ConstraintError{}
 	}
 
-	var pointIndex = slices.IndexFunc(visitedLocations, func(element *ent.AnimalsLocations) bool {
+	var pointIndex = slices.IndexFunc(visitedLocations, func(element *ent.VisitedLocation) bool {
 		return element.ID == dto.VisitedAnimalLocationId
 	})
 
@@ -104,7 +104,7 @@ func (this *AnimalsLocationsService) Update(animalId uint64, dto *UpdateAnimalsL
 		return nil, &ent.ConstraintError{}
 	}
 
-	var prev, next *ent.AnimalsLocations
+	var prev, next *ent.VisitedLocation
 
 	if pointIndex > 0 {
 		prev = visitedLocations[pointIndex-1]
@@ -118,8 +118,8 @@ func (this *AnimalsLocationsService) Update(animalId uint64, dto *UpdateAnimalsL
 		return nil, &ent.ConstraintError{}
 	}
 
-	var point *ent.AnimalsLocations
-	point, err = this.animalsLocationRepository.Update(animalId, dto)
+	var point *ent.VisitedLocation
+	point, err = this.visitedLocationsRepository.Update(animalId, dto)
 
 	if err != nil {
 		return nil, &ent.NotFoundError{}
@@ -129,7 +129,7 @@ func (this *AnimalsLocationsService) Update(animalId uint64, dto *UpdateAnimalsL
 }
 
 func (this *AnimalsLocationsService) Remove(animalId uint64, visitedId uint64) error {
-	var err = this.animalsLocationRepository.Remove(animalId, visitedId)
+	var err = this.visitedLocationsRepository.Remove(animalId, visitedId)
 
 	if err != nil {
 		return err
@@ -142,7 +142,7 @@ func (this *AnimalsLocationsService) Remove(animalId uint64, visitedId uint64) e
 		return err
 	}
 
-	visitedLocations := animal.Edges.Animals
+	visitedLocations := animal.Edges.VisitedLocations
 
 	if len(visitedLocations) == 0 {
 		return nil
@@ -155,7 +155,7 @@ func (this *AnimalsLocationsService) Remove(animalId uint64, visitedId uint64) e
 	return nil
 }
 
-func prepareAnimalsLocation(animalLocation *ent.AnimalsLocations) *AnimalsLocationsDto {
+func prepareAnimalsLocation(animalLocation *ent.VisitedLocation) *AnimalsLocationsDto {
 	return &AnimalsLocationsDto{
 		Id:                           animalLocation.ID,
 		LocationId:                   animalLocation.LocationID,

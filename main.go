@@ -3,9 +3,9 @@ package main
 import (
 	animaltypes "animals/animal-types"
 	"animals/animals"
-	animalslocations "animals/animals-locations"
 	"animals/locations"
 	"animals/users"
+	visitedlocation "animals/visited-locations"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -58,10 +58,10 @@ func setupRouter() *fiber.App {
 
 	animalsLocationsRouter := animalsRouter.Group(":animalId/locations")
 
-	animalsLocationsRouter.Get("/", users.DisableAuthCheck, users.CheckAuth, animalslocations.Controller.GetAll)
-	animalsLocationsRouter.Post("/:locationId", users.CheckAuth, animalslocations.Controller.Create)
-	animalsLocationsRouter.Put("/", users.CheckAuth, animalslocations.Controller.Update)
-	animalsLocationsRouter.Delete("/:locationId", users.CheckAuth, animalslocations.Controller.Remove)
+	animalsLocationsRouter.Get("/", users.DisableAuthCheck, users.CheckAuth, visitedlocation.Controller.GetAll)
+	animalsLocationsRouter.Post("/:locationId", users.CheckAuth, visitedlocation.Controller.Create)
+	animalsLocationsRouter.Put("/", users.CheckAuth, visitedlocation.Controller.Update)
+	animalsLocationsRouter.Delete("/:locationId", users.CheckAuth, visitedlocation.Controller.Remove)
 
 	return router
 }

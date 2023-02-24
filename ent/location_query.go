@@ -4,9 +4,9 @@ package ent
 
 import (
 	"animals/ent/animal"
-	"animals/ent/animalslocations"
 	"animals/ent/location"
 	"animals/ent/predicate"
+	"animals/ent/visitedlocation"
 	"context"
 	"database/sql/driver"
 	"fmt"
@@ -20,12 +20,13 @@ import (
 // LocationQuery is the builder for querying Location entities.
 type LocationQuery struct {
 	config
-	ctx                         *QueryContext
-	order                       []OrderFunc
-	inters                      []Interceptor
-	predicates                  []predicate.Location
-	withVisitedLocationsAnimals *AnimalQuery
-	withLocations               *AnimalsLocationsQuery
+	ctx                *QueryContext
+	order              []OrderFunc
+	inters             []Interceptor
+	predicates         []predicate.Location
+	withChippedAnimals *AnimalQuery
+	withAnimals        *AnimalQuery
+	withHavingAnimals  *VisitedLocationQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -62,8 +63,8 @@ func (lq *LocationQuery) Order(o ...OrderFunc) *LocationQuery {
 	return lq
 }
 
-// QueryVisitedLocationsAnimals chains the current query on the "visited_locations_animals" edge.
-func (lq *LocationQuery) QueryVisitedLocationsAnimals() *AnimalQuery {
+// QueryChippedAnimals chains the current query on the "chipped_animals" edge.
+func (lq *LocationQuery) QueryChippedAnimals() *AnimalQuery {
 	query := (&AnimalClient{config: lq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := lq.prepareQuery(ctx); err != nil {
@@ -76,7 +77,7 @@ func (lq *LocationQuery) QueryVisitedLocationsAnimals() *AnimalQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(location.Table, location.FieldID, selector),
 			sqlgraph.To(animal.Table, animal.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, location.VisitedLocationsAnimalsTable, location.VisitedLocationsAnimalsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, location.ChippedAnimalsTable, location.ChippedAnimalsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(lq.driver.Dialect(), step)
 		return fromU, nil
@@ -84,9 +85,9 @@ func (lq *LocationQuery) QueryVisitedLocationsAnimals() *AnimalQuery {
 	return query
 }
 
-// QueryLocations chains the current query on the "locations" edge.
-func (lq *LocationQuery) QueryLocations() *AnimalsLocationsQuery {
-	query := (&AnimalsLocationsClient{config: lq.config}).Query()
+// QueryAnimals chains the current query on the "animals" edge.
+func (lq *LocationQuery) QueryAnimals() *AnimalQuery {
+	query := (&AnimalClient{config: lq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := lq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -97,8 +98,30 @@ func (lq *LocationQuery) QueryLocations() *AnimalsLocationsQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(location.Table, location.FieldID, selector),
-			sqlgraph.To(animalslocations.Table, animalslocations.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, location.LocationsTable, location.LocationsColumn),
+			sqlgraph.To(animal.Table, animal.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, location.AnimalsTable, location.AnimalsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(lq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryHavingAnimals chains the current query on the "having_animals" edge.
+func (lq *LocationQuery) QueryHavingAnimals() *VisitedLocationQuery {
+	query := (&VisitedLocationClient{config: lq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := lq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := lq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(location.Table, location.FieldID, selector),
+			sqlgraph.To(visitedlocation.Table, visitedlocation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, location.HavingAnimalsTable, location.HavingAnimalsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(lq.driver.Dialect(), step)
 		return fromU, nil
@@ -293,38 +316,50 @@ func (lq *LocationQuery) Clone() *LocationQuery {
 		return nil
 	}
 	return &LocationQuery{
-		config:                      lq.config,
-		ctx:                         lq.ctx.Clone(),
-		order:                       append([]OrderFunc{}, lq.order...),
-		inters:                      append([]Interceptor{}, lq.inters...),
-		predicates:                  append([]predicate.Location{}, lq.predicates...),
-		withVisitedLocationsAnimals: lq.withVisitedLocationsAnimals.Clone(),
-		withLocations:               lq.withLocations.Clone(),
+		config:             lq.config,
+		ctx:                lq.ctx.Clone(),
+		order:              append([]OrderFunc{}, lq.order...),
+		inters:             append([]Interceptor{}, lq.inters...),
+		predicates:         append([]predicate.Location{}, lq.predicates...),
+		withChippedAnimals: lq.withChippedAnimals.Clone(),
+		withAnimals:        lq.withAnimals.Clone(),
+		withHavingAnimals:  lq.withHavingAnimals.Clone(),
 		// clone intermediate query.
 		sql:  lq.sql.Clone(),
 		path: lq.path,
 	}
 }
 
-// WithVisitedLocationsAnimals tells the query-builder to eager-load the nodes that are connected to
-// the "visited_locations_animals" edge. The optional arguments are used to configure the query builder of the edge.
-func (lq *LocationQuery) WithVisitedLocationsAnimals(opts ...func(*AnimalQuery)) *LocationQuery {
+// WithChippedAnimals tells the query-builder to eager-load the nodes that are connected to
+// the "chipped_animals" edge. The optional arguments are used to configure the query builder of the edge.
+func (lq *LocationQuery) WithChippedAnimals(opts ...func(*AnimalQuery)) *LocationQuery {
 	query := (&AnimalClient{config: lq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	lq.withVisitedLocationsAnimals = query
+	lq.withChippedAnimals = query
 	return lq
 }
 
-// WithLocations tells the query-builder to eager-load the nodes that are connected to
-// the "locations" edge. The optional arguments are used to configure the query builder of the edge.
-func (lq *LocationQuery) WithLocations(opts ...func(*AnimalsLocationsQuery)) *LocationQuery {
-	query := (&AnimalsLocationsClient{config: lq.config}).Query()
+// WithAnimals tells the query-builder to eager-load the nodes that are connected to
+// the "animals" edge. The optional arguments are used to configure the query builder of the edge.
+func (lq *LocationQuery) WithAnimals(opts ...func(*AnimalQuery)) *LocationQuery {
+	query := (&AnimalClient{config: lq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	lq.withLocations = query
+	lq.withAnimals = query
+	return lq
+}
+
+// WithHavingAnimals tells the query-builder to eager-load the nodes that are connected to
+// the "having_animals" edge. The optional arguments are used to configure the query builder of the edge.
+func (lq *LocationQuery) WithHavingAnimals(opts ...func(*VisitedLocationQuery)) *LocationQuery {
+	query := (&VisitedLocationClient{config: lq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	lq.withHavingAnimals = query
 	return lq
 }
 
@@ -406,9 +441,10 @@ func (lq *LocationQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Loc
 	var (
 		nodes       = []*Location{}
 		_spec       = lq.querySpec()
-		loadedTypes = [2]bool{
-			lq.withVisitedLocationsAnimals != nil,
-			lq.withLocations != nil,
+		loadedTypes = [3]bool{
+			lq.withChippedAnimals != nil,
+			lq.withAnimals != nil,
+			lq.withHavingAnimals != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -429,26 +465,58 @@ func (lq *LocationQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Loc
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := lq.withVisitedLocationsAnimals; query != nil {
-		if err := lq.loadVisitedLocationsAnimals(ctx, query, nodes,
-			func(n *Location) { n.Edges.VisitedLocationsAnimals = []*Animal{} },
-			func(n *Location, e *Animal) {
-				n.Edges.VisitedLocationsAnimals = append(n.Edges.VisitedLocationsAnimals, e)
-			}); err != nil {
+	if query := lq.withChippedAnimals; query != nil {
+		if err := lq.loadChippedAnimals(ctx, query, nodes,
+			func(n *Location) { n.Edges.ChippedAnimals = []*Animal{} },
+			func(n *Location, e *Animal) { n.Edges.ChippedAnimals = append(n.Edges.ChippedAnimals, e) }); err != nil {
 			return nil, err
 		}
 	}
-	if query := lq.withLocations; query != nil {
-		if err := lq.loadLocations(ctx, query, nodes,
-			func(n *Location) { n.Edges.Locations = []*AnimalsLocations{} },
-			func(n *Location, e *AnimalsLocations) { n.Edges.Locations = append(n.Edges.Locations, e) }); err != nil {
+	if query := lq.withAnimals; query != nil {
+		if err := lq.loadAnimals(ctx, query, nodes,
+			func(n *Location) { n.Edges.Animals = []*Animal{} },
+			func(n *Location, e *Animal) { n.Edges.Animals = append(n.Edges.Animals, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := lq.withHavingAnimals; query != nil {
+		if err := lq.loadHavingAnimals(ctx, query, nodes,
+			func(n *Location) { n.Edges.HavingAnimals = []*VisitedLocation{} },
+			func(n *Location, e *VisitedLocation) { n.Edges.HavingAnimals = append(n.Edges.HavingAnimals, e) }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (lq *LocationQuery) loadVisitedLocationsAnimals(ctx context.Context, query *AnimalQuery, nodes []*Location, init func(*Location), assign func(*Location, *Animal)) error {
+func (lq *LocationQuery) loadChippedAnimals(ctx context.Context, query *AnimalQuery, nodes []*Location, init func(*Location), assign func(*Location, *Animal)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Location)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.Where(predicate.Animal(func(s *sql.Selector) {
+		s.Where(sql.InValues(location.ChippedAnimalsColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ChippingLocationID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "chipping_location_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (lq *LocationQuery) loadAnimals(ctx context.Context, query *AnimalQuery, nodes []*Location, init func(*Location), assign func(*Location, *Animal)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
 	byID := make(map[uint64]*Location)
 	nids := make(map[uint64]map[*Location]struct{})
@@ -460,11 +528,11 @@ func (lq *LocationQuery) loadVisitedLocationsAnimals(ctx context.Context, query 
 		}
 	}
 	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(location.VisitedLocationsAnimalsTable)
-		s.Join(joinT).On(s.C(animal.FieldID), joinT.C(location.VisitedLocationsAnimalsPrimaryKey[0]))
-		s.Where(sql.InValues(joinT.C(location.VisitedLocationsAnimalsPrimaryKey[1]), edgeIDs...))
+		joinT := sql.Table(location.AnimalsTable)
+		s.Join(joinT).On(s.C(animal.FieldID), joinT.C(location.AnimalsPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(location.AnimalsPrimaryKey[1]), edgeIDs...))
 		columns := s.SelectedColumns()
-		s.Select(joinT.C(location.VisitedLocationsAnimalsPrimaryKey[1]))
+		s.Select(joinT.C(location.AnimalsPrimaryKey[1]))
 		s.AppendSelect(columns...)
 		s.SetDistinct(false)
 	})
@@ -501,7 +569,7 @@ func (lq *LocationQuery) loadVisitedLocationsAnimals(ctx context.Context, query 
 	for _, n := range neighbors {
 		nodes, ok := nids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected "visited_locations_animals" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected "animals" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)
@@ -509,7 +577,7 @@ func (lq *LocationQuery) loadVisitedLocationsAnimals(ctx context.Context, query 
 	}
 	return nil
 }
-func (lq *LocationQuery) loadLocations(ctx context.Context, query *AnimalsLocationsQuery, nodes []*Location, init func(*Location), assign func(*Location, *AnimalsLocations)) error {
+func (lq *LocationQuery) loadHavingAnimals(ctx context.Context, query *VisitedLocationQuery, nodes []*Location, init func(*Location), assign func(*Location, *VisitedLocation)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*Location)
 	for i := range nodes {
@@ -519,8 +587,8 @@ func (lq *LocationQuery) loadLocations(ctx context.Context, query *AnimalsLocati
 			init(nodes[i])
 		}
 	}
-	query.Where(predicate.AnimalsLocations(func(s *sql.Selector) {
-		s.Where(sql.InValues(location.LocationsColumn, fks...))
+	query.Where(predicate.VisitedLocation(func(s *sql.Selector) {
+		s.Where(sql.InValues(location.HavingAnimalsColumn, fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

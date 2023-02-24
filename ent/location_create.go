@@ -4,8 +4,8 @@ package ent
 
 import (
 	"animals/ent/animal"
-	"animals/ent/animalslocations"
 	"animals/ent/location"
+	"animals/ent/visitedlocation"
 	"context"
 	"errors"
 	"fmt"
@@ -39,34 +39,49 @@ func (lc *LocationCreate) SetID(u uint64) *LocationCreate {
 	return lc
 }
 
-// AddVisitedLocationsAnimalIDs adds the "visited_locations_animals" edge to the Animal entity by IDs.
-func (lc *LocationCreate) AddVisitedLocationsAnimalIDs(ids ...uint64) *LocationCreate {
-	lc.mutation.AddVisitedLocationsAnimalIDs(ids...)
+// AddChippedAnimalIDs adds the "chipped_animals" edge to the Animal entity by IDs.
+func (lc *LocationCreate) AddChippedAnimalIDs(ids ...uint64) *LocationCreate {
+	lc.mutation.AddChippedAnimalIDs(ids...)
 	return lc
 }
 
-// AddVisitedLocationsAnimals adds the "visited_locations_animals" edges to the Animal entity.
-func (lc *LocationCreate) AddVisitedLocationsAnimals(a ...*Animal) *LocationCreate {
+// AddChippedAnimals adds the "chipped_animals" edges to the Animal entity.
+func (lc *LocationCreate) AddChippedAnimals(a ...*Animal) *LocationCreate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return lc.AddVisitedLocationsAnimalIDs(ids...)
+	return lc.AddChippedAnimalIDs(ids...)
 }
 
-// AddLocationIDs adds the "locations" edge to the AnimalsLocations entity by IDs.
-func (lc *LocationCreate) AddLocationIDs(ids ...uint64) *LocationCreate {
-	lc.mutation.AddLocationIDs(ids...)
+// AddAnimalIDs adds the "animals" edge to the Animal entity by IDs.
+func (lc *LocationCreate) AddAnimalIDs(ids ...uint64) *LocationCreate {
+	lc.mutation.AddAnimalIDs(ids...)
 	return lc
 }
 
-// AddLocations adds the "locations" edges to the AnimalsLocations entity.
-func (lc *LocationCreate) AddLocations(a ...*AnimalsLocations) *LocationCreate {
+// AddAnimals adds the "animals" edges to the Animal entity.
+func (lc *LocationCreate) AddAnimals(a ...*Animal) *LocationCreate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return lc.AddLocationIDs(ids...)
+	return lc.AddAnimalIDs(ids...)
+}
+
+// AddHavingAnimalIDs adds the "having_animals" edge to the VisitedLocation entity by IDs.
+func (lc *LocationCreate) AddHavingAnimalIDs(ids ...uint64) *LocationCreate {
+	lc.mutation.AddHavingAnimalIDs(ids...)
+	return lc
+}
+
+// AddHavingAnimals adds the "having_animals" edges to the VisitedLocation entity.
+func (lc *LocationCreate) AddHavingAnimals(v ...*VisitedLocation) *LocationCreate {
+	ids := make([]uint64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return lc.AddHavingAnimalIDs(ids...)
 }
 
 // Mutation returns the LocationMutation object of the builder.
@@ -164,12 +179,12 @@ func (lc *LocationCreate) createSpec() (*Location, *sqlgraph.CreateSpec) {
 		_spec.SetField(location.FieldLongitude, field.TypeFloat64, value)
 		_node.Longitude = value
 	}
-	if nodes := lc.mutation.VisitedLocationsAnimalsIDs(); len(nodes) > 0 {
+	if nodes := lc.mutation.ChippedAnimalsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   location.VisitedLocationsAnimalsTable,
-			Columns: location.VisitedLocationsAnimalsPrimaryKey,
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   location.ChippedAnimalsTable,
+			Columns: []string{location.ChippedAnimalsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -183,17 +198,36 @@ func (lc *LocationCreate) createSpec() (*Location, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := lc.mutation.LocationsIDs(); len(nodes) > 0 {
+	if nodes := lc.mutation.AnimalsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   location.LocationsTable,
-			Columns: []string{location.LocationsColumn},
+			Table:   location.AnimalsTable,
+			Columns: location.AnimalsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: animalslocations.FieldID,
+					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := lc.mutation.HavingAnimalsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   location.HavingAnimalsTable,
+			Columns: []string{location.HavingAnimalsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: visitedlocation.FieldID,
 				},
 			},
 		}

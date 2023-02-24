@@ -14,14 +14,16 @@ type Tx struct {
 	config
 	// Animal is the client for interacting with the Animal builders.
 	Animal *AnimalClient
+	// AnimalTag is the client for interacting with the AnimalTag builders.
+	AnimalTag *AnimalTagClient
 	// AnimalType is the client for interacting with the AnimalType builders.
 	AnimalType *AnimalTypeClient
-	// AnimalsLocations is the client for interacting with the AnimalsLocations builders.
-	AnimalsLocations *AnimalsLocationsClient
 	// Location is the client for interacting with the Location builders.
 	Location *LocationClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
+	// VisitedLocation is the client for interacting with the VisitedLocation builders.
+	VisitedLocation *VisitedLocationClient
 
 	// lazily loaded.
 	client     *Client
@@ -154,10 +156,11 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Animal = NewAnimalClient(tx.config)
+	tx.AnimalTag = NewAnimalTagClient(tx.config)
 	tx.AnimalType = NewAnimalTypeClient(tx.config)
-	tx.AnimalsLocations = NewAnimalsLocationsClient(tx.config)
 	tx.Location = NewLocationClient(tx.config)
 	tx.User = NewUserClient(tx.config)
+	tx.VisitedLocation = NewVisitedLocationClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

@@ -20,6 +20,18 @@ func (f AnimalFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AnimalMutation", m)
 }
 
+// The AnimalTagFunc type is an adapter to allow the use of ordinary
+// function as AnimalTag mutator.
+type AnimalTagFunc func(context.Context, *ent.AnimalTagMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AnimalTagFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AnimalTagMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AnimalTagMutation", m)
+}
+
 // The AnimalTypeFunc type is an adapter to allow the use of ordinary
 // function as AnimalType mutator.
 type AnimalTypeFunc func(context.Context, *ent.AnimalTypeMutation) (ent.Value, error)
@@ -30,18 +42,6 @@ func (f AnimalTypeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AnimalTypeMutation", m)
-}
-
-// The AnimalsLocationsFunc type is an adapter to allow the use of ordinary
-// function as AnimalsLocations mutator.
-type AnimalsLocationsFunc func(context.Context, *ent.AnimalsLocationsMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f AnimalsLocationsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.AnimalsLocationsMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AnimalsLocationsMutation", m)
 }
 
 // The LocationFunc type is an adapter to allow the use of ordinary
@@ -66,6 +66,18 @@ func (f UserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserMutation", m)
+}
+
+// The VisitedLocationFunc type is an adapter to allow the use of ordinary
+// function as VisitedLocation mutator.
+type VisitedLocationFunc func(context.Context, *ent.VisitedLocationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f VisitedLocationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.VisitedLocationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.VisitedLocationMutation", m)
 }
 
 // Condition is a hook condition function.

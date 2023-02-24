@@ -50,7 +50,7 @@ func (this *AnimalsRepository) GetAll(dto *AnimalsSearchQueryDto) ([]*ent.Animal
 	}
 
 	return query.
-		WithAnimalTypeAnimal().
+		WithTypes().
 		WithVisitedLocations().
 		Offset(int(dto.From)).
 		Limit(int(dto.Size)).
@@ -61,22 +61,22 @@ func (this *AnimalsRepository) GetOne(id uint64) (*ent.Animal, error) {
 	return this.db.Client.Animal.
 		Query().
 		Where(animal.ID(id)).
-		WithAnimalTypeAnimal().
+		WithTypes().
 		WithVisitedLocations().
-		WithAnimals().
+		WithLocations().
 		Only(this.db.Context)
 }
 
 func (this *AnimalsRepository) Create(dto *CreateAnimalDto) (*ent.Animal, error) {
 	animal, err := this.db.Client.Animal.
 		Create().
-		SetChipperAnimalID(dto.ChipperId).
+		SetChipperID(dto.ChipperId).
 		SetChippingLocationID(dto.ChippingLocationId).
 		SetWeight(dto.Weight).
 		SetLength(dto.Length).
 		SetHeight(dto.Height).
 		SetGender(animal.Gender(dto.Gender)).
-		AddAnimalTypeAnimalIDs(dto.AnimalTypes...).
+		AddTypeIDs(dto.AnimalTypes...).
 		AddVisitedLocationIDs([]uint64{}...).
 		Save(this.db.Context)
 
@@ -95,7 +95,7 @@ func (this *AnimalsRepository) Update(id uint64, dto *UpdateAnimalDto) (*ent.Ani
 	}
 
 	return query.
-		SetChipperAnimalID(dto.ChipperId).
+		SetChipperID(dto.ChipperId).
 		SetChippingLocationID(dto.ChippingLocationId).
 		SetWeight(dto.Weight).
 		SetLength(dto.Length).
@@ -114,13 +114,13 @@ func (this *AnimalsRepository) Remove(id uint64) error {
 func (this *AnimalsRepository) AddType(id uint64, typeId uint64) (*ent.Animal, error) {
 	return this.db.Client.Animal.
 		UpdateOneID(id).
-		AddAnimalTypeAnimalIDs(typeId).
+		AddTypeIDs(typeId).
 		Save(this.db.Context)
 }
 
 func (this *AnimalsRepository) RemoveType(id uint64, typeId uint64) (*ent.Animal, error) {
 	return this.db.Client.Animal.
 		UpdateOneID(id).
-		RemoveAnimalTypeAnimalIDs(typeId).
+		RemoveTypeIDs(typeId).
 		Save(this.db.Context)
 }

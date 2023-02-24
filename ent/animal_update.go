@@ -4,11 +4,11 @@ package ent
 
 import (
 	"animals/ent/animal"
-	"animals/ent/animalslocations"
-	"animals/ent/animaltype"
+	"animals/ent/animaltag"
 	"animals/ent/location"
 	"animals/ent/predicate"
 	"animals/ent/user"
+	"animals/ent/visitedlocation"
 	"context"
 	"errors"
 	"fmt"
@@ -165,38 +165,24 @@ func (au *AnimalUpdate) ClearDeathDateTime() *AnimalUpdate {
 	return au
 }
 
-// SetChipperAnimalID sets the "chipper_animal" edge to the User entity by ID.
-func (au *AnimalUpdate) SetChipperAnimalID(id uint32) *AnimalUpdate {
-	au.mutation.SetChipperAnimalID(id)
+// SetChipper sets the "chipper" edge to the User entity.
+func (au *AnimalUpdate) SetChipper(u *User) *AnimalUpdate {
+	return au.SetChipperID(u.ID)
+}
+
+// AddTypeIDs adds the "types" edge to the AnimalTag entity by IDs.
+func (au *AnimalUpdate) AddTypeIDs(ids ...uint64) *AnimalUpdate {
+	au.mutation.AddTypeIDs(ids...)
 	return au
 }
 
-// SetNillableChipperAnimalID sets the "chipper_animal" edge to the User entity by ID if the given value is not nil.
-func (au *AnimalUpdate) SetNillableChipperAnimalID(id *uint32) *AnimalUpdate {
-	if id != nil {
-		au = au.SetChipperAnimalID(*id)
-	}
-	return au
-}
-
-// SetChipperAnimal sets the "chipper_animal" edge to the User entity.
-func (au *AnimalUpdate) SetChipperAnimal(u *User) *AnimalUpdate {
-	return au.SetChipperAnimalID(u.ID)
-}
-
-// AddAnimalTypeAnimalIDs adds the "animal_type_animal" edge to the AnimalType entity by IDs.
-func (au *AnimalUpdate) AddAnimalTypeAnimalIDs(ids ...uint64) *AnimalUpdate {
-	au.mutation.AddAnimalTypeAnimalIDs(ids...)
-	return au
-}
-
-// AddAnimalTypeAnimal adds the "animal_type_animal" edges to the AnimalType entity.
-func (au *AnimalUpdate) AddAnimalTypeAnimal(a ...*AnimalType) *AnimalUpdate {
+// AddTypes adds the "types" edges to the AnimalTag entity.
+func (au *AnimalUpdate) AddTypes(a ...*AnimalTag) *AnimalUpdate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return au.AddAnimalTypeAnimalIDs(ids...)
+	return au.AddTypeIDs(ids...)
 }
 
 // SetChippingLocation sets the "chipping_location" edge to the Location entity.
@@ -204,34 +190,34 @@ func (au *AnimalUpdate) SetChippingLocation(l *Location) *AnimalUpdate {
 	return au.SetChippingLocationID(l.ID)
 }
 
-// AddVisitedLocationIDs adds the "visited_locations" edge to the Location entity by IDs.
+// AddLocationIDs adds the "locations" edge to the Location entity by IDs.
+func (au *AnimalUpdate) AddLocationIDs(ids ...uint64) *AnimalUpdate {
+	au.mutation.AddLocationIDs(ids...)
+	return au
+}
+
+// AddLocations adds the "locations" edges to the Location entity.
+func (au *AnimalUpdate) AddLocations(l ...*Location) *AnimalUpdate {
+	ids := make([]uint64, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return au.AddLocationIDs(ids...)
+}
+
+// AddVisitedLocationIDs adds the "visited_locations" edge to the VisitedLocation entity by IDs.
 func (au *AnimalUpdate) AddVisitedLocationIDs(ids ...uint64) *AnimalUpdate {
 	au.mutation.AddVisitedLocationIDs(ids...)
 	return au
 }
 
-// AddVisitedLocations adds the "visited_locations" edges to the Location entity.
-func (au *AnimalUpdate) AddVisitedLocations(l ...*Location) *AnimalUpdate {
-	ids := make([]uint64, len(l))
-	for i := range l {
-		ids[i] = l[i].ID
+// AddVisitedLocations adds the "visited_locations" edges to the VisitedLocation entity.
+func (au *AnimalUpdate) AddVisitedLocations(v ...*VisitedLocation) *AnimalUpdate {
+	ids := make([]uint64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
 	return au.AddVisitedLocationIDs(ids...)
-}
-
-// AddAnimalIDs adds the "animals" edge to the AnimalsLocations entity by IDs.
-func (au *AnimalUpdate) AddAnimalIDs(ids ...uint64) *AnimalUpdate {
-	au.mutation.AddAnimalIDs(ids...)
-	return au
-}
-
-// AddAnimals adds the "animals" edges to the AnimalsLocations entity.
-func (au *AnimalUpdate) AddAnimals(a ...*AnimalsLocations) *AnimalUpdate {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return au.AddAnimalIDs(ids...)
 }
 
 // Mutation returns the AnimalMutation object of the builder.
@@ -239,31 +225,31 @@ func (au *AnimalUpdate) Mutation() *AnimalMutation {
 	return au.mutation
 }
 
-// ClearChipperAnimal clears the "chipper_animal" edge to the User entity.
-func (au *AnimalUpdate) ClearChipperAnimal() *AnimalUpdate {
-	au.mutation.ClearChipperAnimal()
+// ClearChipper clears the "chipper" edge to the User entity.
+func (au *AnimalUpdate) ClearChipper() *AnimalUpdate {
+	au.mutation.ClearChipper()
 	return au
 }
 
-// ClearAnimalTypeAnimal clears all "animal_type_animal" edges to the AnimalType entity.
-func (au *AnimalUpdate) ClearAnimalTypeAnimal() *AnimalUpdate {
-	au.mutation.ClearAnimalTypeAnimal()
+// ClearTypes clears all "types" edges to the AnimalTag entity.
+func (au *AnimalUpdate) ClearTypes() *AnimalUpdate {
+	au.mutation.ClearTypes()
 	return au
 }
 
-// RemoveAnimalTypeAnimalIDs removes the "animal_type_animal" edge to AnimalType entities by IDs.
-func (au *AnimalUpdate) RemoveAnimalTypeAnimalIDs(ids ...uint64) *AnimalUpdate {
-	au.mutation.RemoveAnimalTypeAnimalIDs(ids...)
+// RemoveTypeIDs removes the "types" edge to AnimalTag entities by IDs.
+func (au *AnimalUpdate) RemoveTypeIDs(ids ...uint64) *AnimalUpdate {
+	au.mutation.RemoveTypeIDs(ids...)
 	return au
 }
 
-// RemoveAnimalTypeAnimal removes "animal_type_animal" edges to AnimalType entities.
-func (au *AnimalUpdate) RemoveAnimalTypeAnimal(a ...*AnimalType) *AnimalUpdate {
+// RemoveTypes removes "types" edges to AnimalTag entities.
+func (au *AnimalUpdate) RemoveTypes(a ...*AnimalTag) *AnimalUpdate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return au.RemoveAnimalTypeAnimalIDs(ids...)
+	return au.RemoveTypeIDs(ids...)
 }
 
 // ClearChippingLocation clears the "chipping_location" edge to the Location entity.
@@ -272,46 +258,46 @@ func (au *AnimalUpdate) ClearChippingLocation() *AnimalUpdate {
 	return au
 }
 
-// ClearVisitedLocations clears all "visited_locations" edges to the Location entity.
+// ClearLocations clears all "locations" edges to the Location entity.
+func (au *AnimalUpdate) ClearLocations() *AnimalUpdate {
+	au.mutation.ClearLocations()
+	return au
+}
+
+// RemoveLocationIDs removes the "locations" edge to Location entities by IDs.
+func (au *AnimalUpdate) RemoveLocationIDs(ids ...uint64) *AnimalUpdate {
+	au.mutation.RemoveLocationIDs(ids...)
+	return au
+}
+
+// RemoveLocations removes "locations" edges to Location entities.
+func (au *AnimalUpdate) RemoveLocations(l ...*Location) *AnimalUpdate {
+	ids := make([]uint64, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return au.RemoveLocationIDs(ids...)
+}
+
+// ClearVisitedLocations clears all "visited_locations" edges to the VisitedLocation entity.
 func (au *AnimalUpdate) ClearVisitedLocations() *AnimalUpdate {
 	au.mutation.ClearVisitedLocations()
 	return au
 }
 
-// RemoveVisitedLocationIDs removes the "visited_locations" edge to Location entities by IDs.
+// RemoveVisitedLocationIDs removes the "visited_locations" edge to VisitedLocation entities by IDs.
 func (au *AnimalUpdate) RemoveVisitedLocationIDs(ids ...uint64) *AnimalUpdate {
 	au.mutation.RemoveVisitedLocationIDs(ids...)
 	return au
 }
 
-// RemoveVisitedLocations removes "visited_locations" edges to Location entities.
-func (au *AnimalUpdate) RemoveVisitedLocations(l ...*Location) *AnimalUpdate {
-	ids := make([]uint64, len(l))
-	for i := range l {
-		ids[i] = l[i].ID
+// RemoveVisitedLocations removes "visited_locations" edges to VisitedLocation entities.
+func (au *AnimalUpdate) RemoveVisitedLocations(v ...*VisitedLocation) *AnimalUpdate {
+	ids := make([]uint64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
 	return au.RemoveVisitedLocationIDs(ids...)
-}
-
-// ClearAnimals clears all "animals" edges to the AnimalsLocations entity.
-func (au *AnimalUpdate) ClearAnimals() *AnimalUpdate {
-	au.mutation.ClearAnimals()
-	return au
-}
-
-// RemoveAnimalIDs removes the "animals" edge to AnimalsLocations entities by IDs.
-func (au *AnimalUpdate) RemoveAnimalIDs(ids ...uint64) *AnimalUpdate {
-	au.mutation.RemoveAnimalIDs(ids...)
-	return au
-}
-
-// RemoveAnimals removes "animals" edges to AnimalsLocations entities.
-func (au *AnimalUpdate) RemoveAnimals(a ...*AnimalsLocations) *AnimalUpdate {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return au.RemoveAnimalIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -416,12 +402,12 @@ func (au *AnimalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if au.mutation.DeathDateTimeCleared() {
 		_spec.ClearField(animal.FieldDeathDateTime, field.TypeTime)
 	}
-	if au.mutation.ChipperAnimalCleared() {
+	if au.mutation.ChipperCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   animal.ChipperAnimalTable,
-			Columns: []string{animal.ChipperAnimalColumn},
+			Inverse: true,
+			Table:   animal.ChipperTable,
+			Columns: []string{animal.ChipperColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -432,12 +418,12 @@ func (au *AnimalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.ChipperAnimalIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.ChipperIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   animal.ChipperAnimalTable,
-			Columns: []string{animal.ChipperAnimalColumn},
+			Inverse: true,
+			Table:   animal.ChipperTable,
+			Columns: []string{animal.ChipperColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -451,33 +437,33 @@ func (au *AnimalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.AnimalTypeAnimalCleared() {
+	if au.mutation.TypesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   animal.AnimalTypeAnimalTable,
-			Columns: animal.AnimalTypeAnimalPrimaryKey,
+			Table:   animal.TypesTable,
+			Columns: animal.TypesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: animaltype.FieldID,
+					Column: animaltag.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.RemovedAnimalTypeAnimalIDs(); len(nodes) > 0 && !au.mutation.AnimalTypeAnimalCleared() {
+	if nodes := au.mutation.RemovedTypesIDs(); len(nodes) > 0 && !au.mutation.TypesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   animal.AnimalTypeAnimalTable,
-			Columns: animal.AnimalTypeAnimalPrimaryKey,
+			Table:   animal.TypesTable,
+			Columns: animal.TypesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: animaltype.FieldID,
+					Column: animaltag.FieldID,
 				},
 			},
 		}
@@ -486,17 +472,17 @@ func (au *AnimalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.AnimalTypeAnimalIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.TypesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   animal.AnimalTypeAnimalTable,
-			Columns: animal.AnimalTypeAnimalPrimaryKey,
+			Table:   animal.TypesTable,
+			Columns: animal.TypesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: animaltype.FieldID,
+					Column: animaltag.FieldID,
 				},
 			},
 		}
@@ -508,7 +494,7 @@ func (au *AnimalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if au.mutation.ChippingLocationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   animal.ChippingLocationTable,
 			Columns: []string{animal.ChippingLocationColumn},
 			Bidi:    false,
@@ -524,7 +510,7 @@ func (au *AnimalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := au.mutation.ChippingLocationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   animal.ChippingLocationTable,
 			Columns: []string{animal.ChippingLocationColumn},
 			Bidi:    false,
@@ -540,12 +526,12 @@ func (au *AnimalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.VisitedLocationsCleared() {
+	if au.mutation.LocationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   animal.VisitedLocationsTable,
-			Columns: animal.VisitedLocationsPrimaryKey,
+			Table:   animal.LocationsTable,
+			Columns: animal.LocationsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -556,12 +542,12 @@ func (au *AnimalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.RemovedVisitedLocationsIDs(); len(nodes) > 0 && !au.mutation.VisitedLocationsCleared() {
+	if nodes := au.mutation.RemovedLocationsIDs(); len(nodes) > 0 && !au.mutation.LocationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   animal.VisitedLocationsTable,
-			Columns: animal.VisitedLocationsPrimaryKey,
+			Table:   animal.LocationsTable,
+			Columns: animal.LocationsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -575,12 +561,12 @@ func (au *AnimalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.VisitedLocationsIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.LocationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   animal.VisitedLocationsTable,
-			Columns: animal.VisitedLocationsPrimaryKey,
+			Table:   animal.LocationsTable,
+			Columns: animal.LocationsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -594,33 +580,33 @@ func (au *AnimalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.AnimalsCleared() {
+	if au.mutation.VisitedLocationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: true,
-			Table:   animal.AnimalsTable,
-			Columns: []string{animal.AnimalsColumn},
+			Table:   animal.VisitedLocationsTable,
+			Columns: []string{animal.VisitedLocationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: animalslocations.FieldID,
+					Column: visitedlocation.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.RemovedAnimalsIDs(); len(nodes) > 0 && !au.mutation.AnimalsCleared() {
+	if nodes := au.mutation.RemovedVisitedLocationsIDs(); len(nodes) > 0 && !au.mutation.VisitedLocationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: true,
-			Table:   animal.AnimalsTable,
-			Columns: []string{animal.AnimalsColumn},
+			Table:   animal.VisitedLocationsTable,
+			Columns: []string{animal.VisitedLocationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: animalslocations.FieldID,
+					Column: visitedlocation.FieldID,
 				},
 			},
 		}
@@ -629,17 +615,17 @@ func (au *AnimalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.AnimalsIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.VisitedLocationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: true,
-			Table:   animal.AnimalsTable,
-			Columns: []string{animal.AnimalsColumn},
+			Table:   animal.VisitedLocationsTable,
+			Columns: []string{animal.VisitedLocationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: animalslocations.FieldID,
+					Column: visitedlocation.FieldID,
 				},
 			},
 		}
@@ -801,38 +787,24 @@ func (auo *AnimalUpdateOne) ClearDeathDateTime() *AnimalUpdateOne {
 	return auo
 }
 
-// SetChipperAnimalID sets the "chipper_animal" edge to the User entity by ID.
-func (auo *AnimalUpdateOne) SetChipperAnimalID(id uint32) *AnimalUpdateOne {
-	auo.mutation.SetChipperAnimalID(id)
+// SetChipper sets the "chipper" edge to the User entity.
+func (auo *AnimalUpdateOne) SetChipper(u *User) *AnimalUpdateOne {
+	return auo.SetChipperID(u.ID)
+}
+
+// AddTypeIDs adds the "types" edge to the AnimalTag entity by IDs.
+func (auo *AnimalUpdateOne) AddTypeIDs(ids ...uint64) *AnimalUpdateOne {
+	auo.mutation.AddTypeIDs(ids...)
 	return auo
 }
 
-// SetNillableChipperAnimalID sets the "chipper_animal" edge to the User entity by ID if the given value is not nil.
-func (auo *AnimalUpdateOne) SetNillableChipperAnimalID(id *uint32) *AnimalUpdateOne {
-	if id != nil {
-		auo = auo.SetChipperAnimalID(*id)
-	}
-	return auo
-}
-
-// SetChipperAnimal sets the "chipper_animal" edge to the User entity.
-func (auo *AnimalUpdateOne) SetChipperAnimal(u *User) *AnimalUpdateOne {
-	return auo.SetChipperAnimalID(u.ID)
-}
-
-// AddAnimalTypeAnimalIDs adds the "animal_type_animal" edge to the AnimalType entity by IDs.
-func (auo *AnimalUpdateOne) AddAnimalTypeAnimalIDs(ids ...uint64) *AnimalUpdateOne {
-	auo.mutation.AddAnimalTypeAnimalIDs(ids...)
-	return auo
-}
-
-// AddAnimalTypeAnimal adds the "animal_type_animal" edges to the AnimalType entity.
-func (auo *AnimalUpdateOne) AddAnimalTypeAnimal(a ...*AnimalType) *AnimalUpdateOne {
+// AddTypes adds the "types" edges to the AnimalTag entity.
+func (auo *AnimalUpdateOne) AddTypes(a ...*AnimalTag) *AnimalUpdateOne {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return auo.AddAnimalTypeAnimalIDs(ids...)
+	return auo.AddTypeIDs(ids...)
 }
 
 // SetChippingLocation sets the "chipping_location" edge to the Location entity.
@@ -840,34 +812,34 @@ func (auo *AnimalUpdateOne) SetChippingLocation(l *Location) *AnimalUpdateOne {
 	return auo.SetChippingLocationID(l.ID)
 }
 
-// AddVisitedLocationIDs adds the "visited_locations" edge to the Location entity by IDs.
+// AddLocationIDs adds the "locations" edge to the Location entity by IDs.
+func (auo *AnimalUpdateOne) AddLocationIDs(ids ...uint64) *AnimalUpdateOne {
+	auo.mutation.AddLocationIDs(ids...)
+	return auo
+}
+
+// AddLocations adds the "locations" edges to the Location entity.
+func (auo *AnimalUpdateOne) AddLocations(l ...*Location) *AnimalUpdateOne {
+	ids := make([]uint64, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return auo.AddLocationIDs(ids...)
+}
+
+// AddVisitedLocationIDs adds the "visited_locations" edge to the VisitedLocation entity by IDs.
 func (auo *AnimalUpdateOne) AddVisitedLocationIDs(ids ...uint64) *AnimalUpdateOne {
 	auo.mutation.AddVisitedLocationIDs(ids...)
 	return auo
 }
 
-// AddVisitedLocations adds the "visited_locations" edges to the Location entity.
-func (auo *AnimalUpdateOne) AddVisitedLocations(l ...*Location) *AnimalUpdateOne {
-	ids := make([]uint64, len(l))
-	for i := range l {
-		ids[i] = l[i].ID
+// AddVisitedLocations adds the "visited_locations" edges to the VisitedLocation entity.
+func (auo *AnimalUpdateOne) AddVisitedLocations(v ...*VisitedLocation) *AnimalUpdateOne {
+	ids := make([]uint64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
 	return auo.AddVisitedLocationIDs(ids...)
-}
-
-// AddAnimalIDs adds the "animals" edge to the AnimalsLocations entity by IDs.
-func (auo *AnimalUpdateOne) AddAnimalIDs(ids ...uint64) *AnimalUpdateOne {
-	auo.mutation.AddAnimalIDs(ids...)
-	return auo
-}
-
-// AddAnimals adds the "animals" edges to the AnimalsLocations entity.
-func (auo *AnimalUpdateOne) AddAnimals(a ...*AnimalsLocations) *AnimalUpdateOne {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return auo.AddAnimalIDs(ids...)
 }
 
 // Mutation returns the AnimalMutation object of the builder.
@@ -875,31 +847,31 @@ func (auo *AnimalUpdateOne) Mutation() *AnimalMutation {
 	return auo.mutation
 }
 
-// ClearChipperAnimal clears the "chipper_animal" edge to the User entity.
-func (auo *AnimalUpdateOne) ClearChipperAnimal() *AnimalUpdateOne {
-	auo.mutation.ClearChipperAnimal()
+// ClearChipper clears the "chipper" edge to the User entity.
+func (auo *AnimalUpdateOne) ClearChipper() *AnimalUpdateOne {
+	auo.mutation.ClearChipper()
 	return auo
 }
 
-// ClearAnimalTypeAnimal clears all "animal_type_animal" edges to the AnimalType entity.
-func (auo *AnimalUpdateOne) ClearAnimalTypeAnimal() *AnimalUpdateOne {
-	auo.mutation.ClearAnimalTypeAnimal()
+// ClearTypes clears all "types" edges to the AnimalTag entity.
+func (auo *AnimalUpdateOne) ClearTypes() *AnimalUpdateOne {
+	auo.mutation.ClearTypes()
 	return auo
 }
 
-// RemoveAnimalTypeAnimalIDs removes the "animal_type_animal" edge to AnimalType entities by IDs.
-func (auo *AnimalUpdateOne) RemoveAnimalTypeAnimalIDs(ids ...uint64) *AnimalUpdateOne {
-	auo.mutation.RemoveAnimalTypeAnimalIDs(ids...)
+// RemoveTypeIDs removes the "types" edge to AnimalTag entities by IDs.
+func (auo *AnimalUpdateOne) RemoveTypeIDs(ids ...uint64) *AnimalUpdateOne {
+	auo.mutation.RemoveTypeIDs(ids...)
 	return auo
 }
 
-// RemoveAnimalTypeAnimal removes "animal_type_animal" edges to AnimalType entities.
-func (auo *AnimalUpdateOne) RemoveAnimalTypeAnimal(a ...*AnimalType) *AnimalUpdateOne {
+// RemoveTypes removes "types" edges to AnimalTag entities.
+func (auo *AnimalUpdateOne) RemoveTypes(a ...*AnimalTag) *AnimalUpdateOne {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return auo.RemoveAnimalTypeAnimalIDs(ids...)
+	return auo.RemoveTypeIDs(ids...)
 }
 
 // ClearChippingLocation clears the "chipping_location" edge to the Location entity.
@@ -908,46 +880,46 @@ func (auo *AnimalUpdateOne) ClearChippingLocation() *AnimalUpdateOne {
 	return auo
 }
 
-// ClearVisitedLocations clears all "visited_locations" edges to the Location entity.
+// ClearLocations clears all "locations" edges to the Location entity.
+func (auo *AnimalUpdateOne) ClearLocations() *AnimalUpdateOne {
+	auo.mutation.ClearLocations()
+	return auo
+}
+
+// RemoveLocationIDs removes the "locations" edge to Location entities by IDs.
+func (auo *AnimalUpdateOne) RemoveLocationIDs(ids ...uint64) *AnimalUpdateOne {
+	auo.mutation.RemoveLocationIDs(ids...)
+	return auo
+}
+
+// RemoveLocations removes "locations" edges to Location entities.
+func (auo *AnimalUpdateOne) RemoveLocations(l ...*Location) *AnimalUpdateOne {
+	ids := make([]uint64, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return auo.RemoveLocationIDs(ids...)
+}
+
+// ClearVisitedLocations clears all "visited_locations" edges to the VisitedLocation entity.
 func (auo *AnimalUpdateOne) ClearVisitedLocations() *AnimalUpdateOne {
 	auo.mutation.ClearVisitedLocations()
 	return auo
 }
 
-// RemoveVisitedLocationIDs removes the "visited_locations" edge to Location entities by IDs.
+// RemoveVisitedLocationIDs removes the "visited_locations" edge to VisitedLocation entities by IDs.
 func (auo *AnimalUpdateOne) RemoveVisitedLocationIDs(ids ...uint64) *AnimalUpdateOne {
 	auo.mutation.RemoveVisitedLocationIDs(ids...)
 	return auo
 }
 
-// RemoveVisitedLocations removes "visited_locations" edges to Location entities.
-func (auo *AnimalUpdateOne) RemoveVisitedLocations(l ...*Location) *AnimalUpdateOne {
-	ids := make([]uint64, len(l))
-	for i := range l {
-		ids[i] = l[i].ID
+// RemoveVisitedLocations removes "visited_locations" edges to VisitedLocation entities.
+func (auo *AnimalUpdateOne) RemoveVisitedLocations(v ...*VisitedLocation) *AnimalUpdateOne {
+	ids := make([]uint64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
 	return auo.RemoveVisitedLocationIDs(ids...)
-}
-
-// ClearAnimals clears all "animals" edges to the AnimalsLocations entity.
-func (auo *AnimalUpdateOne) ClearAnimals() *AnimalUpdateOne {
-	auo.mutation.ClearAnimals()
-	return auo
-}
-
-// RemoveAnimalIDs removes the "animals" edge to AnimalsLocations entities by IDs.
-func (auo *AnimalUpdateOne) RemoveAnimalIDs(ids ...uint64) *AnimalUpdateOne {
-	auo.mutation.RemoveAnimalIDs(ids...)
-	return auo
-}
-
-// RemoveAnimals removes "animals" edges to AnimalsLocations entities.
-func (auo *AnimalUpdateOne) RemoveAnimals(a ...*AnimalsLocations) *AnimalUpdateOne {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return auo.RemoveAnimalIDs(ids...)
 }
 
 // Where appends a list predicates to the AnimalUpdate builder.
@@ -1082,12 +1054,12 @@ func (auo *AnimalUpdateOne) sqlSave(ctx context.Context) (_node *Animal, err err
 	if auo.mutation.DeathDateTimeCleared() {
 		_spec.ClearField(animal.FieldDeathDateTime, field.TypeTime)
 	}
-	if auo.mutation.ChipperAnimalCleared() {
+	if auo.mutation.ChipperCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   animal.ChipperAnimalTable,
-			Columns: []string{animal.ChipperAnimalColumn},
+			Inverse: true,
+			Table:   animal.ChipperTable,
+			Columns: []string{animal.ChipperColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1098,12 +1070,12 @@ func (auo *AnimalUpdateOne) sqlSave(ctx context.Context) (_node *Animal, err err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.ChipperAnimalIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.ChipperIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   animal.ChipperAnimalTable,
-			Columns: []string{animal.ChipperAnimalColumn},
+			Inverse: true,
+			Table:   animal.ChipperTable,
+			Columns: []string{animal.ChipperColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1117,33 +1089,33 @@ func (auo *AnimalUpdateOne) sqlSave(ctx context.Context) (_node *Animal, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if auo.mutation.AnimalTypeAnimalCleared() {
+	if auo.mutation.TypesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   animal.AnimalTypeAnimalTable,
-			Columns: animal.AnimalTypeAnimalPrimaryKey,
+			Table:   animal.TypesTable,
+			Columns: animal.TypesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: animaltype.FieldID,
+					Column: animaltag.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.RemovedAnimalTypeAnimalIDs(); len(nodes) > 0 && !auo.mutation.AnimalTypeAnimalCleared() {
+	if nodes := auo.mutation.RemovedTypesIDs(); len(nodes) > 0 && !auo.mutation.TypesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   animal.AnimalTypeAnimalTable,
-			Columns: animal.AnimalTypeAnimalPrimaryKey,
+			Table:   animal.TypesTable,
+			Columns: animal.TypesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: animaltype.FieldID,
+					Column: animaltag.FieldID,
 				},
 			},
 		}
@@ -1152,17 +1124,17 @@ func (auo *AnimalUpdateOne) sqlSave(ctx context.Context) (_node *Animal, err err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.AnimalTypeAnimalIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.TypesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   animal.AnimalTypeAnimalTable,
-			Columns: animal.AnimalTypeAnimalPrimaryKey,
+			Table:   animal.TypesTable,
+			Columns: animal.TypesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: animaltype.FieldID,
+					Column: animaltag.FieldID,
 				},
 			},
 		}
@@ -1174,7 +1146,7 @@ func (auo *AnimalUpdateOne) sqlSave(ctx context.Context) (_node *Animal, err err
 	if auo.mutation.ChippingLocationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   animal.ChippingLocationTable,
 			Columns: []string{animal.ChippingLocationColumn},
 			Bidi:    false,
@@ -1190,7 +1162,7 @@ func (auo *AnimalUpdateOne) sqlSave(ctx context.Context) (_node *Animal, err err
 	if nodes := auo.mutation.ChippingLocationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   animal.ChippingLocationTable,
 			Columns: []string{animal.ChippingLocationColumn},
 			Bidi:    false,
@@ -1206,12 +1178,12 @@ func (auo *AnimalUpdateOne) sqlSave(ctx context.Context) (_node *Animal, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if auo.mutation.VisitedLocationsCleared() {
+	if auo.mutation.LocationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   animal.VisitedLocationsTable,
-			Columns: animal.VisitedLocationsPrimaryKey,
+			Table:   animal.LocationsTable,
+			Columns: animal.LocationsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1222,12 +1194,12 @@ func (auo *AnimalUpdateOne) sqlSave(ctx context.Context) (_node *Animal, err err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.RemovedVisitedLocationsIDs(); len(nodes) > 0 && !auo.mutation.VisitedLocationsCleared() {
+	if nodes := auo.mutation.RemovedLocationsIDs(); len(nodes) > 0 && !auo.mutation.LocationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   animal.VisitedLocationsTable,
-			Columns: animal.VisitedLocationsPrimaryKey,
+			Table:   animal.LocationsTable,
+			Columns: animal.LocationsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1241,12 +1213,12 @@ func (auo *AnimalUpdateOne) sqlSave(ctx context.Context) (_node *Animal, err err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.VisitedLocationsIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.LocationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   animal.VisitedLocationsTable,
-			Columns: animal.VisitedLocationsPrimaryKey,
+			Table:   animal.LocationsTable,
+			Columns: animal.LocationsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1260,33 +1232,33 @@ func (auo *AnimalUpdateOne) sqlSave(ctx context.Context) (_node *Animal, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if auo.mutation.AnimalsCleared() {
+	if auo.mutation.VisitedLocationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: true,
-			Table:   animal.AnimalsTable,
-			Columns: []string{animal.AnimalsColumn},
+			Table:   animal.VisitedLocationsTable,
+			Columns: []string{animal.VisitedLocationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: animalslocations.FieldID,
+					Column: visitedlocation.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.RemovedAnimalsIDs(); len(nodes) > 0 && !auo.mutation.AnimalsCleared() {
+	if nodes := auo.mutation.RemovedVisitedLocationsIDs(); len(nodes) > 0 && !auo.mutation.VisitedLocationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: true,
-			Table:   animal.AnimalsTable,
-			Columns: []string{animal.AnimalsColumn},
+			Table:   animal.VisitedLocationsTable,
+			Columns: []string{animal.VisitedLocationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: animalslocations.FieldID,
+					Column: visitedlocation.FieldID,
 				},
 			},
 		}
@@ -1295,17 +1267,17 @@ func (auo *AnimalUpdateOne) sqlSave(ctx context.Context) (_node *Animal, err err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.AnimalsIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.VisitedLocationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: true,
-			Table:   animal.AnimalsTable,
-			Columns: []string{animal.AnimalsColumn},
+			Table:   animal.VisitedLocationsTable,
+			Columns: []string{animal.VisitedLocationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: animalslocations.FieldID,
+					Column: visitedlocation.FieldID,
 				},
 			},
 		}

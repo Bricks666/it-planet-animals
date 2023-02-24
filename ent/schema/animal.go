@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"entgo.io/ent"
-	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -33,26 +32,17 @@ func (Animal) Fields() []ent.Field {
 // Edges of the Animal.
 func (Animal) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("chipper_animal", User.Type).
+		edge.From("chipper", User.Type).
+			Ref("animals").
 			Field("chipper_id").
-			Annotations(entsql.Annotation{
-				OnDelete: entsql.NoAction,
-			}).
 			Unique(),
-		edge.To("animal_type_animal", AnimalType.Type).
-			Annotations(entsql.Annotation{
-				OnDelete: entsql.NoAction,
-			}),
-		edge.To("chipping_location", Location.Type).
-			Annotations(entsql.Annotation{
-				OnDelete: entsql.NoAction,
-			}).
+		edge.To("types", AnimalTag.Type).
+			Through("animal_types", AnimalType.Type),
+		edge.From("chipping_location", Location.Type).
+			Ref("chipped_animals").
 			Field("chipping_location_id").
 			Unique(),
-		edge.To("visited_locations", Location.Type).
-			Annotations(entsql.Annotation{
-				OnDelete: entsql.NoAction,
-			}).
-			Through("animals", AnimalsLocations.Type),
+		edge.To("locations", Location.Type).
+			Through("visited_locations", VisitedLocation.Type),
 	}
 }

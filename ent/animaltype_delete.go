@@ -9,7 +9,6 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"entgo.io/ent/schema/field"
 )
 
 // AnimalTypeDelete is the builder for deleting a AnimalType entity.
@@ -40,7 +39,7 @@ func (atd *AnimalTypeDelete) ExecX(ctx context.Context) int {
 }
 
 func (atd *AnimalTypeDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(animaltype.Table, sqlgraph.NewFieldSpec(animaltype.FieldID, field.TypeUint64))
+	_spec := sqlgraph.NewDeleteSpec(animaltype.Table, nil)
 	if ps := atd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

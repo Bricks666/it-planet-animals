@@ -11,10 +11,11 @@ import (
 	"animals/ent/migrate"
 
 	"animals/ent/animal"
-	"animals/ent/animalslocations"
+	"animals/ent/animaltag"
 	"animals/ent/animaltype"
 	"animals/ent/location"
 	"animals/ent/user"
+	"animals/ent/visitedlocation"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -28,14 +29,16 @@ type Client struct {
 	Schema *migrate.Schema
 	// Animal is the client for interacting with the Animal builders.
 	Animal *AnimalClient
+	// AnimalTag is the client for interacting with the AnimalTag builders.
+	AnimalTag *AnimalTagClient
 	// AnimalType is the client for interacting with the AnimalType builders.
 	AnimalType *AnimalTypeClient
-	// AnimalsLocations is the client for interacting with the AnimalsLocations builders.
-	AnimalsLocations *AnimalsLocationsClient
 	// Location is the client for interacting with the Location builders.
 	Location *LocationClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
+	// VisitedLocation is the client for interacting with the VisitedLocation builders.
+	VisitedLocation *VisitedLocationClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -50,10 +53,11 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Animal = NewAnimalClient(c.config)
+	c.AnimalTag = NewAnimalTagClient(c.config)
 	c.AnimalType = NewAnimalTypeClient(c.config)
-	c.AnimalsLocations = NewAnimalsLocationsClient(c.config)
 	c.Location = NewLocationClient(c.config)
 	c.User = NewUserClient(c.config)
+	c.VisitedLocation = NewVisitedLocationClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -85,13 +89,14 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:              ctx,
-		config:           cfg,
-		Animal:           NewAnimalClient(cfg),
-		AnimalType:       NewAnimalTypeClient(cfg),
-		AnimalsLocations: NewAnimalsLocationsClient(cfg),
-		Location:         NewLocationClient(cfg),
-		User:             NewUserClient(cfg),
+		ctx:             ctx,
+		config:          cfg,
+		Animal:          NewAnimalClient(cfg),
+		AnimalTag:       NewAnimalTagClient(cfg),
+		AnimalType:      NewAnimalTypeClient(cfg),
+		Location:        NewLocationClient(cfg),
+		User:            NewUserClient(cfg),
+		VisitedLocation: NewVisitedLocationClient(cfg),
 	}, nil
 }
 
@@ -109,13 +114,14 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:              ctx,
-		config:           cfg,
-		Animal:           NewAnimalClient(cfg),
-		AnimalType:       NewAnimalTypeClient(cfg),
-		AnimalsLocations: NewAnimalsLocationsClient(cfg),
-		Location:         NewLocationClient(cfg),
-		User:             NewUserClient(cfg),
+		ctx:             ctx,
+		config:          cfg,
+		Animal:          NewAnimalClient(cfg),
+		AnimalTag:       NewAnimalTagClient(cfg),
+		AnimalType:      NewAnimalTypeClient(cfg),
+		Location:        NewLocationClient(cfg),
+		User:            NewUserClient(cfg),
+		VisitedLocation: NewVisitedLocationClient(cfg),
 	}, nil
 }
 
@@ -145,20 +151,22 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Animal.Use(hooks...)
+	c.AnimalTag.Use(hooks...)
 	c.AnimalType.Use(hooks...)
-	c.AnimalsLocations.Use(hooks...)
 	c.Location.Use(hooks...)
 	c.User.Use(hooks...)
+	c.VisitedLocation.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Animal.Intercept(interceptors...)
+	c.AnimalTag.Intercept(interceptors...)
 	c.AnimalType.Intercept(interceptors...)
-	c.AnimalsLocations.Intercept(interceptors...)
 	c.Location.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
+	c.VisitedLocation.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -166,14 +174,16 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *AnimalMutation:
 		return c.Animal.mutate(ctx, m)
+	case *AnimalTagMutation:
+		return c.AnimalTag.mutate(ctx, m)
 	case *AnimalTypeMutation:
 		return c.AnimalType.mutate(ctx, m)
-	case *AnimalsLocationsMutation:
-		return c.AnimalsLocations.mutate(ctx, m)
 	case *LocationMutation:
 		return c.Location.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
+	case *VisitedLocationMutation:
+		return c.VisitedLocation.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -272,15 +282,15 @@ func (c *AnimalClient) GetX(ctx context.Context, id uint64) *Animal {
 	return obj
 }
 
-// QueryChipperAnimal queries the chipper_animal edge of a Animal.
-func (c *AnimalClient) QueryChipperAnimal(a *Animal) *UserQuery {
+// QueryChipper queries the chipper edge of a Animal.
+func (c *AnimalClient) QueryChipper(a *Animal) *UserQuery {
 	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(animal.Table, animal.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, animal.ChipperAnimalTable, animal.ChipperAnimalColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, animal.ChipperTable, animal.ChipperColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -288,15 +298,15 @@ func (c *AnimalClient) QueryChipperAnimal(a *Animal) *UserQuery {
 	return query
 }
 
-// QueryAnimalTypeAnimal queries the animal_type_animal edge of a Animal.
-func (c *AnimalClient) QueryAnimalTypeAnimal(a *Animal) *AnimalTypeQuery {
-	query := (&AnimalTypeClient{config: c.config}).Query()
+// QueryTypes queries the types edge of a Animal.
+func (c *AnimalClient) QueryTypes(a *Animal) *AnimalTagQuery {
+	query := (&AnimalTagClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(animal.Table, animal.FieldID, id),
-			sqlgraph.To(animaltype.Table, animaltype.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, animal.AnimalTypeAnimalTable, animal.AnimalTypeAnimalPrimaryKey...),
+			sqlgraph.To(animaltag.Table, animaltag.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, animal.TypesTable, animal.TypesPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -312,7 +322,39 @@ func (c *AnimalClient) QueryChippingLocation(a *Animal) *LocationQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(animal.Table, animal.FieldID, id),
 			sqlgraph.To(location.Table, location.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, animal.ChippingLocationTable, animal.ChippingLocationColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, animal.ChippingLocationTable, animal.ChippingLocationColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryLocations queries the locations edge of a Animal.
+func (c *AnimalClient) QueryLocations(a *Animal) *LocationQuery {
+	query := (&LocationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(animal.Table, animal.FieldID, id),
+			sqlgraph.To(location.Table, location.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, animal.LocationsTable, animal.LocationsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAnimalTypes queries the animal_types edge of a Animal.
+func (c *AnimalClient) QueryAnimalTypes(a *Animal) *AnimalTypeQuery {
+	query := (&AnimalTypeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(animal.Table, animal.FieldID, id),
+			sqlgraph.To(animaltype.Table, animaltype.AnimalsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, animal.AnimalTypesTable, animal.AnimalTypesColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -321,30 +363,14 @@ func (c *AnimalClient) QueryChippingLocation(a *Animal) *LocationQuery {
 }
 
 // QueryVisitedLocations queries the visited_locations edge of a Animal.
-func (c *AnimalClient) QueryVisitedLocations(a *Animal) *LocationQuery {
-	query := (&LocationClient{config: c.config}).Query()
+func (c *AnimalClient) QueryVisitedLocations(a *Animal) *VisitedLocationQuery {
+	query := (&VisitedLocationClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(animal.Table, animal.FieldID, id),
-			sqlgraph.To(location.Table, location.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, animal.VisitedLocationsTable, animal.VisitedLocationsPrimaryKey...),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryAnimals queries the animals edge of a Animal.
-func (c *AnimalClient) QueryAnimals(a *Animal) *AnimalsLocationsQuery {
-	query := (&AnimalsLocationsClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(animal.Table, animal.FieldID, id),
-			sqlgraph.To(animalslocations.Table, animalslocations.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, animal.AnimalsTable, animal.AnimalsColumn),
+			sqlgraph.To(visitedlocation.Table, visitedlocation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, animal.VisitedLocationsTable, animal.VisitedLocationsColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -374,6 +400,156 @@ func (c *AnimalClient) mutate(ctx context.Context, m *AnimalMutation) (Value, er
 		return (&AnimalDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Animal mutation op: %q", m.Op())
+	}
+}
+
+// AnimalTagClient is a client for the AnimalTag schema.
+type AnimalTagClient struct {
+	config
+}
+
+// NewAnimalTagClient returns a client for the AnimalTag from the given config.
+func NewAnimalTagClient(c config) *AnimalTagClient {
+	return &AnimalTagClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `animaltag.Hooks(f(g(h())))`.
+func (c *AnimalTagClient) Use(hooks ...Hook) {
+	c.hooks.AnimalTag = append(c.hooks.AnimalTag, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `animaltag.Intercept(f(g(h())))`.
+func (c *AnimalTagClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AnimalTag = append(c.inters.AnimalTag, interceptors...)
+}
+
+// Create returns a builder for creating a AnimalTag entity.
+func (c *AnimalTagClient) Create() *AnimalTagCreate {
+	mutation := newAnimalTagMutation(c.config, OpCreate)
+	return &AnimalTagCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AnimalTag entities.
+func (c *AnimalTagClient) CreateBulk(builders ...*AnimalTagCreate) *AnimalTagCreateBulk {
+	return &AnimalTagCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AnimalTag.
+func (c *AnimalTagClient) Update() *AnimalTagUpdate {
+	mutation := newAnimalTagMutation(c.config, OpUpdate)
+	return &AnimalTagUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AnimalTagClient) UpdateOne(at *AnimalTag) *AnimalTagUpdateOne {
+	mutation := newAnimalTagMutation(c.config, OpUpdateOne, withAnimalTag(at))
+	return &AnimalTagUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AnimalTagClient) UpdateOneID(id uint64) *AnimalTagUpdateOne {
+	mutation := newAnimalTagMutation(c.config, OpUpdateOne, withAnimalTagID(id))
+	return &AnimalTagUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AnimalTag.
+func (c *AnimalTagClient) Delete() *AnimalTagDelete {
+	mutation := newAnimalTagMutation(c.config, OpDelete)
+	return &AnimalTagDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AnimalTagClient) DeleteOne(at *AnimalTag) *AnimalTagDeleteOne {
+	return c.DeleteOneID(at.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AnimalTagClient) DeleteOneID(id uint64) *AnimalTagDeleteOne {
+	builder := c.Delete().Where(animaltag.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AnimalTagDeleteOne{builder}
+}
+
+// Query returns a query builder for AnimalTag.
+func (c *AnimalTagClient) Query() *AnimalTagQuery {
+	return &AnimalTagQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAnimalTag},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AnimalTag entity by its id.
+func (c *AnimalTagClient) Get(ctx context.Context, id uint64) (*AnimalTag, error) {
+	return c.Query().Where(animaltag.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AnimalTagClient) GetX(ctx context.Context, id uint64) *AnimalTag {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryAnimals queries the animals edge of a AnimalTag.
+func (c *AnimalTagClient) QueryAnimals(at *AnimalTag) *AnimalQuery {
+	query := (&AnimalClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(animaltag.Table, animaltag.FieldID, id),
+			sqlgraph.To(animal.Table, animal.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, animaltag.AnimalsTable, animaltag.AnimalsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAnimalTypes queries the animal_types edge of a AnimalTag.
+func (c *AnimalTagClient) QueryAnimalTypes(at *AnimalTag) *AnimalTypeQuery {
+	query := (&AnimalTypeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(animaltag.Table, animaltag.FieldID, id),
+			sqlgraph.To(animaltype.Table, animaltype.TypesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, animaltag.AnimalTypesTable, animaltag.AnimalTypesColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AnimalTagClient) Hooks() []Hook {
+	return c.hooks.AnimalTag
+}
+
+// Interceptors returns the client interceptors.
+func (c *AnimalTagClient) Interceptors() []Interceptor {
+	return c.inters.AnimalTag
+}
+
+func (c *AnimalTagClient) mutate(ctx context.Context, m *AnimalTagMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AnimalTagCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AnimalTagUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AnimalTagUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AnimalTagDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AnimalTag mutation op: %q", m.Op())
 	}
 }
 
@@ -418,13 +594,9 @@ func (c *AnimalTypeClient) Update() *AnimalTypeUpdate {
 
 // UpdateOne returns an update builder for the given entity.
 func (c *AnimalTypeClient) UpdateOne(at *AnimalType) *AnimalTypeUpdateOne {
-	mutation := newAnimalTypeMutation(c.config, OpUpdateOne, withAnimalType(at))
-	return &AnimalTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *AnimalTypeClient) UpdateOneID(id uint64) *AnimalTypeUpdateOne {
-	mutation := newAnimalTypeMutation(c.config, OpUpdateOne, withAnimalTypeID(id))
+	mutation := newAnimalTypeMutation(c.config, OpUpdateOne)
+	mutation.animals = &at.AnimalID
+	mutation.types = &at.TypeID
 	return &AnimalTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -432,19 +604,6 @@ func (c *AnimalTypeClient) UpdateOneID(id uint64) *AnimalTypeUpdateOne {
 func (c *AnimalTypeClient) Delete() *AnimalTypeDelete {
 	mutation := newAnimalTypeMutation(c.config, OpDelete)
 	return &AnimalTypeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *AnimalTypeClient) DeleteOne(at *AnimalType) *AnimalTypeDeleteOne {
-	return c.DeleteOneID(at.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *AnimalTypeClient) DeleteOneID(id uint64) *AnimalTypeDeleteOne {
-	builder := c.Delete().Where(animaltype.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &AnimalTypeDeleteOne{builder}
 }
 
 // Query returns a query builder for AnimalType.
@@ -456,34 +615,18 @@ func (c *AnimalTypeClient) Query() *AnimalTypeQuery {
 	}
 }
 
-// Get returns a AnimalType entity by its id.
-func (c *AnimalTypeClient) Get(ctx context.Context, id uint64) (*AnimalType, error) {
-	return c.Query().Where(animaltype.ID(id)).Only(ctx)
+// QueryAnimals queries the animals edge of a AnimalType.
+func (c *AnimalTypeClient) QueryAnimals(at *AnimalType) *AnimalQuery {
+	return c.Query().
+		Where(animaltype.AnimalID(at.AnimalID), animaltype.TypeID(at.TypeID)).
+		QueryAnimals()
 }
 
-// GetX is like Get, but panics if an error occurs.
-func (c *AnimalTypeClient) GetX(ctx context.Context, id uint64) *AnimalType {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryAnimalTypeType queries the animal_type_type edge of a AnimalType.
-func (c *AnimalTypeClient) QueryAnimalTypeType(at *AnimalType) *AnimalQuery {
-	query := (&AnimalClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := at.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(animaltype.Table, animaltype.FieldID, id),
-			sqlgraph.To(animal.Table, animal.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, animaltype.AnimalTypeTypeTable, animaltype.AnimalTypeTypePrimaryKey...),
-		)
-		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
+// QueryTypes queries the types edge of a AnimalType.
+func (c *AnimalTypeClient) QueryTypes(at *AnimalType) *AnimalTagQuery {
+	return c.Query().
+		Where(animaltype.AnimalID(at.AnimalID), animaltype.TypeID(at.TypeID)).
+		QueryTypes()
 }
 
 // Hooks returns the client hooks.
@@ -508,156 +651,6 @@ func (c *AnimalTypeClient) mutate(ctx context.Context, m *AnimalTypeMutation) (V
 		return (&AnimalTypeDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown AnimalType mutation op: %q", m.Op())
-	}
-}
-
-// AnimalsLocationsClient is a client for the AnimalsLocations schema.
-type AnimalsLocationsClient struct {
-	config
-}
-
-// NewAnimalsLocationsClient returns a client for the AnimalsLocations from the given config.
-func NewAnimalsLocationsClient(c config) *AnimalsLocationsClient {
-	return &AnimalsLocationsClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `animalslocations.Hooks(f(g(h())))`.
-func (c *AnimalsLocationsClient) Use(hooks ...Hook) {
-	c.hooks.AnimalsLocations = append(c.hooks.AnimalsLocations, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `animalslocations.Intercept(f(g(h())))`.
-func (c *AnimalsLocationsClient) Intercept(interceptors ...Interceptor) {
-	c.inters.AnimalsLocations = append(c.inters.AnimalsLocations, interceptors...)
-}
-
-// Create returns a builder for creating a AnimalsLocations entity.
-func (c *AnimalsLocationsClient) Create() *AnimalsLocationsCreate {
-	mutation := newAnimalsLocationsMutation(c.config, OpCreate)
-	return &AnimalsLocationsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of AnimalsLocations entities.
-func (c *AnimalsLocationsClient) CreateBulk(builders ...*AnimalsLocationsCreate) *AnimalsLocationsCreateBulk {
-	return &AnimalsLocationsCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for AnimalsLocations.
-func (c *AnimalsLocationsClient) Update() *AnimalsLocationsUpdate {
-	mutation := newAnimalsLocationsMutation(c.config, OpUpdate)
-	return &AnimalsLocationsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *AnimalsLocationsClient) UpdateOne(al *AnimalsLocations) *AnimalsLocationsUpdateOne {
-	mutation := newAnimalsLocationsMutation(c.config, OpUpdateOne, withAnimalsLocations(al))
-	return &AnimalsLocationsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *AnimalsLocationsClient) UpdateOneID(id uint64) *AnimalsLocationsUpdateOne {
-	mutation := newAnimalsLocationsMutation(c.config, OpUpdateOne, withAnimalsLocationsID(id))
-	return &AnimalsLocationsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for AnimalsLocations.
-func (c *AnimalsLocationsClient) Delete() *AnimalsLocationsDelete {
-	mutation := newAnimalsLocationsMutation(c.config, OpDelete)
-	return &AnimalsLocationsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *AnimalsLocationsClient) DeleteOne(al *AnimalsLocations) *AnimalsLocationsDeleteOne {
-	return c.DeleteOneID(al.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *AnimalsLocationsClient) DeleteOneID(id uint64) *AnimalsLocationsDeleteOne {
-	builder := c.Delete().Where(animalslocations.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &AnimalsLocationsDeleteOne{builder}
-}
-
-// Query returns a query builder for AnimalsLocations.
-func (c *AnimalsLocationsClient) Query() *AnimalsLocationsQuery {
-	return &AnimalsLocationsQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeAnimalsLocations},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a AnimalsLocations entity by its id.
-func (c *AnimalsLocationsClient) Get(ctx context.Context, id uint64) (*AnimalsLocations, error) {
-	return c.Query().Where(animalslocations.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *AnimalsLocationsClient) GetX(ctx context.Context, id uint64) *AnimalsLocations {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryAnimalsLocationsAnimal queries the animals_locations_animal edge of a AnimalsLocations.
-func (c *AnimalsLocationsClient) QueryAnimalsLocationsAnimal(al *AnimalsLocations) *AnimalQuery {
-	query := (&AnimalClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := al.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(animalslocations.Table, animalslocations.FieldID, id),
-			sqlgraph.To(animal.Table, animal.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, animalslocations.AnimalsLocationsAnimalTable, animalslocations.AnimalsLocationsAnimalColumn),
-		)
-		fromV = sqlgraph.Neighbors(al.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryAnimalsLocationsLocation queries the animals_locations_location edge of a AnimalsLocations.
-func (c *AnimalsLocationsClient) QueryAnimalsLocationsLocation(al *AnimalsLocations) *LocationQuery {
-	query := (&LocationClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := al.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(animalslocations.Table, animalslocations.FieldID, id),
-			sqlgraph.To(location.Table, location.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, animalslocations.AnimalsLocationsLocationTable, animalslocations.AnimalsLocationsLocationColumn),
-		)
-		fromV = sqlgraph.Neighbors(al.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *AnimalsLocationsClient) Hooks() []Hook {
-	return c.hooks.AnimalsLocations
-}
-
-// Interceptors returns the client interceptors.
-func (c *AnimalsLocationsClient) Interceptors() []Interceptor {
-	return c.inters.AnimalsLocations
-}
-
-func (c *AnimalsLocationsClient) mutate(ctx context.Context, m *AnimalsLocationsMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&AnimalsLocationsCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&AnimalsLocationsUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&AnimalsLocationsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&AnimalsLocationsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown AnimalsLocations mutation op: %q", m.Op())
 	}
 }
 
@@ -754,15 +747,15 @@ func (c *LocationClient) GetX(ctx context.Context, id uint64) *Location {
 	return obj
 }
 
-// QueryVisitedLocationsAnimals queries the visited_locations_animals edge of a Location.
-func (c *LocationClient) QueryVisitedLocationsAnimals(l *Location) *AnimalQuery {
+// QueryChippedAnimals queries the chipped_animals edge of a Location.
+func (c *LocationClient) QueryChippedAnimals(l *Location) *AnimalQuery {
 	query := (&AnimalClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := l.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(location.Table, location.FieldID, id),
 			sqlgraph.To(animal.Table, animal.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, location.VisitedLocationsAnimalsTable, location.VisitedLocationsAnimalsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, location.ChippedAnimalsTable, location.ChippedAnimalsColumn),
 		)
 		fromV = sqlgraph.Neighbors(l.driver.Dialect(), step)
 		return fromV, nil
@@ -770,15 +763,31 @@ func (c *LocationClient) QueryVisitedLocationsAnimals(l *Location) *AnimalQuery 
 	return query
 }
 
-// QueryLocations queries the locations edge of a Location.
-func (c *LocationClient) QueryLocations(l *Location) *AnimalsLocationsQuery {
-	query := (&AnimalsLocationsClient{config: c.config}).Query()
+// QueryAnimals queries the animals edge of a Location.
+func (c *LocationClient) QueryAnimals(l *Location) *AnimalQuery {
+	query := (&AnimalClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := l.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(location.Table, location.FieldID, id),
-			sqlgraph.To(animalslocations.Table, animalslocations.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, location.LocationsTable, location.LocationsColumn),
+			sqlgraph.To(animal.Table, animal.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, location.AnimalsTable, location.AnimalsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(l.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryHavingAnimals queries the having_animals edge of a Location.
+func (c *LocationClient) QueryHavingAnimals(l *Location) *VisitedLocationQuery {
+	query := (&VisitedLocationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := l.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(location.Table, location.FieldID, id),
+			sqlgraph.To(visitedlocation.Table, visitedlocation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, location.HavingAnimalsTable, location.HavingAnimalsColumn),
 		)
 		fromV = sqlgraph.Neighbors(l.driver.Dialect(), step)
 		return fromV, nil
@@ -904,6 +913,22 @@ func (c *UserClient) GetX(ctx context.Context, id uint32) *User {
 	return obj
 }
 
+// QueryAnimals queries the animals edge of a User.
+func (c *UserClient) QueryAnimals(u *User) *AnimalQuery {
+	query := (&AnimalClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(animal.Table, animal.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.AnimalsTable, user.AnimalsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -926,5 +951,155 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 		return (&UserDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown User mutation op: %q", m.Op())
+	}
+}
+
+// VisitedLocationClient is a client for the VisitedLocation schema.
+type VisitedLocationClient struct {
+	config
+}
+
+// NewVisitedLocationClient returns a client for the VisitedLocation from the given config.
+func NewVisitedLocationClient(c config) *VisitedLocationClient {
+	return &VisitedLocationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `visitedlocation.Hooks(f(g(h())))`.
+func (c *VisitedLocationClient) Use(hooks ...Hook) {
+	c.hooks.VisitedLocation = append(c.hooks.VisitedLocation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `visitedlocation.Intercept(f(g(h())))`.
+func (c *VisitedLocationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.VisitedLocation = append(c.inters.VisitedLocation, interceptors...)
+}
+
+// Create returns a builder for creating a VisitedLocation entity.
+func (c *VisitedLocationClient) Create() *VisitedLocationCreate {
+	mutation := newVisitedLocationMutation(c.config, OpCreate)
+	return &VisitedLocationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of VisitedLocation entities.
+func (c *VisitedLocationClient) CreateBulk(builders ...*VisitedLocationCreate) *VisitedLocationCreateBulk {
+	return &VisitedLocationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for VisitedLocation.
+func (c *VisitedLocationClient) Update() *VisitedLocationUpdate {
+	mutation := newVisitedLocationMutation(c.config, OpUpdate)
+	return &VisitedLocationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *VisitedLocationClient) UpdateOne(vl *VisitedLocation) *VisitedLocationUpdateOne {
+	mutation := newVisitedLocationMutation(c.config, OpUpdateOne, withVisitedLocation(vl))
+	return &VisitedLocationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *VisitedLocationClient) UpdateOneID(id uint64) *VisitedLocationUpdateOne {
+	mutation := newVisitedLocationMutation(c.config, OpUpdateOne, withVisitedLocationID(id))
+	return &VisitedLocationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for VisitedLocation.
+func (c *VisitedLocationClient) Delete() *VisitedLocationDelete {
+	mutation := newVisitedLocationMutation(c.config, OpDelete)
+	return &VisitedLocationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *VisitedLocationClient) DeleteOne(vl *VisitedLocation) *VisitedLocationDeleteOne {
+	return c.DeleteOneID(vl.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *VisitedLocationClient) DeleteOneID(id uint64) *VisitedLocationDeleteOne {
+	builder := c.Delete().Where(visitedlocation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &VisitedLocationDeleteOne{builder}
+}
+
+// Query returns a query builder for VisitedLocation.
+func (c *VisitedLocationClient) Query() *VisitedLocationQuery {
+	return &VisitedLocationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeVisitedLocation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a VisitedLocation entity by its id.
+func (c *VisitedLocationClient) Get(ctx context.Context, id uint64) (*VisitedLocation, error) {
+	return c.Query().Where(visitedlocation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *VisitedLocationClient) GetX(ctx context.Context, id uint64) *VisitedLocation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryAnimals queries the animals edge of a VisitedLocation.
+func (c *VisitedLocationClient) QueryAnimals(vl *VisitedLocation) *AnimalQuery {
+	query := (&AnimalClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := vl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(visitedlocation.Table, visitedlocation.FieldID, id),
+			sqlgraph.To(animal.Table, animal.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, visitedlocation.AnimalsTable, visitedlocation.AnimalsColumn),
+		)
+		fromV = sqlgraph.Neighbors(vl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryLocations queries the locations edge of a VisitedLocation.
+func (c *VisitedLocationClient) QueryLocations(vl *VisitedLocation) *LocationQuery {
+	query := (&LocationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := vl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(visitedlocation.Table, visitedlocation.FieldID, id),
+			sqlgraph.To(location.Table, location.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, visitedlocation.LocationsTable, visitedlocation.LocationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(vl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *VisitedLocationClient) Hooks() []Hook {
+	return c.hooks.VisitedLocation
+}
+
+// Interceptors returns the client interceptors.
+func (c *VisitedLocationClient) Interceptors() []Interceptor {
+	return c.inters.VisitedLocation
+}
+
+func (c *VisitedLocationClient) mutate(ctx context.Context, m *VisitedLocationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&VisitedLocationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&VisitedLocationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&VisitedLocationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&VisitedLocationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown VisitedLocation mutation op: %q", m.Op())
 	}
 }

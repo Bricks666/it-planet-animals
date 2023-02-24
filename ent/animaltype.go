@@ -3,6 +3,8 @@
 package ent
 
 import (
+	"animals/ent/animal"
+	"animals/ent/animaltag"
 	"animals/ent/animaltype"
 	"fmt"
 	"strings"
@@ -13,10 +15,10 @@ import (
 // AnimalType is the model entity for the AnimalType schema.
 type AnimalType struct {
 	config `json:"-"`
-	// ID of the ent.
-	ID uint64 `json:"id,omitempty"`
-	// Type holds the value of the "type" field.
-	Type string `json:"type,omitempty"`
+	// AnimalID holds the value of the "animal_id" field.
+	AnimalID uint64 `json:"animal_id,omitempty"`
+	// TypeID holds the value of the "type_id" field.
+	TypeID uint64 `json:"type_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AnimalTypeQuery when eager-loading is set.
 	Edges AnimalTypeEdges `json:"edges"`
@@ -24,20 +26,39 @@ type AnimalType struct {
 
 // AnimalTypeEdges holds the relations/edges for other nodes in the graph.
 type AnimalTypeEdges struct {
-	// AnimalTypeType holds the value of the animal_type_type edge.
-	AnimalTypeType []*Animal `json:"animal_type_type,omitempty"`
+	// Animals holds the value of the animals edge.
+	Animals *Animal `json:"animals,omitempty"`
+	// Types holds the value of the types edge.
+	Types *AnimalTag `json:"types,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
-// AnimalTypeTypeOrErr returns the AnimalTypeType value or an error if the edge
-// was not loaded in eager-loading.
-func (e AnimalTypeEdges) AnimalTypeTypeOrErr() ([]*Animal, error) {
+// AnimalsOrErr returns the Animals value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AnimalTypeEdges) AnimalsOrErr() (*Animal, error) {
 	if e.loadedTypes[0] {
-		return e.AnimalTypeType, nil
+		if e.Animals == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: animal.Label}
+		}
+		return e.Animals, nil
 	}
-	return nil, &NotLoadedError{edge: "animal_type_type"}
+	return nil, &NotLoadedError{edge: "animals"}
+}
+
+// TypesOrErr returns the Types value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AnimalTypeEdges) TypesOrErr() (*AnimalTag, error) {
+	if e.loadedTypes[1] {
+		if e.Types == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: animaltag.Label}
+		}
+		return e.Types, nil
+	}
+	return nil, &NotLoadedError{edge: "types"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -45,10 +66,8 @@ func (*AnimalType) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case animaltype.FieldID:
+		case animaltype.FieldAnimalID, animaltype.FieldTypeID:
 			values[i] = new(sql.NullInt64)
-		case animaltype.FieldType:
-			values[i] = new(sql.NullString)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type AnimalType", columns[i])
 		}
@@ -64,26 +83,31 @@ func (at *AnimalType) assignValues(columns []string, values []any) error {
 	}
 	for i := range columns {
 		switch columns[i] {
-		case animaltype.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
-			}
-			at.ID = uint64(value.Int64)
-		case animaltype.FieldType:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field type", values[i])
+		case animaltype.FieldAnimalID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field animal_id", values[i])
 			} else if value.Valid {
-				at.Type = value.String
+				at.AnimalID = uint64(value.Int64)
+			}
+		case animaltype.FieldTypeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field type_id", values[i])
+			} else if value.Valid {
+				at.TypeID = uint64(value.Int64)
 			}
 		}
 	}
 	return nil
 }
 
-// QueryAnimalTypeType queries the "animal_type_type" edge of the AnimalType entity.
-func (at *AnimalType) QueryAnimalTypeType() *AnimalQuery {
-	return NewAnimalTypeClient(at.config).QueryAnimalTypeType(at)
+// QueryAnimals queries the "animals" edge of the AnimalType entity.
+func (at *AnimalType) QueryAnimals() *AnimalQuery {
+	return NewAnimalTypeClient(at.config).QueryAnimals(at)
+}
+
+// QueryTypes queries the "types" edge of the AnimalType entity.
+func (at *AnimalType) QueryTypes() *AnimalTagQuery {
+	return NewAnimalTypeClient(at.config).QueryTypes(at)
 }
 
 // Update returns a builder for updating this AnimalType.
@@ -108,9 +132,11 @@ func (at *AnimalType) Unwrap() *AnimalType {
 func (at *AnimalType) String() string {
 	var builder strings.Builder
 	builder.WriteString("AnimalType(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", at.ID))
-	builder.WriteString("type=")
-	builder.WriteString(at.Type)
+	builder.WriteString("animal_id=")
+	builder.WriteString(fmt.Sprintf("%v", at.AnimalID))
+	builder.WriteString(", ")
+	builder.WriteString("type_id=")
+	builder.WriteString(fmt.Sprintf("%v", at.TypeID))
 	builder.WriteByte(')')
 	return builder.String()
 }

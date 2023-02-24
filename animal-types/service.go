@@ -48,9 +48,9 @@ func (this *AnimalTypesService) Remove(id uint64) error {
 	return this.animalTypeRepository.Remove(id)
 }
 
-func prepareAnimalType(animalType *ent.AnimalType) *AnimalTypeDto {
+func prepareAnimalType(animalType *ent.AnimalTag) *AnimalTypeDto {
 	return &AnimalTypeDto{
-		Id:         animalType.ID,
-		AnimalType: animalType.Type,
+		Id:   animalType.ID,
+		Type: animalType.Type,
 	}
 }

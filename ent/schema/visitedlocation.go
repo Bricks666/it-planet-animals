@@ -2,23 +2,22 @@ package schema
 
 import (
 	"entgo.io/ent"
-	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
 
-// AnimalsLocations holds the schema definition for the AnimalsLocations entity.
-type AnimalsLocations struct {
+// VisitedLocation holds the schema definition for the VisitedLocation entity.
+type VisitedLocation struct {
 	ent.Schema
 }
 
-func (AnimalsLocations) Annotations() []schema.Annotation {
+func (VisitedLocation) Annotations() []schema.Annotation {
 	return []schema.Annotation{}
 }
 
 // Fields of the AnimalsLocations.
-func (AnimalsLocations) Fields() []ent.Field {
+func (VisitedLocation) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint64("id").Positive(),
 		field.Uint64("animal_id"),
@@ -29,20 +28,14 @@ func (AnimalsLocations) Fields() []ent.Field {
 }
 
 // Edges of the AnimalsLocations.
-func (AnimalsLocations) Edges() []ent.Edge {
+func (VisitedLocation) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("animals_locations_animal", Animal.Type).
+		edge.To("animals", Animal.Type).
 			Unique().
-			Annotations(entsql.Annotation{
-				OnDelete: entsql.NoAction,
-			}).
 			Required().
 			Field("animal_id"),
-		edge.To("animals_locations_location", Location.Type).
+		edge.To("locations", Location.Type).
 			Unique().
-			Annotations(entsql.Annotation{
-				OnDelete: entsql.NoAction,
-			}).
 			Required().
 			Field("location_id"),
 	}

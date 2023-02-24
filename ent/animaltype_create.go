@@ -4,6 +4,7 @@ package ent
 
 import (
 	"animals/ent/animal"
+	"animals/ent/animaltag"
 	"animals/ent/animaltype"
 	"context"
 	"errors"
@@ -20,31 +21,38 @@ type AnimalTypeCreate struct {
 	hooks    []Hook
 }
 
-// SetType sets the "type" field.
-func (atc *AnimalTypeCreate) SetType(s string) *AnimalTypeCreate {
-	atc.mutation.SetType(s)
+// SetAnimalID sets the "animal_id" field.
+func (atc *AnimalTypeCreate) SetAnimalID(u uint64) *AnimalTypeCreate {
+	atc.mutation.SetAnimalID(u)
 	return atc
 }
 
-// SetID sets the "id" field.
-func (atc *AnimalTypeCreate) SetID(u uint64) *AnimalTypeCreate {
-	atc.mutation.SetID(u)
+// SetTypeID sets the "type_id" field.
+func (atc *AnimalTypeCreate) SetTypeID(u uint64) *AnimalTypeCreate {
+	atc.mutation.SetTypeID(u)
 	return atc
 }
 
-// AddAnimalTypeTypeIDs adds the "animal_type_type" edge to the Animal entity by IDs.
-func (atc *AnimalTypeCreate) AddAnimalTypeTypeIDs(ids ...uint64) *AnimalTypeCreate {
-	atc.mutation.AddAnimalTypeTypeIDs(ids...)
+// SetAnimalsID sets the "animals" edge to the Animal entity by ID.
+func (atc *AnimalTypeCreate) SetAnimalsID(id uint64) *AnimalTypeCreate {
+	atc.mutation.SetAnimalsID(id)
 	return atc
 }
 
-// AddAnimalTypeType adds the "animal_type_type" edges to the Animal entity.
-func (atc *AnimalTypeCreate) AddAnimalTypeType(a ...*Animal) *AnimalTypeCreate {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return atc.AddAnimalTypeTypeIDs(ids...)
+// SetAnimals sets the "animals" edge to the Animal entity.
+func (atc *AnimalTypeCreate) SetAnimals(a *Animal) *AnimalTypeCreate {
+	return atc.SetAnimalsID(a.ID)
+}
+
+// SetTypesID sets the "types" edge to the AnimalTag entity by ID.
+func (atc *AnimalTypeCreate) SetTypesID(id uint64) *AnimalTypeCreate {
+	atc.mutation.SetTypesID(id)
+	return atc
+}
+
+// SetTypes sets the "types" edge to the AnimalTag entity.
+func (atc *AnimalTypeCreate) SetTypes(a *AnimalTag) *AnimalTypeCreate {
+	return atc.SetTypesID(a.ID)
 }
 
 // Mutation returns the AnimalTypeMutation object of the builder.
@@ -81,18 +89,17 @@ func (atc *AnimalTypeCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (atc *AnimalTypeCreate) check() error {
-	if _, ok := atc.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "AnimalType.type"`)}
+	if _, ok := atc.mutation.AnimalID(); !ok {
+		return &ValidationError{Name: "animal_id", err: errors.New(`ent: missing required field "AnimalType.animal_id"`)}
 	}
-	if v, ok := atc.mutation.GetType(); ok {
-		if err := animaltype.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "AnimalType.type": %w`, err)}
-		}
+	if _, ok := atc.mutation.TypeID(); !ok {
+		return &ValidationError{Name: "type_id", err: errors.New(`ent: missing required field "AnimalType.type_id"`)}
 	}
-	if v, ok := atc.mutation.ID(); ok {
-		if err := animaltype.IDValidator(v); err != nil {
-			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "AnimalType.id": %w`, err)}
-		}
+	if _, ok := atc.mutation.AnimalsID(); !ok {
+		return &ValidationError{Name: "animals", err: errors.New(`ent: missing required edge "AnimalType.animals"`)}
+	}
+	if _, ok := atc.mutation.TypesID(); !ok {
+		return &ValidationError{Name: "types", err: errors.New(`ent: missing required edge "AnimalType.types"`)}
 	}
 	return nil
 }
@@ -108,34 +115,20 @@ func (atc *AnimalTypeCreate) sqlSave(ctx context.Context) (*AnimalType, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
-	}
-	atc.mutation.id = &_node.ID
-	atc.mutation.done = true
 	return _node, nil
 }
 
 func (atc *AnimalTypeCreate) createSpec() (*AnimalType, *sqlgraph.CreateSpec) {
 	var (
 		_node = &AnimalType{config: atc.config}
-		_spec = sqlgraph.NewCreateSpec(animaltype.Table, sqlgraph.NewFieldSpec(animaltype.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(animaltype.Table, nil)
 	)
-	if id, ok := atc.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = id
-	}
-	if value, ok := atc.mutation.GetType(); ok {
-		_spec.SetField(animaltype.FieldType, field.TypeString, value)
-		_node.Type = value
-	}
-	if nodes := atc.mutation.AnimalTypeTypeIDs(); len(nodes) > 0 {
+	if nodes := atc.mutation.AnimalsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   animaltype.AnimalTypeTypeTable,
-			Columns: animaltype.AnimalTypeTypePrimaryKey,
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   animaltype.AnimalsTable,
+			Columns: []string{animaltype.AnimalsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -147,6 +140,27 @@ func (atc *AnimalTypeCreate) createSpec() (*AnimalType, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.AnimalID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := atc.mutation.TypesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   animaltype.TypesTable,
+			Columns: []string{animaltype.TypesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: animaltag.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.TypeID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -190,11 +204,6 @@ func (atcb *AnimalTypeCreateBulk) Save(ctx context.Context) ([]*AnimalType, erro
 				}
 				if err != nil {
 					return nil, err
-				}
-				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil

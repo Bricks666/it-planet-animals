@@ -11,24 +11,33 @@ const (
 	FieldLatitude = "latitude"
 	// FieldLongitude holds the string denoting the longitude field in the database.
 	FieldLongitude = "longitude"
-	// EdgeVisitedLocationsAnimals holds the string denoting the visited_locations_animals edge name in mutations.
-	EdgeVisitedLocationsAnimals = "visited_locations_animals"
-	// EdgeLocations holds the string denoting the locations edge name in mutations.
-	EdgeLocations = "locations"
+	// EdgeChippedAnimals holds the string denoting the chipped_animals edge name in mutations.
+	EdgeChippedAnimals = "chipped_animals"
+	// EdgeAnimals holds the string denoting the animals edge name in mutations.
+	EdgeAnimals = "animals"
+	// EdgeHavingAnimals holds the string denoting the having_animals edge name in mutations.
+	EdgeHavingAnimals = "having_animals"
 	// Table holds the table name of the location in the database.
 	Table = "locations"
-	// VisitedLocationsAnimalsTable is the table that holds the visited_locations_animals relation/edge. The primary key declared below.
-	VisitedLocationsAnimalsTable = "animals_locations"
-	// VisitedLocationsAnimalsInverseTable is the table name for the Animal entity.
+	// ChippedAnimalsTable is the table that holds the chipped_animals relation/edge.
+	ChippedAnimalsTable = "animals"
+	// ChippedAnimalsInverseTable is the table name for the Animal entity.
 	// It exists in this package in order to avoid circular dependency with the "animal" package.
-	VisitedLocationsAnimalsInverseTable = "animals"
-	// LocationsTable is the table that holds the locations relation/edge.
-	LocationsTable = "animals_locations"
-	// LocationsInverseTable is the table name for the AnimalsLocations entity.
-	// It exists in this package in order to avoid circular dependency with the "animalslocations" package.
-	LocationsInverseTable = "animals_locations"
-	// LocationsColumn is the table column denoting the locations relation/edge.
-	LocationsColumn = "location_id"
+	ChippedAnimalsInverseTable = "animals"
+	// ChippedAnimalsColumn is the table column denoting the chipped_animals relation/edge.
+	ChippedAnimalsColumn = "chipping_location_id"
+	// AnimalsTable is the table that holds the animals relation/edge. The primary key declared below.
+	AnimalsTable = "visited_locations"
+	// AnimalsInverseTable is the table name for the Animal entity.
+	// It exists in this package in order to avoid circular dependency with the "animal" package.
+	AnimalsInverseTable = "animals"
+	// HavingAnimalsTable is the table that holds the having_animals relation/edge.
+	HavingAnimalsTable = "visited_locations"
+	// HavingAnimalsInverseTable is the table name for the VisitedLocation entity.
+	// It exists in this package in order to avoid circular dependency with the "visitedlocation" package.
+	HavingAnimalsInverseTable = "visited_locations"
+	// HavingAnimalsColumn is the table column denoting the having_animals relation/edge.
+	HavingAnimalsColumn = "location_id"
 )
 
 // Columns holds all SQL columns for location fields.
@@ -39,9 +48,9 @@ var Columns = []string{
 }
 
 var (
-	// VisitedLocationsAnimalsPrimaryKey and VisitedLocationsAnimalsColumn2 are the table columns denoting the
-	// primary key for the visited_locations_animals relation (M2M).
-	VisitedLocationsAnimalsPrimaryKey = []string{"animal_id", "location_id"}
+	// AnimalsPrimaryKey and AnimalsColumn2 are the table columns denoting the
+	// primary key for the animals relation (M2M).
+	AnimalsPrimaryKey = []string{"animal_id", "location_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
