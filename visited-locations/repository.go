@@ -14,13 +14,17 @@ type VisitedLocationsRepository struct {
 
 var Repository VisitedLocationsRepository
 
-func init() {
-	Repository = VisitedLocationsRepository{
-		db: &shared.Database,
+func NewVisitedLocationsRepository(db *shared.DB) *VisitedLocationsRepository {
+	return &VisitedLocationsRepository{
+		db: db,
 	}
 }
 
-func (this *VisitedLocationsRepository) GetAll(animalId uint64, dto *AnimalsLocationSearchQueryDto) ([]*ent.VisitedLocation, error) {
+func init() {
+	Repository = *NewVisitedLocationsRepository(&shared.Database)
+}
+
+func (this *VisitedLocationsRepository) GetAll(animalId uint64, dto *VisitedLocationSearchQueryDto) ([]*ent.VisitedLocation, error) {
 	query := this.db.Client.VisitedLocation.Query().
 		Where(visitedlocation.AnimalID(animalId))
 
@@ -54,7 +58,7 @@ func (this *VisitedLocationsRepository) Create(animalId uint64, locationId uint6
 		Save(this.db.Context)
 }
 
-func (this *VisitedLocationsRepository) Update(animalId uint64, dto *UpdateAnimalsLocationDto) (*ent.VisitedLocation, error) {
+func (this *VisitedLocationsRepository) Update(animalId uint64, dto *UpdateVisitedLocationDto) (*ent.VisitedLocation, error) {
 	return this.db.Client.VisitedLocation.
 		UpdateOneID(dto.VisitedAnimalLocationId).
 		Where(visitedlocation.AnimalID(animalId)).

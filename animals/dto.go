@@ -61,3 +61,16 @@ type ReplaceAnimalTypeDto struct {
 	OldTypeId uint64 `json:"oldtypeid" validate:"required,gt=0"`
 	NewTypeId uint64 `json:"newtypeid" validate:"required,gt=0"`
 }
+
+var NewAnimalParamsDto = shared.BaseNew[AnimalParamsDto]()
+var NewAnimalDto = shared.BaseNew[AnimalDto]()
+var NewAnimalsSearchQueryDto = func() *AnimalsSearchQueryDto {
+	return &AnimalsSearchQueryDto{
+		PaginationDto:      *shared.NewPaginationDto(),
+		TimeSearchQueryDto: *shared.NewTimeSearchQueryDto(),
+	}
+}
+var NewCreateAnimalDto = shared.BaseNew[CreateAnimalDto]()
+var NewUpdateAnimalDto = shared.BaseNew[UpdateAnimalDto]()
+var NewAnimalTypeParamsDto = shared.BaseNew[AnimalTypeParamsDto]()
+var NewReplaceAnimalTypeDto = shared.BaseNew[ReplaceAnimalTypeDto]()

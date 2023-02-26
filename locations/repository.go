@@ -6,16 +6,22 @@ import (
 	"animals/shared"
 )
 
-var Repository LocationRepository
-
 type LocationRepository struct {
 	db *shared.DB
 }
 
-func init() {
-	Repository = LocationRepository{
-		db: &shared.Database,
+var Repository LocationRepository
+
+func NewLocationRepository(db *shared.DB) *LocationRepository {
+	return &LocationRepository{
+		db: db,
 	}
+}
+
+func init() {
+	Repository = *NewLocationRepository(
+		&shared.Database,
+	)
 }
 
 func (lr *LocationRepository) GetOne(id uint64) (*ent.Location, error) {

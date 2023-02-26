@@ -8,16 +8,22 @@ import (
 	"time"
 )
 
-var Repository AnimalsRepository
-
 type AnimalsRepository struct {
 	db *shared.DB
 }
 
-func init() {
-	Repository = AnimalsRepository{
-		db: &shared.Database,
+var Repository AnimalsRepository
+
+func NewAnimalsRepository(db *shared.DB) *AnimalsRepository {
+	return &AnimalsRepository{
+		db: db,
 	}
+}
+
+func init() {
+	Repository = *NewAnimalsRepository(
+		&shared.Database,
+	)
 }
 
 func (this *AnimalsRepository) GetAll(dto *AnimalsSearchQueryDto) ([]*ent.Animal, error) {
@@ -63,7 +69,6 @@ func (this *AnimalsRepository) GetOne(id uint64) (*ent.Animal, error) {
 		Where(animal.ID(id)).
 		WithTypes().
 		WithVisitedLocations().
-		WithLocations().
 		Only(this.db.Context)
 }
 

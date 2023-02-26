@@ -4,16 +4,22 @@ import (
 	"animals/ent"
 )
 
-var Service LocationsService
-
 type LocationsService struct {
 	locationRepository *LocationRepository
 }
 
-func init() {
-	Service = LocationsService{
-		locationRepository: &Repository,
+var Service LocationsService
+
+func NewLocationsService(locationRepository *LocationRepository) *LocationsService {
+	return &LocationsService{
+		locationRepository: locationRepository,
 	}
+}
+
+func init() {
+	Service = *NewLocationsService(
+		&Repository,
+	)
 }
 
 func (this *LocationsService) GetOne(id uint64) (*LocationDto, error) {

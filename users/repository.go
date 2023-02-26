@@ -6,16 +6,20 @@ import (
 	"animals/shared"
 )
 
-var Repository UserRepository
-
 type UserRepository struct {
 	db *shared.DB
 }
 
-func init() {
-	Repository = UserRepository{
-		db: &shared.Database,
+var Repository UserRepository
+
+func NewUserRepository(db *shared.DB) *UserRepository {
+	return &UserRepository{
+		db: db,
 	}
+}
+
+func init() {
+	Repository = *NewUserRepository(&shared.Database)
 }
 
 func (this *UserRepository) GetAll(dto *UsersSearchQueryDto) ([]*ent.User, error) {

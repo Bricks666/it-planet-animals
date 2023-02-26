@@ -1,5 +1,7 @@
 package animaltypes
 
+import "animals/shared"
+
 type AnimalTypeDto struct {
 	Id   uint64 `json:"id"`
 	Type string `json:"type"`
@@ -16,3 +18,8 @@ type UpdateAnimaTypeDto struct {
 type AnimalTypeParamsDto struct {
 	Id uint64 `param:"id" validate:"number,gt=0"`
 }
+
+var NewAnimalTypeDto = shared.BaseNew[AnimalTypeDto]()
+var NewCreateAnimaTypeDto = shared.BaseNew[CreateAnimaTypeDto]()
+var NewUpdateAnimaTypeDto = shared.BaseNew[UpdateAnimaTypeDto]()
+var NewAnimalTypeParamsDto = shared.BaseNew[AnimalTypeParamsDto]()

@@ -4,20 +4,27 @@ import (
 	"animals/ent"
 	Animal "animals/ent/animal"
 	"animals/shared"
+	"log"
 
 	"golang.org/x/exp/slices"
 )
-
-var Service AnimalsService
 
 type AnimalsService struct {
 	animalsRepository *AnimalsRepository
 }
 
-func init() {
-	Service = AnimalsService{
-		animalsRepository: &Repository,
+var Service AnimalsService
+
+func NewAnimalsService(animalsRepository *AnimalsRepository) *AnimalsService {
+	return &AnimalsService{
+		animalsRepository: animalsRepository,
 	}
+}
+
+func init() {
+	Service = *NewAnimalsService(
+		&Repository,
+	)
 }
 
 func (this *AnimalsService) GetAll(dto *AnimalsSearchQueryDto) ([]*AnimalDto, error) {
@@ -70,7 +77,7 @@ func (this *AnimalsService) Update(id uint64, dto *UpdateAnimalDto) (*AnimalDto,
 	}
 
 	count := len(animal.Edges.VisitedLocations)
-	if count > 0 && animal.Edges.VisitedLocations[count-1].ID == dto.ChippingLocationId {
+	if count > 0 && animal.Edges.VisitedLocations[0].LocationID == dto.ChippingLocationId {
 		return nil, &ent.ConstraintError{}
 	}
 
@@ -196,6 +203,16 @@ func prepareAnimal(animal *ent.Animal) *AnimalDto {
 		ChippingLocationId: animal.ChippingLocationID,
 		DeathDateTime:      nil,
 		VisitedLocations:   locationIds,
+	}
+
+	if slices.Contains(preparedAnimal.AnimalTypes, 74) {
+		log.Println(preparedAnimal.AnimalTypes)
+		log.Println(animal.Edges.Types)
+	}
+
+	if preparedAnimal.ID == 4 || preparedAnimal.ID == 5 {
+		log.Println(preparedAnimal)
+		log.Println(animal)
 	}
 
 	if animal.DeathDateTime != nil {

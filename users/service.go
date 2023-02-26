@@ -8,16 +8,20 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type UsersService struct {
+	usersRepository *UserRepository
+}
+
 var Service UsersService
 
-func init() {
-	Service = UsersService{
-		usersRepository: &Repository,
+func NewUsersService(usersRepository *UserRepository) *UsersService {
+	return &UsersService{
+		usersRepository: usersRepository,
 	}
 }
 
-type UsersService struct {
-	usersRepository *UserRepository
+func init() {
+	Service = *NewUsersService(&Repository)
 }
 
 func (this *UsersService) GetAll(dto *UsersSearchQueryDto) ([]*SecurityUserDto, error) {

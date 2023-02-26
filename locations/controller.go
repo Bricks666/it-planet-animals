@@ -7,34 +7,34 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-var Controller LocationsController
-
 type LocationsController struct {
 	locationsService *LocationsService
 }
 
-func init() {
-	Controller = LocationsController{
-		locationsService: &Service,
+var Controller LocationsController
+
+func NewLocationsController(locationsService *LocationsService) *LocationsController {
+	return &LocationsController{
+		locationsService: locationsService,
 	}
 }
 
+func init() {
+	Controller = *NewLocationsController(
+		&Service,
+	)
+}
+
 func (lc *LocationsController) GetOne(ct *fiber.Ctx) error {
-	var params LocationParams
-	var validationErrors []*shared.ErrorResponse
+	var params = NewLocationParams()
 	var err error
 
-	err = ct.ParamsParser(&params)
+	err = shared.GetParams(ct, params)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	validationErrors = shared.ValidateStruct(&params)
-	if validationErrors != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
-	}
-
-	var location *LocationDto
+	var location = NewLocationDto()
 	location, err = lc.locationsService.GetOne(params.Id)
 	if err != nil {
 		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
@@ -43,30 +43,24 @@ func (lc *LocationsController) GetOne(ct *fiber.Ctx) error {
 	return ct.Status(fiber.StatusOK).JSON(location)
 }
 func (lc *LocationsController) Create(ct *fiber.Ctx) error {
-	var dto CreateLocationDto
-	var validationErrors []*shared.ErrorResponse
+	var body = NewCreateLocationDto()
 	var err error
 
 	if bodyContainsNull(ct.Body()) {
 		return ct.Status(fiber.StatusBadRequest).JSON("")
 	}
 
-	err = ct.BodyParser(&dto)
+	err = shared.GetBody(ct, body)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	validationErrors = shared.ValidateStruct(&dto)
-	if validationErrors != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
+	var location = NewLocationDto()
+	location, err = lc.locationsService.Create(body)
+	if ent.IsConstraintError(err) {
+		return ct.Status(fiber.StatusConflict).JSON(err.Error())
 	}
-
-	var location *LocationDto
-	location, err = lc.locationsService.Create(&dto)
-	if err != nil {
-		if ent.IsConstraintError(err) {
-			return ct.Status(fiber.StatusConflict).JSON(err.Error())
-		}
+	if ent.IsNotFound(err) {
 		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
 	}
 
@@ -74,41 +68,30 @@ func (lc *LocationsController) Create(ct *fiber.Ctx) error {
 }
 
 func (lc *LocationsController) Update(ct *fiber.Ctx) error {
-	var params LocationParams
-	var dto UpdateLocationDto
-	var validationErrors []*shared.ErrorResponse
+	var params = NewLocationParams()
+	var body = NewUpdateLocationDto()
 	var err error
 
-	err = ct.ParamsParser(&params)
+	err = shared.GetParams(ct, params)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
-	}
-
-	validationErrors = shared.ValidateStruct(&params)
-	if validationErrors != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
 	}
 
 	if bodyContainsNull(ct.Body()) {
 		return ct.Status(fiber.StatusBadRequest).JSON("")
 	}
 
-	err = ct.BodyParser(&dto)
+	err = shared.GetBody(ct, body)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	validationErrors = shared.ValidateStruct(&dto)
-	if validationErrors != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
+	var location = NewLocationDto()
+	location, err = lc.locationsService.Update(params.Id, body)
+	if ent.IsNotFound(err) {
+		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
 	}
-
-	var location *LocationDto
-	location, err = lc.locationsService.Update(params.Id, &dto)
-	if err != nil {
-		if ent.IsNotFound(err) {
-			return ct.Status(fiber.StatusNotFound).JSON(err.Error())
-		}
+	if ent.IsConstraintError(err) {
 		return ct.Status(fiber.StatusConflict).JSON(err.Error())
 	}
 
@@ -116,18 +99,12 @@ func (lc *LocationsController) Update(ct *fiber.Ctx) error {
 }
 
 func (lc *LocationsController) Remove(ct *fiber.Ctx) error {
-	var params LocationParams
-	var validationErrors []*shared.ErrorResponse
+	var params = NewLocationParams()
 	var err error
 
-	err = ct.ParamsParser(&params)
+	err = shared.GetParams(ct, params)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
-	}
-
-	validationErrors = shared.ValidateStruct(&params)
-	if validationErrors != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
 	}
 
 	err = lc.locationsService.Remove(params.Id)

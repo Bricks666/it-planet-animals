@@ -6,16 +6,20 @@ import (
 	"animals/shared"
 )
 
-var Repository AnimalTypeRepository
-
 type AnimalTypeRepository struct {
 	db *shared.DB
 }
 
-func init() {
-	Repository = AnimalTypeRepository{
-		db: &shared.Database,
+var Repository AnimalTypeRepository
+
+func NewAnimalTypeRepository(db *shared.DB) *AnimalTypeRepository {
+	return &AnimalTypeRepository{
+		db: db,
 	}
+}
+
+func init() {
+	Repository = *NewAnimalTypeRepository(&shared.Database)
 }
 
 func (this *AnimalTypeRepository) GetOne(id uint64) (*ent.AnimalTag, error) {

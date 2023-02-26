@@ -2,16 +2,20 @@ package animaltypes
 
 import "animals/ent"
 
-var Service AnimalTypesService
-
 type AnimalTypesService struct {
 	animalTypeRepository *AnimalTypeRepository
 }
 
-func init() {
-	Service = AnimalTypesService{
-		animalTypeRepository: &Repository,
+var Service AnimalTypesService
+
+func NewAnimalTypesService(animalTypeRepository *AnimalTypeRepository) *AnimalTypesService {
+	return &AnimalTypesService{
+		animalTypeRepository: animalTypeRepository,
 	}
+}
+
+func init() {
+	Service = *NewAnimalTypesService(&Repository)
 }
 
 func (this *AnimalTypesService) GetOne(id uint64) (*AnimalTypeDto, error) {

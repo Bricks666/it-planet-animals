@@ -11,7 +11,7 @@ import (
 type ErrorResponse struct {
 	FailedField string
 	Tag         string
-	Value       string
+	Value       interface{}
 }
 
 var Validator = validator.New()
@@ -22,7 +22,7 @@ func init() {
 	Validator.RegisterValidation("any-number", AnyNumber)
 }
 
-func ValidateStruct[T interface{}](obj *T) []*ErrorResponse {
+func ValidateStruct(obj interface{}) []*ErrorResponse {
 	var errors []*ErrorResponse
 	err := Validator.Struct(obj)
 	if err != nil {
@@ -30,7 +30,7 @@ func ValidateStruct[T interface{}](obj *T) []*ErrorResponse {
 			var element ErrorResponse
 			element.FailedField = err.StructNamespace()
 			element.Tag = err.Tag()
-			element.Value = err.Param()
+			element.Value = err.Value()
 			errors = append(errors, &element)
 		}
 	}

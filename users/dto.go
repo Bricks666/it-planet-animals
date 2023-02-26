@@ -1,6 +1,8 @@
 package users
 
-import "animals/shared"
+import (
+	"animals/shared"
+)
 
 type CreateUserDto struct {
 	FirstName string `json:"firstName" validate:"required,notblank,min=1"`
@@ -29,7 +31,23 @@ type UserParamsDto struct {
 
 type UsersSearchQueryDto struct {
 	shared.PaginationDto
+	shared.TimeSearchQueryDto
 	FirstName string `query:"firstName" validate:"omitempty,notblank"`
 	LastName  string `query:"lastName" validate:"omitempty,notblank"`
 	Email     string `query:"email" validate:"omitempty,notblank"`
+}
+
+var NewCreateUserDto = shared.BaseNew[CreateUserDto]()
+
+var NewUpdateUserDto = shared.BaseNew[UpdateUserDto]()
+
+var NewSecurityUserDto = shared.BaseNew[SecurityUserDto]()
+
+var NewUserParamsDto = shared.BaseNew[UserParamsDto]()
+
+func NewUsersSearchQueryDto() *UsersSearchQueryDto {
+	return &UsersSearchQueryDto{
+		PaginationDto:      *shared.NewPaginationDto(),
+		TimeSearchQueryDto: *shared.NewTimeSearchQueryDto(),
+	}
 }

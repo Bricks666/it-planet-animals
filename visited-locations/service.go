@@ -9,21 +9,30 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-type AnimalsLocationsService struct {
+type VisitedLocationsService struct {
 	visitedLocationsRepository *VisitedLocationsRepository
 	animalsRepository          *animals.AnimalsRepository
 }
 
-var Service AnimalsLocationsService
+var Service VisitedLocationsService
 
-func init() {
-	Service = AnimalsLocationsService{
-		visitedLocationsRepository: &Repository,
-		animalsRepository:          &animals.Repository,
+func NewVisitedLocationsService(
+	visitedLocationsRepository *VisitedLocationsRepository,
+	animalsRepository *animals.AnimalsRepository) *VisitedLocationsService {
+	return &VisitedLocationsService{
+		visitedLocationsRepository: visitedLocationsRepository,
+		animalsRepository:          animalsRepository,
 	}
 }
 
-func (this *AnimalsLocationsService) GetAll(animalId uint64, dto *AnimalsLocationSearchQueryDto) ([]*AnimalsLocationsDto, error) {
+func init() {
+	Service = *NewVisitedLocationsService(
+		&Repository,
+		&animals.Repository,
+	)
+}
+
+func (this *VisitedLocationsService) GetAll(animalId uint64, dto *VisitedLocationSearchQueryDto) ([]*VisitedLocationDto, error) {
 
 	locations, err := this.visitedLocationsRepository.GetAll(animalId, dto)
 
@@ -31,7 +40,7 @@ func (this *AnimalsLocationsService) GetAll(animalId uint64, dto *AnimalsLocatio
 		return nil, err
 	}
 
-	preparedLocations := []*AnimalsLocationsDto{}
+	preparedLocations := []*VisitedLocationDto{}
 
 	for _, location := range locations {
 		preparedLocations = append(preparedLocations, prepareAnimalsLocation(location))
@@ -40,7 +49,7 @@ func (this *AnimalsLocationsService) GetAll(animalId uint64, dto *AnimalsLocatio
 	return preparedLocations, nil
 }
 
-func (this *AnimalsLocationsService) Create(animalId uint64, locationId uint64) (*AnimalsLocationsDto, error) {
+func (this *VisitedLocationsService) Create(animalId uint64, locationId uint64) (*VisitedLocationDto, error) {
 	animal, err := this.animalsRepository.GetOne(animalId)
 
 	if err != nil {
@@ -57,8 +66,9 @@ func (this *AnimalsLocationsService) Create(animalId uint64, locationId uint64) 
 		animal.ChippingLocationID == locationId {
 		return nil, &ent.ConstraintError{}
 	}
+
 	if visitedLocationsCount > 0 &&
-		visitedLocations[0].ID == locationId {
+		visitedLocations[visitedLocationsCount-1].LocationID == locationId {
 		return nil, &ent.ConstraintError{}
 	}
 
@@ -71,7 +81,7 @@ func (this *AnimalsLocationsService) Create(animalId uint64, locationId uint64) 
 	return prepareAnimalsLocation(animalLocation), nil
 }
 
-func (this *AnimalsLocationsService) Update(animalId uint64, dto *UpdateAnimalsLocationDto) (*AnimalsLocationsDto, error) {
+func (this *VisitedLocationsService) Update(animalId uint64, dto *UpdateVisitedLocationDto) (*VisitedLocationDto, error) {
 	animal, err := this.animalsRepository.GetOne(animalId)
 
 	if err != nil {
@@ -128,7 +138,7 @@ func (this *AnimalsLocationsService) Update(animalId uint64, dto *UpdateAnimalsL
 	return prepareAnimalsLocation(point), nil
 }
 
-func (this *AnimalsLocationsService) Remove(animalId uint64, visitedId uint64) error {
+func (this *VisitedLocationsService) Remove(animalId uint64, visitedId uint64) error {
 	var err = this.visitedLocationsRepository.Remove(animalId, visitedId)
 
 	if err != nil {
@@ -155,8 +165,8 @@ func (this *AnimalsLocationsService) Remove(animalId uint64, visitedId uint64) e
 	return nil
 }
 
-func prepareAnimalsLocation(animalLocation *ent.VisitedLocation) *AnimalsLocationsDto {
-	return &AnimalsLocationsDto{
+func prepareAnimalsLocation(animalLocation *ent.VisitedLocation) *VisitedLocationDto {
+	return &VisitedLocationDto{
 		Id:                           animalLocation.ID,
 		LocationId:                   animalLocation.LocationID,
 		DateTimeOfVisitLocationPoint: animalLocation.DateTimeOfVisitLocationPoint.Format(shared.ISO8601_PATTER),

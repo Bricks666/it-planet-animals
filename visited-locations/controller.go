@@ -7,51 +7,39 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type AnimalsLocationsController struct {
-	animalsLocationsService *AnimalsLocationsService
+type VisitedLocationsController struct {
+	visitedLocationsService *VisitedLocationsService
 }
 
-var Controller AnimalsLocationsController
+var Controller VisitedLocationsController
+
+func NewVisitedLocationsController(visitedLocationsService *VisitedLocationsService) *VisitedLocationsController {
+	return &VisitedLocationsController{
+		visitedLocationsService: visitedLocationsService,
+	}
+}
 
 func init() {
-	Controller = AnimalsLocationsController{
-		animalsLocationsService: &Service,
-	}
+	Controller = *NewVisitedLocationsController(&Service)
 }
 
-func (this *AnimalsLocationsController) GetAll(ct *fiber.Ctx) error {
-	var query AnimalsLocationSearchQueryDto
-	var params AnimalsLocationParamsDto
-	var validationError []*shared.ErrorResponse
+func (this *VisitedLocationsController) GetAll(ct *fiber.Ctx) error {
+	var query = NewVisitedLocationSearchQueryDto()
+	var params = NewVisitedLocationParamsDto()
 	var err error
 
-	err = ct.QueryParser(&query)
+	err = shared.GetQuery(ct, query)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	var size = ct.QueryInt("size", 10)
-	if query.Size == 0 {
-		query.Size = uint32(size)
-	}
-
-	validationError = shared.ValidateStruct(&query)
-	if validationError != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(validationError)
-	}
-
-	err = ct.ParamsParser(&params)
+	err = shared.GetParams(ct, params)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	validationError = shared.ValidateStruct(&params)
-	if validationError != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(validationError)
-	}
-
-	var locations = []*AnimalsLocationsDto{}
-	locations, err = this.animalsLocationsService.GetAll(params.AnimalId, &query)
+	var locations = []*VisitedLocationDto{}
+	locations, err = this.visitedLocationsService.GetAll(params.AnimalId, query)
 
 	if err != nil {
 		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
@@ -60,24 +48,17 @@ func (this *AnimalsLocationsController) GetAll(ct *fiber.Ctx) error {
 	return ct.Status(fiber.StatusOK).JSON(locations)
 }
 
-func (this *AnimalsLocationsController) Create(ct *fiber.Ctx) error {
-	var params AnimalLocationParamsDto
-	var validationError []*shared.ErrorResponse
+func (this *VisitedLocationsController) Create(ct *fiber.Ctx) error {
+	var params = NewVisitedLocationMutationParamsDto()
 	var err error
 
-	err = ct.ParamsParser(&params)
+	err = shared.GetParams(ct, params)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	validationError = shared.ValidateStruct(&params)
-	if validationError != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(validationError)
-	}
-
-	var animalLocation *AnimalsLocationsDto
-	animalLocation, err = this.animalsLocationsService.Create(params.AnimalId, params.LocationId)
-
+	var animalLocation *VisitedLocationDto
+	animalLocation, err = this.visitedLocationsService.Create(params.AnimalId, params.LocationId)
 	if ent.IsNotFound(err) {
 		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
 	}
@@ -89,35 +70,23 @@ func (this *AnimalsLocationsController) Create(ct *fiber.Ctx) error {
 	return ct.Status(fiber.StatusCreated).JSON(animalLocation)
 }
 
-func (this *AnimalsLocationsController) Update(ct *fiber.Ctx) error {
-	var params AnimalsLocationParamsDto
-	var dto UpdateAnimalsLocationDto
-	var validationError []*shared.ErrorResponse
+func (this *VisitedLocationsController) Update(ct *fiber.Ctx) error {
+	var params = NewVisitedLocationParamsDto()
+	var body = NewUpdateVisitedLocationDto()
 	var err error
 
-	err = ct.ParamsParser(&params)
+	err = shared.GetParams(ct, params)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	validationError = shared.ValidateStruct(&params)
-	if validationError != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(validationError)
-	}
-
-	err = ct.BodyParser(&dto)
+	err = shared.GetBody(ct, body)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	validationError = shared.ValidateStruct(&dto)
-	if validationError != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(validationError)
-	}
-
-	var animalLocation *AnimalsLocationsDto
-	animalLocation, err = this.animalsLocationsService.Update(params.AnimalId, &dto)
-
+	var animalLocation *VisitedLocationDto
+	animalLocation, err = this.visitedLocationsService.Update(params.AnimalId, body)
 	if ent.IsConstraintError(err) {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
@@ -129,17 +98,16 @@ func (this *AnimalsLocationsController) Update(ct *fiber.Ctx) error {
 	return ct.Status(fiber.StatusOK).JSON(animalLocation)
 }
 
-func (this *AnimalsLocationsController) Remove(ct *fiber.Ctx) error {
-	var params AnimalLocationParamsDto
+func (this *VisitedLocationsController) Remove(ct *fiber.Ctx) error {
+	var params = NewVisitedLocationMutationParamsDto()
 	var err error
 
-	err = shared.GetParams(ct, &params)
+	err = shared.GetParams(ct, params)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	err = this.animalsLocationsService.Remove(params.AnimalId, params.LocationId)
-
+	err = this.visitedLocationsService.Remove(params.AnimalId, params.LocationId)
 	if err != nil {
 		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
 	}

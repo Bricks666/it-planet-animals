@@ -7,41 +7,35 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-var Controller AnimalsController
-
 type AnimalsController struct {
 	animalsService *AnimalsService
 }
 
-func init() {
-	Controller = AnimalsController{
-		animalsService: &Service,
+var Controller AnimalsController
+
+func NewAnimalsController(animalsService *AnimalsService) *AnimalsController {
+	return &AnimalsController{
+		animalsService: animalsService,
 	}
 }
 
+func init() {
+	Controller = *NewAnimalsController(
+		&Service,
+	)
+}
+
 func (this *AnimalsController) GetAll(ct *fiber.Ctx) error {
-	var query AnimalsSearchQueryDto
-	var validationErrors []*shared.ErrorResponse
+	var query = NewAnimalsSearchQueryDto()
 	var err error
 
-	err = ct.QueryParser(&query)
+	err = shared.GetQuery(ct, query)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	var size = ct.QueryInt("size", 10)
-	if query.Size == 0 {
-		query.Size = uint32(size)
-	}
-
-	validationErrors = shared.ValidateStruct(&query)
-	if validationErrors != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
-	}
-
 	var animals []*AnimalDto
-	animals, err = this.animalsService.GetAll(&query)
-
+	animals, err = this.animalsService.GetAll(query)
 	if err != nil {
 		return ct.Status(fiber.StatusInternalServerError).JSON(err.Error())
 	}
@@ -50,21 +44,15 @@ func (this *AnimalsController) GetAll(ct *fiber.Ctx) error {
 }
 
 func (this *AnimalsController) GetOne(ct *fiber.Ctx) error {
-	var params AnimalParamsDto
-	var validationErrors []*shared.ErrorResponse
+	var params = NewAnimalParamsDto()
 	var err error
 
-	err = ct.ParamsParser(&params)
+	err = shared.GetParams(ct, params)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	validationErrors = shared.ValidateStruct(&params)
-	if validationErrors != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
-	}
-
-	var animal *AnimalDto
+	var animal = NewAnimalDto()
 	animal, err = this.animalsService.GetOne(params.Id)
 
 	if err != nil {
@@ -75,27 +63,20 @@ func (this *AnimalsController) GetOne(ct *fiber.Ctx) error {
 }
 
 func (this *AnimalsController) Create(ct *fiber.Ctx) error {
-	var dto CreateAnimalDto
-	var validationErrors []*shared.ErrorResponse
+	var body = NewCreateAnimalDto()
 	var err error
 
-	err = ct.BodyParser(&dto)
+	err = shared.GetBody(ct, body)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
-
-	validationErrors = shared.ValidateStruct(&dto)
-	if validationErrors != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
-	}
-
-	onlyUnique := shared.HasOnlyUnique(dto.AnimalTypes)
+	onlyUnique := shared.HasOnlyUnique(body.AnimalTypes)
 	if !onlyUnique {
 		return ct.Status(fiber.StatusConflict).JSON(onlyUnique)
 	}
 
-	var animal *AnimalDto
-	animal, err = this.animalsService.Create(&dto)
+	var animal = NewAnimalDto()
+	animal, err = this.animalsService.Create(body)
 
 	if err != nil {
 
@@ -106,33 +87,22 @@ func (this *AnimalsController) Create(ct *fiber.Ctx) error {
 }
 
 func (this *AnimalsController) Update(ct *fiber.Ctx) error {
-	var params AnimalParamsDto
-	var dto UpdateAnimalDto
-	var validationErrors []*shared.ErrorResponse
+	var params = NewAnimalParamsDto()
+	var body = NewUpdateAnimalDto()
 	var err error
 
-	err = ct.ParamsParser(&params)
+	err = shared.GetParams(ct, params)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	validationErrors = shared.ValidateStruct(&params)
-	if validationErrors != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
-	}
-
-	err = ct.BodyParser(&dto)
+	err = shared.GetBody(ct, body)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	validationErrors = shared.ValidateStruct(&dto)
-	if validationErrors != nil {
-		return ct.Status(fiber.StatusBadRequest).JSON(validationErrors)
-	}
-
-	var animal *AnimalDto
-	animal, err = this.animalsService.Update(params.Id, &dto)
+	var animal = NewAnimalDto()
+	animal, err = this.animalsService.Update(params.Id, body)
 
 	if ent.IsConstraintError(err) {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
@@ -146,10 +116,10 @@ func (this *AnimalsController) Update(ct *fiber.Ctx) error {
 }
 
 func (this *AnimalsController) Remove(ct *fiber.Ctx) error {
-	var params AnimalParamsDto
+	var params = NewAnimalParamsDto()
 	var err error
 
-	err = shared.GetParams(ct, &params)
+	err = shared.GetParams(ct, params)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
@@ -166,15 +136,15 @@ func (this *AnimalsController) Remove(ct *fiber.Ctx) error {
 }
 
 func (this *AnimalsController) AddType(ct *fiber.Ctx) error {
-	var params AnimalTypeParamsDto
+	var params = NewAnimalTypeParamsDto()
 	var err error
 
-	err = shared.GetParams(ct, &params)
+	err = shared.GetParams(ct, params)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	var animal *AnimalDto
+	var animal = NewAnimalDto()
 	animal, err = this.animalsService.AddType(params.Id, params.TypeId)
 
 	if ent.IsNotFound(err) {
@@ -189,22 +159,22 @@ func (this *AnimalsController) AddType(ct *fiber.Ctx) error {
 }
 
 func (this *AnimalsController) ReplaceType(ct *fiber.Ctx) error {
-	var params AnimalParamsDto
-	var dto ReplaceAnimalTypeDto
+	var params = NewAnimalParamsDto()
+	var body = NewReplaceAnimalTypeDto()
 	var err error
 
-	err = shared.GetParams(ct, &params)
+	err = shared.GetParams(ct, params)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	err = shared.GetBody(ct, &dto)
+	err = shared.GetBody(ct, body)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	var animal *AnimalDto
-	animal, err = this.animalsService.ReplaceType(params.Id, &dto)
+	var animal = NewAnimalDto()
+	animal, err = this.animalsService.ReplaceType(params.Id, body)
 
 	if ent.IsNotFound(err) {
 		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
@@ -218,15 +188,15 @@ func (this *AnimalsController) ReplaceType(ct *fiber.Ctx) error {
 }
 
 func (this *AnimalsController) RemoveType(ct *fiber.Ctx) error {
-	var params AnimalTypeParamsDto
+	var params = NewAnimalTypeParamsDto()
 	var err error
 
-	err = shared.GetParams(ct, &params)
+	err = shared.GetParams(ct, params)
 	if err != nil {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	var animal *AnimalDto
+	var animal = NewAnimalDto()
 	animal, err = this.animalsService.RemoveType(params.Id, params.TypeId)
 
 	if ent.IsNotFound(err) {

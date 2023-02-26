@@ -21,8 +21,7 @@ func HasOnlyUnique[T mappable](array []T) bool {
 
 	return true
 }
-
-func GetBody[T interface{}](ct *fiber.Ctx, dto *T) error {
+func GetBody(ct *fiber.Ctx, dto interface{}) error {
 	var err = ct.BodyParser(dto)
 	if err != nil {
 		return err
@@ -36,7 +35,8 @@ func GetBody[T interface{}](ct *fiber.Ctx, dto *T) error {
 	return nil
 }
 
-func GetParams[T interface{}](ct *fiber.Ctx, params *T) error {
+func GetParams(ct *fiber.Ctx, params interface{}) error {
+
 	var err = ct.ParamsParser(params)
 	if err != nil {
 		return err
@@ -50,16 +50,14 @@ func GetParams[T interface{}](ct *fiber.Ctx, params *T) error {
 	return nil
 }
 
-func GetQuery[T interface{}](ct *fiber.Ctx, query *T) error {
+func GetQuery(ct *fiber.Ctx, query interface{}) error {
 	var err = ct.QueryParser(query)
 	if err != nil {
 		return err
 	}
-
 	var validationError = ValidateStruct(query)
 	if validationError != nil {
 		return fiber.ErrBadRequest
 	}
-
 	return nil
 }
