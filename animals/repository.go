@@ -52,7 +52,7 @@ func (this *AnimalsRepository) GetAll(dto *AnimalsSearchQueryDto) ([]*ent.Animal
 	}
 
 	if len(conditions) != 0 {
-		query = query.Where(animal.Or(conditions...))
+		query = query.Where(animal.And(conditions...))
 	}
 
 	return query.
