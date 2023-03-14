@@ -4,7 +4,6 @@ import (
 	"animals/ent"
 	Animal "animals/ent/animal"
 	"animals/shared"
-	"log"
 
 	"golang.org/x/exp/slices"
 )
@@ -203,16 +202,6 @@ func prepareAnimal(animal *ent.Animal) *AnimalDto {
 		ChippingLocationId: animal.ChippingLocationID,
 		DeathDateTime:      nil,
 		VisitedLocations:   locationIds,
-	}
-
-	if slices.Contains(preparedAnimal.AnimalTypes, 74) {
-		log.Println(preparedAnimal.AnimalTypes)
-		log.Println(animal.Edges.Types)
-	}
-
-	if preparedAnimal.ID == 4 || preparedAnimal.ID == 5 {
-		log.Println(preparedAnimal)
-		log.Println(animal)
 	}
 
 	if animal.DeathDateTime != nil {
