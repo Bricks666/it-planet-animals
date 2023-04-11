@@ -103,6 +103,7 @@ var (
 		{Name: "password", Type: field.TypeString},
 		{Name: "first_name", Type: field.TypeString},
 		{Name: "last_name", Type: field.TypeString},
+		{Name: "role", Type: field.TypeEnum, Enums: []string{"USER", "CHIPPER", "ADMIN"}},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -139,7 +140,7 @@ var (
 		Indexes: []*schema.Index{
 			{
 				Name:    "visitedlocation_animal_id_location_id",
-				Unique:  false,
+				Unique:  true,
 				Columns: []*schema.Column{VisitedLocationsColumns[2], VisitedLocationsColumns[3]},
 			},
 		},

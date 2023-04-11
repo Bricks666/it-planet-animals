@@ -52,6 +52,12 @@ func (uu *UserUpdate) SetLastName(s string) *UserUpdate {
 	return uu
 }
 
+// SetRole sets the "role" field.
+func (uu *UserUpdate) SetRole(u user.Role) *UserUpdate {
+	uu.mutation.SetRole(u)
+	return uu
+}
+
 // AddAnimalIDs adds the "animals" edge to the Animal entity by IDs.
 func (uu *UserUpdate) AddAnimalIDs(ids ...uint64) *UserUpdate {
 	uu.mutation.AddAnimalIDs(ids...)
@@ -142,6 +148,11 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "lastName", err: fmt.Errorf(`ent: validator failed for field "User.lastName": %w`, err)}
 		}
 	}
+	if v, ok := uu.mutation.Role(); ok {
+		if err := user.RoleValidator(v); err != nil {
+			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "User.role": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -168,6 +179,9 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.LastName(); ok {
 		_spec.SetField(user.FieldLastName, field.TypeString, value)
+	}
+	if value, ok := uu.mutation.Role(); ok {
+		_spec.SetField(user.FieldRole, field.TypeEnum, value)
 	}
 	if uu.mutation.AnimalsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -264,6 +278,12 @@ func (uuo *UserUpdateOne) SetFirstName(s string) *UserUpdateOne {
 // SetLastName sets the "lastName" field.
 func (uuo *UserUpdateOne) SetLastName(s string) *UserUpdateOne {
 	uuo.mutation.SetLastName(s)
+	return uuo
+}
+
+// SetRole sets the "role" field.
+func (uuo *UserUpdateOne) SetRole(u user.Role) *UserUpdateOne {
+	uuo.mutation.SetRole(u)
 	return uuo
 }
 
@@ -370,6 +390,11 @@ func (uuo *UserUpdateOne) check() error {
 			return &ValidationError{Name: "lastName", err: fmt.Errorf(`ent: validator failed for field "User.lastName": %w`, err)}
 		}
 	}
+	if v, ok := uuo.mutation.Role(); ok {
+		if err := user.RoleValidator(v); err != nil {
+			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "User.role": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -413,6 +438,9 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.LastName(); ok {
 		_spec.SetField(user.FieldLastName, field.TypeString, value)
+	}
+	if value, ok := uuo.mutation.Role(); ok {
+		_spec.SetField(user.FieldRole, field.TypeEnum, value)
 	}
 	if uuo.mutation.AnimalsCleared() {
 		edge := &sqlgraph.EdgeSpec{

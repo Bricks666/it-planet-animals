@@ -1,6 +1,7 @@
 package users
 
 import (
+	"animals/shared"
 	"encoding/base64"
 	"strings"
 
@@ -63,4 +64,16 @@ func CheckUnauthorized(ct *fiber.Ctx) error {
 		return ct.Status(fiber.StatusForbidden).JSON("Header is empty")
 	}
 	return ct.Next()
+}
+
+func CheckRole(allowedRoles ...string) func(ct *fiber.Ctx) error {
+	return func(ct *fiber.Ctx) error {
+		var user = ct.Locals(USER_LOCALS).(*SecurityUserDto)
+
+		if !shared.Contains(allowedRoles, user.Role) {
+			return ct.Status(fiber.StatusForbidden).JSON("Invalid credentials")
+		}
+
+		return ct.Next()
+	}
 }

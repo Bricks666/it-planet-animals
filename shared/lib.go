@@ -2,13 +2,13 @@ package shared
 
 import "github.com/gofiber/fiber/v2"
 
-type mappable interface {
+type primitives interface {
 	uint | uint16 | uint32 | uint64 | uint8 |
 		int | int16 | int32 | int64 | int8 |
 		float32 | float64 | string | bool
 }
 
-func HasOnlyUnique[T mappable](array []T) bool {
+func HasOnlyUnique[T primitives](array []T) bool {
 	var occurred = map[T]bool{}
 
 	for _, e := range array {
@@ -60,4 +60,14 @@ func GetQuery(ct *fiber.Ctx, query interface{}) error {
 		return fiber.ErrBadRequest
 	}
 	return nil
+}
+
+func Contains[T primitives](array []T, element T) bool {
+	for _, e := range array {
+		if e == element {
+			return true
+		}
+	}
+
+	return false
 }

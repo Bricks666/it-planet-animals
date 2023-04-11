@@ -2,6 +2,10 @@
 
 package user
 
+import (
+	"fmt"
+)
+
 const (
 	// Label holds the string label denoting the user type in the database.
 	Label = "user"
@@ -15,6 +19,8 @@ const (
 	FieldFirstName = "first_name"
 	// FieldLastName holds the string denoting the lastname field in the database.
 	FieldLastName = "last_name"
+	// FieldRole holds the string denoting the role field in the database.
+	FieldRole = "role"
 	// EdgeAnimals holds the string denoting the animals edge name in mutations.
 	EdgeAnimals = "animals"
 	// Table holds the table name of the user in the database.
@@ -35,6 +41,7 @@ var Columns = []string{
 	FieldPassword,
 	FieldFirstName,
 	FieldLastName,
+	FieldRole,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -59,3 +66,27 @@ var (
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
+
+// Role defines the type for the "role" enum field.
+type Role string
+
+// Role values.
+const (
+	RoleUSER    Role = "USER"
+	RoleCHIPPER Role = "CHIPPER"
+	RoleADMIN   Role = "ADMIN"
+)
+
+func (r Role) String() string {
+	return string(r)
+}
+
+// RoleValidator is a validator for the "role" field enum values. It is called by the builders before save.
+func RoleValidator(r Role) error {
+	switch r {
+	case RoleUSER, RoleCHIPPER, RoleADMIN:
+		return nil
+	default:
+		return fmt.Errorf("user: invalid enum value for role field: %q", r)
+	}
+}

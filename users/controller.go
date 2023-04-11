@@ -52,6 +52,11 @@ func (this *UsersController) GetOne(ct *fiber.Ctx) error {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
+	var authUser = ct.Locals(USER_LOCALS).(*SecurityUserDto)
+	if authUser.Id != params.Id && authUser.Role != ADMIN_ROLE {
+		return ct.Status(fiber.StatusForbidden).JSON("invalid id")
+	}
+
 	user, err := this.usersService.GetOne(params.Id)
 	if err != nil {
 		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
@@ -89,8 +94,9 @@ func (this *UsersController) Update(ct *fiber.Ctx) error {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	err = AuthHasSameId(ct, params.Id)
-	if err != nil {
+	var authUser = ct.Locals(USER_LOCALS).(*SecurityUserDto)
+
+	if authUser.Id != params.Id && authUser.Role != ADMIN_ROLE {
 		return ct.Status(fiber.StatusForbidden).JSON("invalid id")
 	}
 
@@ -121,8 +127,9 @@ func (this *UsersController) Remove(ct *fiber.Ctx) error {
 		return ct.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	err = AuthHasSameId(ct, params.Id)
-	if err != nil {
+	var authUser = ct.Locals(USER_LOCALS).(*SecurityUserDto)
+
+	if authUser.Id != params.Id && authUser.Role != ADMIN_ROLE {
 		return ct.Status(fiber.StatusForbidden).JSON("invalid id")
 	}
 

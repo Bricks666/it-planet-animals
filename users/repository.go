@@ -40,7 +40,7 @@ func (this *UserRepository) GetOne(id uint32) (*ent.User, error) {
 	return this.db.Client.User.
 		Query().
 		Where(user.ID(id)).
-		Select(user.FieldEmail, user.FieldFirstName, user.FieldLastName, user.FieldID).
+		Select(user.FieldEmail, user.FieldFirstName, user.FieldLastName, user.FieldID, user.FieldRole).
 		Only(this.db.Context)
 
 }
@@ -53,8 +53,15 @@ func (this *UserRepository) GetByEmail(email string) (*ent.User, error) {
 }
 
 func (this *UserRepository) Create(dto *CreateUserDto) (*ent.User, error) {
-	return this.db.Client.User.
-		Create().
+	var query = this.db.Client.User.Create()
+
+	if dto.Role != nil {
+		query.SetRole(user.Role(*dto.Role))
+	} else {
+		query.SetRole(user.Role(USER_ROLE))
+	}
+
+	return query.
 		SetEmail(dto.Email).
 		SetFirstName(dto.FirstName).
 		SetLastName(dto.LastName).
@@ -70,6 +77,7 @@ func (this *UserRepository) Update(id uint32, dto *UpdateUserDto) (*ent.User, er
 		SetFirstName(dto.FirstName).
 		SetLastName(dto.LastName).
 		SetPassword(dto.Password).
+		SetRole(user.Role(dto.Role)).
 		Save(this.db.Context)
 }
 

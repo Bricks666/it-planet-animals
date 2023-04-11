@@ -13,6 +13,8 @@ import (
 func main() {
 	router := setupRouter()
 
+	writeStartData()
+
 	router.Listen(":5000")
 }
 
@@ -23,8 +25,9 @@ func setupRouter() *fiber.App {
 
 	usersRouter := router.Group("accounts")
 
-	usersRouter.Get("/search", users.DisableAuthCheck, users.CheckAuth, users.Controller.GetAll)
-	usersRouter.Get("/:id", users.DisableAuthCheck, users.CheckAuth, users.Controller.GetOne)
+	usersRouter.Get("/search", users.CheckAuth, users.CheckRole(users.ADMIN_ROLE), users.Controller.GetAll)
+	usersRouter.Get("/:id", users.CheckAuth, users.Controller.GetOne)
+	usersRouter.Post("/", users.CheckAuth, users.CheckRole(users.ADMIN_ROLE), users.Controller.Create)
 	usersRouter.Put("/:id", users.CheckAuth, users.Controller.Update)
 	usersRouter.Delete("/:id", users.CheckAuth, users.Controller.Remove)
 
@@ -64,4 +67,32 @@ func setupRouter() *fiber.App {
 	animalsLocationsRouter.Delete("/:locationId", users.CheckAuth, visitedlocation.Controller.Remove)
 
 	return router
+}
+
+func writeStartData() {
+	admin := users.ADMIN_ROLE
+	chipper := users.CHIPPER_ROLE
+	user := users.USER_ROLE
+
+	users.Service.Create(&users.CreateUserDto{
+		FirstName: "adminFirstName",
+		LastName:  "adminLastName",
+		Email:     "admin@simbirsoft.com",
+		Password:  "qwerty123",
+		Role:      &admin,
+	})
+	users.Service.Create(&users.CreateUserDto{
+		FirstName: "chipperFirstName",
+		LastName:  "chipperLastName",
+		Email:     "chipper@simbirsoft.com",
+		Password:  "qwerty123",
+		Role:      &chipper,
+	})
+	users.Service.Create(&users.CreateUserDto{
+		FirstName: "userFirstName",
+		LastName:  "userLastName",
+		Email:     "user@simbirsoft.com",
+		Password:  "qwerty123",
+		Role:      &user,
+	})
 }

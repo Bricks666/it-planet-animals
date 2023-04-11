@@ -23,6 +23,8 @@ type User struct {
 	FirstName string `json:"firstName,omitempty"`
 	// LastName holds the value of the "lastName" field.
 	LastName string `json:"lastName,omitempty"`
+	// Role holds the value of the "role" field.
+	Role user.Role `json:"role,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges UserEdges `json:"edges"`
@@ -53,7 +55,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldEmail, user.FieldPassword, user.FieldFirstName, user.FieldLastName:
+		case user.FieldEmail, user.FieldPassword, user.FieldFirstName, user.FieldLastName, user.FieldRole:
 			values[i] = new(sql.NullString)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type User", columns[i])
@@ -100,6 +102,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.LastName = value.String
 			}
+		case user.FieldRole:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field role", values[i])
+			} else if value.Valid {
+				u.Role = user.Role(value.String)
+			}
 		}
 	}
 	return nil
@@ -144,6 +152,9 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("lastName=")
 	builder.WriteString(u.LastName)
+	builder.WriteString(", ")
+	builder.WriteString("role=")
+	builder.WriteString(fmt.Sprintf("%v", u.Role))
 	builder.WriteByte(')')
 	return builder.String()
 }

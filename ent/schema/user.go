@@ -20,6 +20,7 @@ func (User) Fields() []ent.Field {
 		field.String("password").MinLen(1),
 		field.String("firstName").MinLen(1),
 		field.String("lastName").MinLen(1),
+		field.Enum("role").Values("USER", "CHIPPER", "ADMIN"),
 	}
 }
 

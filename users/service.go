@@ -110,5 +110,6 @@ func prepareSecurityUser(user *ent.User) *SecurityUserDto {
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		Email:     user.Email,
+		Role:      string(user.Role),
 	}
 }
