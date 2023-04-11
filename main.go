@@ -19,52 +19,54 @@ func main() {
 }
 
 func setupRouter() *fiber.App {
-	router := fiber.New()
+	var router = fiber.New()
 
 	router.Post("/registration", users.CheckUnauthorized, users.Controller.Create)
 
-	usersRouter := router.Group("accounts")
+	var authRouter = router.Group("", users.CheckAuth)
 
-	usersRouter.Get("/search", users.CheckAuth, users.CheckRole(users.ADMIN_ROLE), users.Controller.GetAll)
-	usersRouter.Get("/:id", users.CheckAuth, users.Controller.GetOne)
-	usersRouter.Post("/", users.CheckAuth, users.CheckRole(users.ADMIN_ROLE), users.Controller.Create)
-	usersRouter.Put("/:id", users.CheckAuth, users.Controller.Update)
-	usersRouter.Delete("/:id", users.CheckAuth, users.Controller.Remove)
+	usersRouter := authRouter.Group("accounts")
 
-	locationsRouter := router.Group("locations")
+	usersRouter.Get("/search", users.CheckRole(users.ADMIN_ROLE), users.Controller.GetAll)
+	usersRouter.Get("/:id", users.Controller.GetOne)
+	usersRouter.Post("/", users.CheckRole(users.ADMIN_ROLE), users.Controller.Create)
+	usersRouter.Put("/:id", users.Controller.Update)
+	usersRouter.Delete("/:id", users.Controller.Remove)
 
-	locationsRouter.Get("/:id", users.DisableAuthCheck, users.CheckAuth, locations.Controller.GetOne)
-	locationsRouter.Post("/", users.CheckAuth, locations.Controller.Create)
-	locationsRouter.Put("/:id", users.CheckAuth, locations.Controller.Update)
-	locationsRouter.Delete("/:id", users.CheckAuth, locations.Controller.Remove)
+	locationsRouter := authRouter.Group("locations")
 
-	animalsRouter := router.Group("animals")
+	locationsRouter.Get("/:id", locations.Controller.GetOne)
+	locationsRouter.Post("/", users.CheckRole(users.ADMIN_ROLE, users.CHIPPER_ROLE), locations.Controller.Create)
+	locationsRouter.Put("/:id", users.CheckRole(users.ADMIN_ROLE, users.CHIPPER_ROLE), locations.Controller.Update)
+	locationsRouter.Delete("/:id", users.CheckRole(users.ADMIN_ROLE), locations.Controller.Remove)
 
-	animalsRouter.Get("/search", users.DisableAuthCheck, users.CheckAuth, animals.Controller.GetAll)
-	animalsRouter.Get("/:id", users.DisableAuthCheck, users.CheckAuth, animals.Controller.GetOne)
-	animalsRouter.Post("/", users.CheckAuth, animals.Controller.Create)
-	animalsRouter.Put("/:id", users.CheckAuth, animals.Controller.Update)
-	animalsRouter.Delete("/:id", users.CheckAuth, animals.Controller.Remove)
+	animalsRouter := authRouter.Group("animals")
+
+	animalsRouter.Get("/search", animals.Controller.GetAll)
+	animalsRouter.Get("/:id", animals.Controller.GetOne)
+	animalsRouter.Post("/", users.CheckRole(users.ADMIN_ROLE, users.CHIPPER_ROLE), animals.Controller.Create)
+	animalsRouter.Put("/:id", users.CheckRole(users.ADMIN_ROLE, users.CHIPPER_ROLE), animals.Controller.Update)
+	animalsRouter.Delete("/:id", users.CheckRole(users.ADMIN_ROLE), animals.Controller.Remove)
 
 	animalsTypesRouter := animalsRouter.Group(":id/types")
 
-	animalsTypesRouter.Post("/:typeId", users.CheckAuth, animals.Controller.AddType)
-	animalsTypesRouter.Put("/", users.CheckAuth, animals.Controller.ReplaceType)
-	animalsTypesRouter.Delete("/:typeId", users.CheckAuth, animals.Controller.RemoveType)
+	animalsTypesRouter.Post("/:typeId", users.CheckRole(users.ADMIN_ROLE, users.CHIPPER_ROLE), animals.Controller.AddType)
+	animalsTypesRouter.Put("/", users.CheckRole(users.ADMIN_ROLE, users.CHIPPER_ROLE), animals.Controller.ReplaceType)
+	animalsTypesRouter.Delete("/:typeId", users.CheckRole(users.ADMIN_ROLE, users.CHIPPER_ROLE), animals.Controller.RemoveType)
 
 	animalTypesRouter := animalsRouter.Group("types")
 
-	animalTypesRouter.Get("/:id", users.DisableAuthCheck, users.CheckAuth, animaltypes.Controller.GetOne)
-	animalTypesRouter.Post("/", users.CheckAuth, animaltypes.Controller.Create)
-	animalTypesRouter.Put("/:id", users.CheckAuth, animaltypes.Controller.Update)
-	animalTypesRouter.Delete("/:id", users.CheckAuth, animaltypes.Controller.Remove)
+	animalTypesRouter.Get("/:id", animaltypes.Controller.GetOne)
+	animalTypesRouter.Post("/", users.CheckRole(users.ADMIN_ROLE, users.CHIPPER_ROLE), animaltypes.Controller.Create)
+	animalTypesRouter.Put("/:id", users.CheckRole(users.ADMIN_ROLE, users.CHIPPER_ROLE), animaltypes.Controller.Update)
+	animalTypesRouter.Delete("/:id", users.CheckRole(users.ADMIN_ROLE), animaltypes.Controller.Remove)
 
 	animalsLocationsRouter := animalsRouter.Group(":animalId/locations")
 
-	animalsLocationsRouter.Get("/", users.DisableAuthCheck, users.CheckAuth, visitedlocation.Controller.GetAll)
-	animalsLocationsRouter.Post("/:locationId", users.CheckAuth, visitedlocation.Controller.Create)
-	animalsLocationsRouter.Put("/", users.CheckAuth, visitedlocation.Controller.Update)
-	animalsLocationsRouter.Delete("/:locationId", users.CheckAuth, visitedlocation.Controller.Remove)
+	animalsLocationsRouter.Get("/", visitedlocation.Controller.GetAll)
+	animalsLocationsRouter.Post("/:locationId", users.CheckRole(users.ADMIN_ROLE, users.CHIPPER_ROLE), visitedlocation.Controller.Create)
+	animalsLocationsRouter.Put("/", users.CheckRole(users.ADMIN_ROLE, users.CHIPPER_ROLE), visitedlocation.Controller.Update)
+	animalsLocationsRouter.Delete("/:locationId", users.CheckRole(users.ADMIN_ROLE), visitedlocation.Controller.Remove)
 
 	return router
 }
