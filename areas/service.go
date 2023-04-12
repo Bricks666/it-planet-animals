@@ -4,6 +4,7 @@ import (
 	"animals/ent"
 	"animals/locations"
 	"animals/shared"
+	"math"
 )
 
 type AreasService struct {
@@ -35,11 +36,19 @@ func (this *AreasService) GetOne(params *AreaParamsDto) (*AreaDto, error) {
 }
 
 func (this *AreasService) Create(dto *AreaBodyDto) (*AreaDto, error) {
+	var err error
+
+	err = this.checkPoints(dto.AreaPoints)
+	if err != nil {
+		return nil, err
+	}
+
 	var innerDto = NewInnerAreaDto()
 	innerDto.Name = dto.Name
 	innerDto.AreaPointIds = this.getLocationIds(dto.AreaPoints)
 
-	var area, err = this.areasRepository.Create(innerDto)
+	var area *ent.Area
+	area, err = this.areasRepository.Create(innerDto)
 
 	if err != nil {
 		return nil, err
@@ -53,11 +62,18 @@ func (this *AreasService) Create(dto *AreaBodyDto) (*AreaDto, error) {
 }
 
 func (this *AreasService) Update(params *AreaParamsDto, dto *AreaBodyDto) (*AreaDto, error) {
+	var err error
+
+	err = this.checkPoints(dto.AreaPoints)
+	if err != nil {
+		return nil, err
+	}
+
 	var innerDto = NewInnerAreaDto()
 	innerDto.Name = dto.Name
 	innerDto.AreaPointIds = this.getLocationIds(dto.AreaPoints)
 
-	var _, err = this.areasRepository.Update(params, innerDto)
+	_, err = this.areasRepository.Update(params, innerDto)
 
 	if err != nil {
 		return nil, err
@@ -82,20 +98,34 @@ func (this *AreasService) getLocationIds(areaPoints []*AreaPointDto) []uint64 {
 	})
 }
 
-func prepareAreaDto(area *ent.Area) *AreaDto {
-	var dto = NewAreaDto()
+func (this *AreasService) checkPoints(points []*AreaPointDto) error {
+	// Check if it on the same line
+	var firstPoint = points[0]
+	var controlPoint = points[1]
+	var different = false
 
-	dto.Id = area.ID
-	dto.Name = area.Name
+	for i := 2; i < len(points); i++ {
+		var secondPoint = points[i]
 
-	dto.AreaPoints = shared.Map(area.Edges.Points, func(element *ent.Location) *AreaPointDto {
-		var areaPointDto = NewAreaPointDto()
+		var lineEquation = getLineEquation(
+			shared.NewVector(firstPoint.Latitude, firstPoint.Longitude),
+			shared.NewVector(secondPoint.Latitude, secondPoint.Longitude),
+		)
+		var y = lineEquation(controlPoint.Latitude)
 
-		areaPointDto.Latitude = element.Latitude
-		areaPointDto.Longitude = element.Longitude
+		if y == math.Inf(1) {
+			continue
+		}
 
-		return areaPointDto
-	})
+		if y != controlPoint.Longitude {
+			different = true
+			break
+		}
+	}
 
-	return dto
+	if !different {
+		return &ent.ValidationError{}
+	}
+
+	return nil
 }

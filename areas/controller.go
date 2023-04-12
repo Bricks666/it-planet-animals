@@ -1,6 +1,7 @@
 package areas
 
 import (
+	"animals/ent"
 	"animals/shared"
 
 	"github.com/gofiber/fiber/v2"
@@ -36,7 +37,7 @@ func (this *AreasController) GetOne(ct *fiber.Ctx) error {
 	area, err = this.areasService.GetOne(params)
 
 	if err != nil {
-		return ct.Status(fiber.StatusNotFound).JSON("")
+		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
 	}
 
 	return ct.Status(fiber.StatusOK).JSON(area)
@@ -54,8 +55,10 @@ func (this *AreasController) Create(ct *fiber.Ctx) error {
 	var area *AreaDto
 	area, err = this.areasService.Create(body)
 
-	if err != nil {
-		return ct.Status(fiber.StatusConflict).JSON("")
+	if ent.IsConstraintError(err) {
+		return ct.Status(fiber.StatusConflict).JSON(err.Error())
+	} else if err != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON("")
 	}
 
 	return ct.Status(fiber.StatusCreated).JSON(area)
@@ -78,8 +81,10 @@ func (this *AreasController) Update(ct *fiber.Ctx) error {
 
 	var area *AreaDto
 	area, err = this.areasService.Update(params, body)
-	if err != nil {
-		return ct.Status(fiber.StatusConflict).JSON("")
+	if ent.IsConstraintError(err) {
+		return ct.Status(fiber.StatusConflict).JSON(err.Error())
+	} else if err != nil {
+		return ct.Status(fiber.StatusBadRequest).JSON("")
 	}
 
 	return ct.Status(fiber.StatusOK).JSON(area)
@@ -97,7 +102,7 @@ func (this *AreasController) Remove(ct *fiber.Ctx) error {
 	err = this.areasService.Remove(params)
 
 	if err != nil {
-		return ct.Status(fiber.StatusNotFound).JSON("")
+		return ct.Status(fiber.StatusNotFound).JSON(err.Error())
 	}
 
 	return ct.Status(fiber.StatusOK).JSON("OK")
