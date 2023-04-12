@@ -30,6 +30,7 @@ type (
 		Animal          []ent.Hook
 		AnimalTag       []ent.Hook
 		AnimalType      []ent.Hook
+		Area            []ent.Hook
 		Location        []ent.Hook
 		User            []ent.Hook
 		VisitedLocation []ent.Hook
@@ -38,6 +39,7 @@ type (
 		Animal          []ent.Interceptor
 		AnimalTag       []ent.Interceptor
 		AnimalType      []ent.Interceptor
+		Area            []ent.Interceptor
 		Location        []ent.Interceptor
 		User            []ent.Interceptor
 		VisitedLocation []ent.Interceptor

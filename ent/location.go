@@ -30,11 +30,13 @@ type LocationEdges struct {
 	ChippedAnimals []*Animal `json:"chipped_animals,omitempty"`
 	// Animals holds the value of the animals edge.
 	Animals []*Animal `json:"animals,omitempty"`
+	// Areas holds the value of the areas edge.
+	Areas []*Area `json:"areas,omitempty"`
 	// HavingAnimals holds the value of the having_animals edge.
 	HavingAnimals []*VisitedLocation `json:"having_animals,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // ChippedAnimalsOrErr returns the ChippedAnimals value or an error if the edge
@@ -55,10 +57,19 @@ func (e LocationEdges) AnimalsOrErr() ([]*Animal, error) {
 	return nil, &NotLoadedError{edge: "animals"}
 }
 
+// AreasOrErr returns the Areas value or an error if the edge
+// was not loaded in eager-loading.
+func (e LocationEdges) AreasOrErr() ([]*Area, error) {
+	if e.loadedTypes[2] {
+		return e.Areas, nil
+	}
+	return nil, &NotLoadedError{edge: "areas"}
+}
+
 // HavingAnimalsOrErr returns the HavingAnimals value or an error if the edge
 // was not loaded in eager-loading.
 func (e LocationEdges) HavingAnimalsOrErr() ([]*VisitedLocation, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.HavingAnimals, nil
 	}
 	return nil, &NotLoadedError{edge: "having_animals"}
@@ -119,6 +130,11 @@ func (l *Location) QueryChippedAnimals() *AnimalQuery {
 // QueryAnimals queries the "animals" edge of the Location entity.
 func (l *Location) QueryAnimals() *AnimalQuery {
 	return NewLocationClient(l.config).QueryAnimals(l)
+}
+
+// QueryAreas queries the "areas" edge of the Location entity.
+func (l *Location) QueryAreas() *AreaQuery {
+	return NewLocationClient(l.config).QueryAreas(l)
 }
 
 // QueryHavingAnimals queries the "having_animals" edge of the Location entity.

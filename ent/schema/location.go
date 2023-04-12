@@ -35,6 +35,8 @@ func (Location) Edges() []ent.Edge {
 				OnDelete: entsql.NoAction,
 			}).
 			Through("having_animals", VisitedLocation.Type),
+		edge.From("areas", Area.Type).
+			Ref("points"),
 	}
 }
 

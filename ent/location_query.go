@@ -4,6 +4,7 @@ package ent
 
 import (
 	"animals/ent/animal"
+	"animals/ent/area"
 	"animals/ent/location"
 	"animals/ent/predicate"
 	"animals/ent/visitedlocation"
@@ -26,6 +27,7 @@ type LocationQuery struct {
 	predicates         []predicate.Location
 	withChippedAnimals *AnimalQuery
 	withAnimals        *AnimalQuery
+	withAreas          *AreaQuery
 	withHavingAnimals  *VisitedLocationQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -100,6 +102,28 @@ func (lq *LocationQuery) QueryAnimals() *AnimalQuery {
 			sqlgraph.From(location.Table, location.FieldID, selector),
 			sqlgraph.To(animal.Table, animal.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, location.AnimalsTable, location.AnimalsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(lq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAreas chains the current query on the "areas" edge.
+func (lq *LocationQuery) QueryAreas() *AreaQuery {
+	query := (&AreaClient{config: lq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := lq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := lq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(location.Table, location.FieldID, selector),
+			sqlgraph.To(area.Table, area.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, location.AreasTable, location.AreasPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(lq.driver.Dialect(), step)
 		return fromU, nil
@@ -323,6 +347,7 @@ func (lq *LocationQuery) Clone() *LocationQuery {
 		predicates:         append([]predicate.Location{}, lq.predicates...),
 		withChippedAnimals: lq.withChippedAnimals.Clone(),
 		withAnimals:        lq.withAnimals.Clone(),
+		withAreas:          lq.withAreas.Clone(),
 		withHavingAnimals:  lq.withHavingAnimals.Clone(),
 		// clone intermediate query.
 		sql:  lq.sql.Clone(),
@@ -349,6 +374,17 @@ func (lq *LocationQuery) WithAnimals(opts ...func(*AnimalQuery)) *LocationQuery 
 		opt(query)
 	}
 	lq.withAnimals = query
+	return lq
+}
+
+// WithAreas tells the query-builder to eager-load the nodes that are connected to
+// the "areas" edge. The optional arguments are used to configure the query builder of the edge.
+func (lq *LocationQuery) WithAreas(opts ...func(*AreaQuery)) *LocationQuery {
+	query := (&AreaClient{config: lq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	lq.withAreas = query
 	return lq
 }
 
@@ -441,9 +477,10 @@ func (lq *LocationQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Loc
 	var (
 		nodes       = []*Location{}
 		_spec       = lq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			lq.withChippedAnimals != nil,
 			lq.withAnimals != nil,
+			lq.withAreas != nil,
 			lq.withHavingAnimals != nil,
 		}
 	)
@@ -476,6 +513,13 @@ func (lq *LocationQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Loc
 		if err := lq.loadAnimals(ctx, query, nodes,
 			func(n *Location) { n.Edges.Animals = []*Animal{} },
 			func(n *Location, e *Animal) { n.Edges.Animals = append(n.Edges.Animals, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := lq.withAreas; query != nil {
+		if err := lq.loadAreas(ctx, query, nodes,
+			func(n *Location) { n.Edges.Areas = []*Area{} },
+			func(n *Location, e *Area) { n.Edges.Areas = append(n.Edges.Areas, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -570,6 +614,67 @@ func (lq *LocationQuery) loadAnimals(ctx context.Context, query *AnimalQuery, no
 		nodes, ok := nids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected "animals" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (lq *LocationQuery) loadAreas(ctx context.Context, query *AreaQuery, nodes []*Location, init func(*Location), assign func(*Location, *Area)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[uint64]*Location)
+	nids := make(map[uint64]map[*Location]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(location.AreasTable)
+		s.Join(joinT).On(s.C(area.FieldID), joinT.C(location.AreasPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(location.AreasPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(location.AreasPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := uint64(values[0].(*sql.NullInt64).Int64)
+				inValue := uint64(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Location]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Area](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "areas" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)

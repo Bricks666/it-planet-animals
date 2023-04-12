@@ -13,6 +13,7 @@ import (
 	"animals/ent/animal"
 	"animals/ent/animaltag"
 	"animals/ent/animaltype"
+	"animals/ent/area"
 	"animals/ent/location"
 	"animals/ent/user"
 	"animals/ent/visitedlocation"
@@ -33,6 +34,8 @@ type Client struct {
 	AnimalTag *AnimalTagClient
 	// AnimalType is the client for interacting with the AnimalType builders.
 	AnimalType *AnimalTypeClient
+	// Area is the client for interacting with the Area builders.
+	Area *AreaClient
 	// Location is the client for interacting with the Location builders.
 	Location *LocationClient
 	// User is the client for interacting with the User builders.
@@ -55,6 +58,7 @@ func (c *Client) init() {
 	c.Animal = NewAnimalClient(c.config)
 	c.AnimalTag = NewAnimalTagClient(c.config)
 	c.AnimalType = NewAnimalTypeClient(c.config)
+	c.Area = NewAreaClient(c.config)
 	c.Location = NewLocationClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.VisitedLocation = NewVisitedLocationClient(c.config)
@@ -94,6 +98,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Animal:          NewAnimalClient(cfg),
 		AnimalTag:       NewAnimalTagClient(cfg),
 		AnimalType:      NewAnimalTypeClient(cfg),
+		Area:            NewAreaClient(cfg),
 		Location:        NewLocationClient(cfg),
 		User:            NewUserClient(cfg),
 		VisitedLocation: NewVisitedLocationClient(cfg),
@@ -119,6 +124,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Animal:          NewAnimalClient(cfg),
 		AnimalTag:       NewAnimalTagClient(cfg),
 		AnimalType:      NewAnimalTypeClient(cfg),
+		Area:            NewAreaClient(cfg),
 		Location:        NewLocationClient(cfg),
 		User:            NewUserClient(cfg),
 		VisitedLocation: NewVisitedLocationClient(cfg),
@@ -153,6 +159,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Animal.Use(hooks...)
 	c.AnimalTag.Use(hooks...)
 	c.AnimalType.Use(hooks...)
+	c.Area.Use(hooks...)
 	c.Location.Use(hooks...)
 	c.User.Use(hooks...)
 	c.VisitedLocation.Use(hooks...)
@@ -164,6 +171,7 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Animal.Intercept(interceptors...)
 	c.AnimalTag.Intercept(interceptors...)
 	c.AnimalType.Intercept(interceptors...)
+	c.Area.Intercept(interceptors...)
 	c.Location.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 	c.VisitedLocation.Intercept(interceptors...)
@@ -178,6 +186,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AnimalTag.mutate(ctx, m)
 	case *AnimalTypeMutation:
 		return c.AnimalType.mutate(ctx, m)
+	case *AreaMutation:
+		return c.Area.mutate(ctx, m)
 	case *LocationMutation:
 		return c.Location.mutate(ctx, m)
 	case *UserMutation:
@@ -654,6 +664,140 @@ func (c *AnimalTypeClient) mutate(ctx context.Context, m *AnimalTypeMutation) (V
 	}
 }
 
+// AreaClient is a client for the Area schema.
+type AreaClient struct {
+	config
+}
+
+// NewAreaClient returns a client for the Area from the given config.
+func NewAreaClient(c config) *AreaClient {
+	return &AreaClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `area.Hooks(f(g(h())))`.
+func (c *AreaClient) Use(hooks ...Hook) {
+	c.hooks.Area = append(c.hooks.Area, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `area.Intercept(f(g(h())))`.
+func (c *AreaClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Area = append(c.inters.Area, interceptors...)
+}
+
+// Create returns a builder for creating a Area entity.
+func (c *AreaClient) Create() *AreaCreate {
+	mutation := newAreaMutation(c.config, OpCreate)
+	return &AreaCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Area entities.
+func (c *AreaClient) CreateBulk(builders ...*AreaCreate) *AreaCreateBulk {
+	return &AreaCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Area.
+func (c *AreaClient) Update() *AreaUpdate {
+	mutation := newAreaMutation(c.config, OpUpdate)
+	return &AreaUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AreaClient) UpdateOne(a *Area) *AreaUpdateOne {
+	mutation := newAreaMutation(c.config, OpUpdateOne, withArea(a))
+	return &AreaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AreaClient) UpdateOneID(id uint64) *AreaUpdateOne {
+	mutation := newAreaMutation(c.config, OpUpdateOne, withAreaID(id))
+	return &AreaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Area.
+func (c *AreaClient) Delete() *AreaDelete {
+	mutation := newAreaMutation(c.config, OpDelete)
+	return &AreaDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AreaClient) DeleteOne(a *Area) *AreaDeleteOne {
+	return c.DeleteOneID(a.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AreaClient) DeleteOneID(id uint64) *AreaDeleteOne {
+	builder := c.Delete().Where(area.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AreaDeleteOne{builder}
+}
+
+// Query returns a query builder for Area.
+func (c *AreaClient) Query() *AreaQuery {
+	return &AreaQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeArea},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Area entity by its id.
+func (c *AreaClient) Get(ctx context.Context, id uint64) (*Area, error) {
+	return c.Query().Where(area.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AreaClient) GetX(ctx context.Context, id uint64) *Area {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryPoints queries the points edge of a Area.
+func (c *AreaClient) QueryPoints(a *Area) *LocationQuery {
+	query := (&LocationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(area.Table, area.FieldID, id),
+			sqlgraph.To(location.Table, location.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, area.PointsTable, area.PointsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AreaClient) Hooks() []Hook {
+	return c.hooks.Area
+}
+
+// Interceptors returns the client interceptors.
+func (c *AreaClient) Interceptors() []Interceptor {
+	return c.inters.Area
+}
+
+func (c *AreaClient) mutate(ctx context.Context, m *AreaMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AreaCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AreaUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AreaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AreaDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Area mutation op: %q", m.Op())
+	}
+}
+
 // LocationClient is a client for the Location schema.
 type LocationClient struct {
 	config
@@ -772,6 +916,22 @@ func (c *LocationClient) QueryAnimals(l *Location) *AnimalQuery {
 			sqlgraph.From(location.Table, location.FieldID, id),
 			sqlgraph.To(animal.Table, animal.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, location.AnimalsTable, location.AnimalsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(l.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAreas queries the areas edge of a Location.
+func (c *LocationClient) QueryAreas(l *Location) *AreaQuery {
+	query := (&AreaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := l.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(location.Table, location.FieldID, id),
+			sqlgraph.To(area.Table, area.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, location.AreasTable, location.AreasPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(l.driver.Dialect(), step)
 		return fromV, nil

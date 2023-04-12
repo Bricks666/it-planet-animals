@@ -5,6 +5,7 @@ package ent
 import (
 	"animals/ent/animal"
 	"animals/ent/animaltag"
+	"animals/ent/area"
 	"animals/ent/location"
 	"animals/ent/schema"
 	"animals/ent/user"
@@ -48,6 +49,12 @@ func init() {
 	animaltagDescID := animaltagFields[0].Descriptor()
 	// animaltag.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	animaltag.IDValidator = animaltagDescID.Validators[0].(func(uint64) error)
+	areaFields := schema.Area{}.Fields()
+	_ = areaFields
+	// areaDescID is the schema descriptor for id field.
+	areaDescID := areaFields[0].Descriptor()
+	// area.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	area.IDValidator = areaDescID.Validators[0].(func(uint64) error)
 	locationFields := schema.Location{}.Fields()
 	_ = locationFields
 	// locationDescLatitude is the schema descriptor for latitude field.

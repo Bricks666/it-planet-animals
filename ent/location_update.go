@@ -4,6 +4,7 @@ package ent
 
 import (
 	"animals/ent/animal"
+	"animals/ent/area"
 	"animals/ent/location"
 	"animals/ent/predicate"
 	"animals/ent/visitedlocation"
@@ -85,6 +86,21 @@ func (lu *LocationUpdate) AddAnimals(a ...*Animal) *LocationUpdate {
 	return lu.AddAnimalIDs(ids...)
 }
 
+// AddAreaIDs adds the "areas" edge to the Area entity by IDs.
+func (lu *LocationUpdate) AddAreaIDs(ids ...uint64) *LocationUpdate {
+	lu.mutation.AddAreaIDs(ids...)
+	return lu
+}
+
+// AddAreas adds the "areas" edges to the Area entity.
+func (lu *LocationUpdate) AddAreas(a ...*Area) *LocationUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return lu.AddAreaIDs(ids...)
+}
+
 // AddHavingAnimalIDs adds the "having_animals" edge to the VisitedLocation entity by IDs.
 func (lu *LocationUpdate) AddHavingAnimalIDs(ids ...uint64) *LocationUpdate {
 	lu.mutation.AddHavingAnimalIDs(ids...)
@@ -145,6 +161,27 @@ func (lu *LocationUpdate) RemoveAnimals(a ...*Animal) *LocationUpdate {
 		ids[i] = a[i].ID
 	}
 	return lu.RemoveAnimalIDs(ids...)
+}
+
+// ClearAreas clears all "areas" edges to the Area entity.
+func (lu *LocationUpdate) ClearAreas() *LocationUpdate {
+	lu.mutation.ClearAreas()
+	return lu
+}
+
+// RemoveAreaIDs removes the "areas" edge to Area entities by IDs.
+func (lu *LocationUpdate) RemoveAreaIDs(ids ...uint64) *LocationUpdate {
+	lu.mutation.RemoveAreaIDs(ids...)
+	return lu
+}
+
+// RemoveAreas removes "areas" edges to Area entities.
+func (lu *LocationUpdate) RemoveAreas(a ...*Area) *LocationUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return lu.RemoveAreaIDs(ids...)
 }
 
 // ClearHavingAnimals clears all "having_animals" edges to the VisitedLocation entity.
@@ -342,6 +379,60 @@ func (lu *LocationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if lu.mutation.AreasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   location.AreasTable,
+			Columns: location.AreasPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: area.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := lu.mutation.RemovedAreasIDs(); len(nodes) > 0 && !lu.mutation.AreasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   location.AreasTable,
+			Columns: location.AreasPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: area.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := lu.mutation.AreasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   location.AreasTable,
+			Columns: location.AreasPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: area.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if lu.mutation.HavingAnimalsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -472,6 +563,21 @@ func (luo *LocationUpdateOne) AddAnimals(a ...*Animal) *LocationUpdateOne {
 	return luo.AddAnimalIDs(ids...)
 }
 
+// AddAreaIDs adds the "areas" edge to the Area entity by IDs.
+func (luo *LocationUpdateOne) AddAreaIDs(ids ...uint64) *LocationUpdateOne {
+	luo.mutation.AddAreaIDs(ids...)
+	return luo
+}
+
+// AddAreas adds the "areas" edges to the Area entity.
+func (luo *LocationUpdateOne) AddAreas(a ...*Area) *LocationUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return luo.AddAreaIDs(ids...)
+}
+
 // AddHavingAnimalIDs adds the "having_animals" edge to the VisitedLocation entity by IDs.
 func (luo *LocationUpdateOne) AddHavingAnimalIDs(ids ...uint64) *LocationUpdateOne {
 	luo.mutation.AddHavingAnimalIDs(ids...)
@@ -532,6 +638,27 @@ func (luo *LocationUpdateOne) RemoveAnimals(a ...*Animal) *LocationUpdateOne {
 		ids[i] = a[i].ID
 	}
 	return luo.RemoveAnimalIDs(ids...)
+}
+
+// ClearAreas clears all "areas" edges to the Area entity.
+func (luo *LocationUpdateOne) ClearAreas() *LocationUpdateOne {
+	luo.mutation.ClearAreas()
+	return luo
+}
+
+// RemoveAreaIDs removes the "areas" edge to Area entities by IDs.
+func (luo *LocationUpdateOne) RemoveAreaIDs(ids ...uint64) *LocationUpdateOne {
+	luo.mutation.RemoveAreaIDs(ids...)
+	return luo
+}
+
+// RemoveAreas removes "areas" edges to Area entities.
+func (luo *LocationUpdateOne) RemoveAreas(a ...*Area) *LocationUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return luo.RemoveAreaIDs(ids...)
 }
 
 // ClearHavingAnimals clears all "having_animals" edges to the VisitedLocation entity.
@@ -751,6 +878,60 @@ func (luo *LocationUpdateOne) sqlSave(ctx context.Context) (_node *Location, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if luo.mutation.AreasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   location.AreasTable,
+			Columns: location.AreasPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: area.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := luo.mutation.RemovedAreasIDs(); len(nodes) > 0 && !luo.mutation.AreasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   location.AreasTable,
+			Columns: location.AreasPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: area.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := luo.mutation.AreasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   location.AreasTable,
+			Columns: location.AreasPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: area.FieldID,
 				},
 			},
 		}

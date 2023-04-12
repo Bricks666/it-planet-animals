@@ -32,7 +32,7 @@ func (this *LocationsService) GetOne(id uint64) (*LocationDto, error) {
 	return prepareLocation(location), nil
 }
 
-func (this *LocationsService) Create(dto *CreateLocationDto) (*LocationDto, error) {
+func (this *LocationsService) Create(dto *LocationBodyDto) (*LocationDto, error) {
 	location, err := this.locationRepository.Create(dto)
 
 	if err != nil {
@@ -42,7 +42,7 @@ func (this *LocationsService) Create(dto *CreateLocationDto) (*LocationDto, erro
 	return prepareLocation(location), nil
 }
 
-func (this *LocationsService) Update(id uint64, dto *UpdateLocationDto) (*LocationDto, error) {
+func (this *LocationsService) Update(id uint64, dto *LocationBodyDto) (*LocationDto, error) {
 	location, err := this.locationRepository.Update(id, dto)
 
 	if err != nil {
@@ -54,6 +54,16 @@ func (this *LocationsService) Update(id uint64, dto *UpdateLocationDto) (*Locati
 
 func (this *LocationsService) Remove(id uint64) error {
 	return this.locationRepository.Remove(id)
+}
+
+func (this *LocationsService) GetOrCreate(params *LocationBodyDto) *LocationDto {
+	var location, err = this.locationRepository.GetOrCreate(params)
+
+	if err != nil {
+		return nil
+	}
+
+	return prepareLocation(location)
 }
 
 func prepareLocation(location *ent.Location) *LocationDto {

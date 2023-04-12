@@ -24,31 +24,48 @@ func init() {
 	)
 }
 
-func (lr *LocationRepository) GetOne(id uint64) (*ent.Location, error) {
-	return lr.db.Client.Location.
+func (this *LocationRepository) GetOne(id uint64) (*ent.Location, error) {
+	return this.db.Client.Location.
 		Query().
 		Where(location.ID(id)).
-		Only(lr.db.Context)
+		Only(this.db.Context)
 }
 
-func (lr *LocationRepository) Create(dto *CreateLocationDto) (*ent.Location, error) {
-	return lr.db.Client.Location.
+func (this *LocationRepository) Create(dto *LocationBodyDto) (*ent.Location, error) {
+	return this.db.Client.Location.
 		Create().
 		SetLatitude(dto.Latitude).
 		SetLongitude(dto.Longitude).
-		Save(lr.db.Context)
+		Save(this.db.Context)
 }
 
-func (lr *LocationRepository) Update(id uint64, dto *UpdateLocationDto) (*ent.Location, error) {
-	return lr.db.Client.Location.
+func (this *LocationRepository) Update(id uint64, dto *LocationBodyDto) (*ent.Location, error) {
+	return this.db.Client.Location.
 		UpdateOneID(id).
 		SetLatitude(dto.Latitude).
 		SetLongitude(dto.Longitude).
-		Save(lr.db.Context)
+		Save(this.db.Context)
 }
 
-func (lr *LocationRepository) Remove(id uint64) error {
-	return lr.db.Client.Location.
+func (this *LocationRepository) Remove(id uint64) error {
+	return this.db.Client.Location.
 		DeleteOneID(id).
-		Exec(lr.db.Context)
+		Exec(this.db.Context)
+}
+
+func (this *LocationRepository) GetOrCreate(params *LocationBodyDto) (*ent.Location, error) {
+	var response *ent.Location
+	var err error
+
+	response, err = this.db.Client.Location.
+		Query().
+		Where(location.Latitude(params.Latitude),
+			location.Longitude(params.Longitude)).
+		Only(this.db.Context)
+
+	if err != nil {
+		return this.Create(params)
+	}
+
+	return response, nil
 }

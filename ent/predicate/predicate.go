@@ -15,6 +15,9 @@ type AnimalTag func(*sql.Selector)
 // AnimalType is the predicate function for animaltype builders.
 type AnimalType func(*sql.Selector)
 
+// Area is the predicate function for area builders.
+type Area func(*sql.Selector)
+
 // Location is the predicate function for location builders.
 type Location func(*sql.Selector)
 

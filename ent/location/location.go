@@ -15,6 +15,8 @@ const (
 	EdgeChippedAnimals = "chipped_animals"
 	// EdgeAnimals holds the string denoting the animals edge name in mutations.
 	EdgeAnimals = "animals"
+	// EdgeAreas holds the string denoting the areas edge name in mutations.
+	EdgeAreas = "areas"
 	// EdgeHavingAnimals holds the string denoting the having_animals edge name in mutations.
 	EdgeHavingAnimals = "having_animals"
 	// Table holds the table name of the location in the database.
@@ -31,6 +33,11 @@ const (
 	// AnimalsInverseTable is the table name for the Animal entity.
 	// It exists in this package in order to avoid circular dependency with the "animal" package.
 	AnimalsInverseTable = "animals"
+	// AreasTable is the table that holds the areas relation/edge. The primary key declared below.
+	AreasTable = "area_points"
+	// AreasInverseTable is the table name for the Area entity.
+	// It exists in this package in order to avoid circular dependency with the "area" package.
+	AreasInverseTable = "areas"
 	// HavingAnimalsTable is the table that holds the having_animals relation/edge.
 	HavingAnimalsTable = "visited_locations"
 	// HavingAnimalsInverseTable is the table name for the VisitedLocation entity.
@@ -51,6 +58,9 @@ var (
 	// AnimalsPrimaryKey and AnimalsColumn2 are the table columns denoting the
 	// primary key for the animals relation (M2M).
 	AnimalsPrimaryKey = []string{"animal_id", "location_id"}
+	// AreasPrimaryKey and AreasColumn2 are the table columns denoting the
+	// primary key for the areas relation (M2M).
+	AreasPrimaryKey = []string{"area_id", "location_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).

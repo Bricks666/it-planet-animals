@@ -77,6 +77,17 @@ var (
 			},
 		},
 	}
+	// AreasColumns holds the columns for the "areas" table.
+	AreasColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "name", Type: field.TypeString},
+	}
+	// AreasTable holds the schema information for the "areas" table.
+	AreasTable = &schema.Table{
+		Name:       "areas",
+		Columns:    AreasColumns,
+		PrimaryKey: []*schema.Column{AreasColumns[0]},
+	}
 	// LocationsColumns holds the columns for the "locations" table.
 	LocationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -145,14 +156,41 @@ var (
 			},
 		},
 	}
+	// AreaPointsColumns holds the columns for the "area_points" table.
+	AreaPointsColumns = []*schema.Column{
+		{Name: "area_id", Type: field.TypeUint64},
+		{Name: "location_id", Type: field.TypeUint64},
+	}
+	// AreaPointsTable holds the schema information for the "area_points" table.
+	AreaPointsTable = &schema.Table{
+		Name:       "area_points",
+		Columns:    AreaPointsColumns,
+		PrimaryKey: []*schema.Column{AreaPointsColumns[0], AreaPointsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "area_points_area_id",
+				Columns:    []*schema.Column{AreaPointsColumns[0]},
+				RefColumns: []*schema.Column{AreasColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "area_points_location_id",
+				Columns:    []*schema.Column{AreaPointsColumns[1]},
+				RefColumns: []*schema.Column{LocationsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AnimalsTable,
 		AnimalTagsTable,
 		AnimalTypesTable,
+		AreasTable,
 		LocationsTable,
 		UsersTable,
 		VisitedLocationsTable,
+		AreaPointsTable,
 	}
 )
 
@@ -163,4 +201,6 @@ func init() {
 	AnimalTypesTable.ForeignKeys[1].RefTable = AnimalTagsTable
 	VisitedLocationsTable.ForeignKeys[0].RefTable = AnimalsTable
 	VisitedLocationsTable.ForeignKeys[1].RefTable = LocationsTable
+	AreaPointsTable.ForeignKeys[0].RefTable = AreasTable
+	AreaPointsTable.ForeignKeys[1].RefTable = LocationsTable
 }

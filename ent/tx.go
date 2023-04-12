@@ -18,6 +18,8 @@ type Tx struct {
 	AnimalTag *AnimalTagClient
 	// AnimalType is the client for interacting with the AnimalType builders.
 	AnimalType *AnimalTypeClient
+	// Area is the client for interacting with the Area builders.
+	Area *AreaClient
 	// Location is the client for interacting with the Location builders.
 	Location *LocationClient
 	// User is the client for interacting with the User builders.
@@ -158,6 +160,7 @@ func (tx *Tx) init() {
 	tx.Animal = NewAnimalClient(tx.config)
 	tx.AnimalTag = NewAnimalTagClient(tx.config)
 	tx.AnimalType = NewAnimalTypeClient(tx.config)
+	tx.Area = NewAreaClient(tx.config)
 	tx.Location = NewLocationClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.VisitedLocation = NewVisitedLocationClient(tx.config)

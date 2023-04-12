@@ -4,6 +4,7 @@ package ent
 
 import (
 	"animals/ent/animal"
+	"animals/ent/area"
 	"animals/ent/location"
 	"animals/ent/visitedlocation"
 	"context"
@@ -67,6 +68,21 @@ func (lc *LocationCreate) AddAnimals(a ...*Animal) *LocationCreate {
 		ids[i] = a[i].ID
 	}
 	return lc.AddAnimalIDs(ids...)
+}
+
+// AddAreaIDs adds the "areas" edge to the Area entity by IDs.
+func (lc *LocationCreate) AddAreaIDs(ids ...uint64) *LocationCreate {
+	lc.mutation.AddAreaIDs(ids...)
+	return lc
+}
+
+// AddAreas adds the "areas" edges to the Area entity.
+func (lc *LocationCreate) AddAreas(a ...*Area) *LocationCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return lc.AddAreaIDs(ids...)
 }
 
 // AddHavingAnimalIDs adds the "having_animals" edge to the VisitedLocation entity by IDs.
@@ -209,6 +225,25 @@ func (lc *LocationCreate) createSpec() (*Location, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: animal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := lc.mutation.AreasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   location.AreasTable,
+			Columns: location.AreasPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: area.FieldID,
 				},
 			},
 		}

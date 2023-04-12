@@ -6,6 +6,7 @@ import (
 	"animals/ent/animal"
 	"animals/ent/animaltag"
 	"animals/ent/animaltype"
+	"animals/ent/area"
 	"animals/ent/location"
 	"animals/ent/predicate"
 	"animals/ent/user"
@@ -32,6 +33,7 @@ const (
 	TypeAnimal          = "Animal"
 	TypeAnimalTag       = "AnimalTag"
 	TypeAnimalType      = "AnimalType"
+	TypeArea            = "Area"
 	TypeLocation        = "Location"
 	TypeUser            = "User"
 	TypeVisitedLocation = "VisitedLocation"
@@ -2143,6 +2145,431 @@ func (m *AnimalTypeMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown AnimalType edge %s", name)
 }
 
+// AreaMutation represents an operation that mutates the Area nodes in the graph.
+type AreaMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uint64
+	name          *string
+	clearedFields map[string]struct{}
+	points        map[uint64]struct{}
+	removedpoints map[uint64]struct{}
+	clearedpoints bool
+	done          bool
+	oldValue      func(context.Context) (*Area, error)
+	predicates    []predicate.Area
+}
+
+var _ ent.Mutation = (*AreaMutation)(nil)
+
+// areaOption allows management of the mutation configuration using functional options.
+type areaOption func(*AreaMutation)
+
+// newAreaMutation creates new mutation for the Area entity.
+func newAreaMutation(c config, op Op, opts ...areaOption) *AreaMutation {
+	m := &AreaMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeArea,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAreaID sets the ID field of the mutation.
+func withAreaID(id uint64) areaOption {
+	return func(m *AreaMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Area
+		)
+		m.oldValue = func(ctx context.Context) (*Area, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Area.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withArea sets the old Area of the mutation.
+func withArea(node *Area) areaOption {
+	return func(m *AreaMutation) {
+		m.oldValue = func(context.Context) (*Area, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m AreaMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m AreaMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Area entities.
+func (m *AreaMutation) SetID(id uint64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *AreaMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *AreaMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Area.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetName sets the "name" field.
+func (m *AreaMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *AreaMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Area entity.
+// If the Area object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AreaMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *AreaMutation) ResetName() {
+	m.name = nil
+}
+
+// AddPointIDs adds the "points" edge to the Location entity by ids.
+func (m *AreaMutation) AddPointIDs(ids ...uint64) {
+	if m.points == nil {
+		m.points = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.points[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPoints clears the "points" edge to the Location entity.
+func (m *AreaMutation) ClearPoints() {
+	m.clearedpoints = true
+}
+
+// PointsCleared reports if the "points" edge to the Location entity was cleared.
+func (m *AreaMutation) PointsCleared() bool {
+	return m.clearedpoints
+}
+
+// RemovePointIDs removes the "points" edge to the Location entity by IDs.
+func (m *AreaMutation) RemovePointIDs(ids ...uint64) {
+	if m.removedpoints == nil {
+		m.removedpoints = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.points, ids[i])
+		m.removedpoints[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPoints returns the removed IDs of the "points" edge to the Location entity.
+func (m *AreaMutation) RemovedPointsIDs() (ids []uint64) {
+	for id := range m.removedpoints {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PointsIDs returns the "points" edge IDs in the mutation.
+func (m *AreaMutation) PointsIDs() (ids []uint64) {
+	for id := range m.points {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPoints resets all changes to the "points" edge.
+func (m *AreaMutation) ResetPoints() {
+	m.points = nil
+	m.clearedpoints = false
+	m.removedpoints = nil
+}
+
+// Where appends a list predicates to the AreaMutation builder.
+func (m *AreaMutation) Where(ps ...predicate.Area) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the AreaMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *AreaMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Area, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *AreaMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *AreaMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Area).
+func (m *AreaMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *AreaMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m.name != nil {
+		fields = append(fields, area.FieldName)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *AreaMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case area.FieldName:
+		return m.Name()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *AreaMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case area.FieldName:
+		return m.OldName(ctx)
+	}
+	return nil, fmt.Errorf("unknown Area field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AreaMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case area.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Area field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *AreaMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *AreaMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AreaMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Area numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *AreaMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *AreaMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *AreaMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Area nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *AreaMutation) ResetField(name string) error {
+	switch name {
+	case area.FieldName:
+		m.ResetName()
+		return nil
+	}
+	return fmt.Errorf("unknown Area field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *AreaMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.points != nil {
+		edges = append(edges, area.EdgePoints)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *AreaMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case area.EdgePoints:
+		ids := make([]ent.Value, 0, len(m.points))
+		for id := range m.points {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *AreaMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removedpoints != nil {
+		edges = append(edges, area.EdgePoints)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *AreaMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case area.EdgePoints:
+		ids := make([]ent.Value, 0, len(m.removedpoints))
+		for id := range m.removedpoints {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *AreaMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedpoints {
+		edges = append(edges, area.EdgePoints)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *AreaMutation) EdgeCleared(name string) bool {
+	switch name {
+	case area.EdgePoints:
+		return m.clearedpoints
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *AreaMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Area unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *AreaMutation) ResetEdge(name string) error {
+	switch name {
+	case area.EdgePoints:
+		m.ResetPoints()
+		return nil
+	}
+	return fmt.Errorf("unknown Area edge %s", name)
+}
+
 // LocationMutation represents an operation that mutates the Location nodes in the graph.
 type LocationMutation struct {
 	config
@@ -2160,6 +2587,9 @@ type LocationMutation struct {
 	animals                map[uint64]struct{}
 	removedanimals         map[uint64]struct{}
 	clearedanimals         bool
+	areas                  map[uint64]struct{}
+	removedareas           map[uint64]struct{}
+	clearedareas           bool
 	having_animals         map[uint64]struct{}
 	removedhaving_animals  map[uint64]struct{}
 	clearedhaving_animals  bool
@@ -2492,6 +2922,60 @@ func (m *LocationMutation) ResetAnimals() {
 	m.removedanimals = nil
 }
 
+// AddAreaIDs adds the "areas" edge to the Area entity by ids.
+func (m *LocationMutation) AddAreaIDs(ids ...uint64) {
+	if m.areas == nil {
+		m.areas = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.areas[ids[i]] = struct{}{}
+	}
+}
+
+// ClearAreas clears the "areas" edge to the Area entity.
+func (m *LocationMutation) ClearAreas() {
+	m.clearedareas = true
+}
+
+// AreasCleared reports if the "areas" edge to the Area entity was cleared.
+func (m *LocationMutation) AreasCleared() bool {
+	return m.clearedareas
+}
+
+// RemoveAreaIDs removes the "areas" edge to the Area entity by IDs.
+func (m *LocationMutation) RemoveAreaIDs(ids ...uint64) {
+	if m.removedareas == nil {
+		m.removedareas = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.areas, ids[i])
+		m.removedareas[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedAreas returns the removed IDs of the "areas" edge to the Area entity.
+func (m *LocationMutation) RemovedAreasIDs() (ids []uint64) {
+	for id := range m.removedareas {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AreasIDs returns the "areas" edge IDs in the mutation.
+func (m *LocationMutation) AreasIDs() (ids []uint64) {
+	for id := range m.areas {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetAreas resets all changes to the "areas" edge.
+func (m *LocationMutation) ResetAreas() {
+	m.areas = nil
+	m.clearedareas = false
+	m.removedareas = nil
+}
+
 // AddHavingAnimalIDs adds the "having_animals" edge to the VisitedLocation entity by ids.
 func (m *LocationMutation) AddHavingAnimalIDs(ids ...uint64) {
 	if m.having_animals == nil {
@@ -2723,12 +3207,15 @@ func (m *LocationMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *LocationMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.chipped_animals != nil {
 		edges = append(edges, location.EdgeChippedAnimals)
 	}
 	if m.animals != nil {
 		edges = append(edges, location.EdgeAnimals)
+	}
+	if m.areas != nil {
+		edges = append(edges, location.EdgeAreas)
 	}
 	if m.having_animals != nil {
 		edges = append(edges, location.EdgeHavingAnimals)
@@ -2752,6 +3239,12 @@ func (m *LocationMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case location.EdgeAreas:
+		ids := make([]ent.Value, 0, len(m.areas))
+		for id := range m.areas {
+			ids = append(ids, id)
+		}
+		return ids
 	case location.EdgeHavingAnimals:
 		ids := make([]ent.Value, 0, len(m.having_animals))
 		for id := range m.having_animals {
@@ -2764,12 +3257,15 @@ func (m *LocationMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *LocationMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedchipped_animals != nil {
 		edges = append(edges, location.EdgeChippedAnimals)
 	}
 	if m.removedanimals != nil {
 		edges = append(edges, location.EdgeAnimals)
+	}
+	if m.removedareas != nil {
+		edges = append(edges, location.EdgeAreas)
 	}
 	if m.removedhaving_animals != nil {
 		edges = append(edges, location.EdgeHavingAnimals)
@@ -2793,6 +3289,12 @@ func (m *LocationMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case location.EdgeAreas:
+		ids := make([]ent.Value, 0, len(m.removedareas))
+		for id := range m.removedareas {
+			ids = append(ids, id)
+		}
+		return ids
 	case location.EdgeHavingAnimals:
 		ids := make([]ent.Value, 0, len(m.removedhaving_animals))
 		for id := range m.removedhaving_animals {
@@ -2805,12 +3307,15 @@ func (m *LocationMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *LocationMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedchipped_animals {
 		edges = append(edges, location.EdgeChippedAnimals)
 	}
 	if m.clearedanimals {
 		edges = append(edges, location.EdgeAnimals)
+	}
+	if m.clearedareas {
+		edges = append(edges, location.EdgeAreas)
 	}
 	if m.clearedhaving_animals {
 		edges = append(edges, location.EdgeHavingAnimals)
@@ -2826,6 +3331,8 @@ func (m *LocationMutation) EdgeCleared(name string) bool {
 		return m.clearedchipped_animals
 	case location.EdgeAnimals:
 		return m.clearedanimals
+	case location.EdgeAreas:
+		return m.clearedareas
 	case location.EdgeHavingAnimals:
 		return m.clearedhaving_animals
 	}
@@ -2849,6 +3356,9 @@ func (m *LocationMutation) ResetEdge(name string) error {
 		return nil
 	case location.EdgeAnimals:
 		m.ResetAnimals()
+		return nil
+	case location.EdgeAreas:
+		m.ResetAreas()
 		return nil
 	case location.EdgeHavingAnimals:
 		m.ResetHavingAnimals()

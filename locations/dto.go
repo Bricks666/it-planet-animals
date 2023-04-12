@@ -8,12 +8,7 @@ type LocationDto struct {
 	Longitude float64 `json:"longitude"`
 }
 
-type CreateLocationDto struct {
-	Latitude  float64 `json:"latitude" validate:"any-number,latitude"`
-	Longitude float64 `json:"longitude" validate:"any-number,longitude"`
-}
-
-type UpdateLocationDto struct {
+type LocationBodyDto struct {
 	Latitude  float64 `json:"latitude" validate:"any-number,latitude"`
 	Longitude float64 `json:"longitude" validate:"any-number,longitude"`
 }
@@ -23,6 +18,5 @@ type LocationParams struct {
 }
 
 var NewLocationDto = shared.BaseNew[LocationDto]()
-var NewCreateLocationDto = shared.BaseNew[CreateLocationDto]()
-var NewUpdateLocationDto = shared.BaseNew[UpdateLocationDto]()
+var NewLocationBodyDto = shared.BaseNew[LocationBodyDto]()
 var NewLocationParams = shared.BaseNew[LocationParams]()

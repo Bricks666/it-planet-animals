@@ -71,3 +71,14 @@ func Contains[T primitives](array []T, element T) bool {
 
 	return false
 }
+
+type ElementHandler[T interface{}, O interface{}] func(element T) O
+
+func Map[T interface{}, O interface{}](array []T, handler ElementHandler[T, O]) []O {
+	var response = []O{}
+	for _, e := range array {
+		response = append(response, handler(e))
+	}
+
+	return response
+}

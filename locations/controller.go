@@ -43,7 +43,7 @@ func (lc *LocationsController) GetOne(ct *fiber.Ctx) error {
 	return ct.Status(fiber.StatusOK).JSON(location)
 }
 func (lc *LocationsController) Create(ct *fiber.Ctx) error {
-	var body = NewCreateLocationDto()
+	var body = NewLocationBodyDto()
 	var err error
 
 	if bodyContainsNull(ct.Body()) {
@@ -69,7 +69,7 @@ func (lc *LocationsController) Create(ct *fiber.Ctx) error {
 
 func (lc *LocationsController) Update(ct *fiber.Ctx) error {
 	var params = NewLocationParams()
-	var body = NewUpdateLocationDto()
+	var body = NewLocationBodyDto()
 	var err error
 
 	err = shared.GetParams(ct, params)

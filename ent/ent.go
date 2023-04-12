@@ -6,6 +6,7 @@ import (
 	"animals/ent/animal"
 	"animals/ent/animaltag"
 	"animals/ent/animaltype"
+	"animals/ent/area"
 	"animals/ent/location"
 	"animals/ent/user"
 	"animals/ent/visitedlocation"
@@ -47,6 +48,7 @@ func columnChecker(table string) func(string) error {
 		animal.Table:          animal.ValidColumn,
 		animaltag.Table:       animaltag.ValidColumn,
 		animaltype.Table:      animaltype.ValidColumn,
+		area.Table:            area.ValidColumn,
 		location.Table:        location.ValidColumn,
 		user.Table:            user.ValidColumn,
 		visitedlocation.Table: visitedlocation.ValidColumn,

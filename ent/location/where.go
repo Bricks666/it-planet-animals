@@ -198,6 +198,33 @@ func HasAnimalsWith(preds ...predicate.Animal) predicate.Location {
 	})
 }
 
+// HasAreas applies the HasEdge predicate on the "areas" edge.
+func HasAreas() predicate.Location {
+	return predicate.Location(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, AreasTable, AreasPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAreasWith applies the HasEdge predicate on the "areas" edge with a given conditions (other predicates).
+func HasAreasWith(preds ...predicate.Area) predicate.Location {
+	return predicate.Location(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(AreasInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, AreasTable, AreasPrimaryKey...),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasHavingAnimals applies the HasEdge predicate on the "having_animals" edge.
 func HasHavingAnimals() predicate.Location {
 	return predicate.Location(func(s *sql.Selector) {
